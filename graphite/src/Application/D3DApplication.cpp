@@ -255,7 +255,6 @@ void D3DApplication::OnRender()
 	// Begin drawing
 	m_GraphicsContext->StartDraw(m_PassCB);
 
-
 	// Tell the scene that render is happening
 	// This will update acceleration structures and other things to render the scene
 	m_Scene->PreRender();
@@ -264,37 +263,10 @@ void D3DApplication::OnRender()
 	m_DeferredRenderer->Render();
 
 	// Copy output from deferred renderer to back buffer
-	ID3D12Resource* outputResource = m_DeferredRenderer->GetOutputResource();
-	D3D12_RESOURCE_STATES outputResourceState = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-	/*
-	switch(m_GBufferDebugView)
-	{
-	case GB_DBG_Albedo:
-		outputResource = m_DeferredRenderer->GetGBufferResource(0);
-		outputResourceState = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		break;
-	case GB_DBG_Normal:
-		outputResource = m_DeferredRenderer->GetGBufferResource(1);
-		outputResourceState = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		break;
-	case GB_DBG_RoughnessMetalness:
-		outputResource = m_DeferredRenderer->GetGBufferResource(2);
-		outputResourceState = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		break;
-	case GB_DBG_Depth:
-		outputResource = m_DeferredRenderer->GetDepthBufferResource();
-		outputResourceState = D3D12_RESOURCE_STATE_DEPTH_WRITE;
-		break;
-	case GB_DBG_None:
-	default:
-		break;
-	}
-	*/
-	m_GraphicsContext->CopyToBackBuffer(outputResource, outputResourceState);
-
-	m_GraphicsContext->SetRenderTargetToBackBuffer(true);
+	m_GraphicsContext->CopyToBackBuffer(m_DeferredRenderer->GetOutputResource(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
 	// ImGui Render
+	m_GraphicsContext->SetRenderTargetToBackBuffer(true);
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_GraphicsContext->GetCommandList());
 
 	// End draw
@@ -403,8 +375,6 @@ void D3DApplication::InitImGui()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-	
 
 	ImGui::StyleColorsDark();
 

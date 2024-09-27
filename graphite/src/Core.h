@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Framework/Log.h"
-#include "Framework/Exception.h"
+#include "Renderer/D3DException.h"
 
 
 #ifdef _DEBUG

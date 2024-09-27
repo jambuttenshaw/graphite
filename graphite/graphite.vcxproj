@@ -532,7 +532,7 @@
     <ClInclude Include="src\Application\Scenes\VolumetricScene.h" />
     <ClInclude Include="src\Framework\Camera\Camera.h" />
     <ClInclude Include="src\Framework\Camera\CameraController.h" />
-    <ClInclude Include="src\Framework\Exception.h" />
+    <ClInclude Include="src\Renderer\D3DException.h" />
     <ClInclude Include="src\Framework\GameTimer.h" />
     <ClInclude Include="src\Framework\GuiHelpers.h" />
     <ClInclude Include="src\Framework\Math.h" />
