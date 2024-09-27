@@ -1,0 +1,18 @@
+[submodule "graphite/vendor/DirectX-Headers"]
+	path = graphite/vendor/DirectX-Headers
+	url = https://github.com/microsoft/DirectX-Headers/
+[submodule "graphite/vendor/DirectXMath"]
+	path = graphite/vendor/DirectXMath
+	url = https://github.com/microsoft/DirectXMath/
+[submodule "graphite/vendor/DirectXTex"]
+	path = graphite/vendor/DirectXTex
+	url = https://github.com/microsoft/DirectXTex/
+[submodule "graphite/vendor/args"]
+	path = graphite/vendor/args
+	url = https://github.com/Taywee/args/
+[submodule "graphite/vendor/imgui"]
+	path = graphite/vendor/imgui
+	url = https://github.com/ocornut/imgui/
+[submodule "graphite/vendor/json"]
+	path = graphite/vendor/json
+	url = https://github.com/nlohmann/json/
