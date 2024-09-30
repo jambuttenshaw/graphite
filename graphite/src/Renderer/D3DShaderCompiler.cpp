@@ -2,6 +2,27 @@
 #include "D3DShaderCompiler.h"
 
 #include "Core.h"
+#include "D3DException.h"
+
+
+const wchar_t* ShaderTypeToTargetStr(D3DShaderCompiler::ShaderType type)
+{
+	switch (type)
+	{
+	case D3DShaderCompiler::ShaderType::Vertex:		return L"vs";
+	case D3DShaderCompiler::ShaderType::Hull:		return L"hs";
+	case D3DShaderCompiler::ShaderType::Domain:		return L"ds";
+	case D3DShaderCompiler::ShaderType::Geometry:	return L"gs";
+	case D3DShaderCompiler::ShaderType::Pixel:		return L"ps";
+	case D3DShaderCompiler::ShaderType::Compute:	return L"cs";
+	case D3DShaderCompiler::ShaderType::Library:	return L"lib";
+	default:
+		LOG_ERROR("Invalid shader type!");
+		break;
+	}
+
+	return nullptr;
+}
 
 D3DShaderCompiler::D3DShaderCompiler()
 {
@@ -12,10 +33,10 @@ D3DShaderCompiler::D3DShaderCompiler()
 }
 
 
-HRESULT D3DShaderCompiler::CompileFromFileImpl(const wchar_t* file, const wchar_t* entryPoint, const wchar_t* target, const std::vector<std::wstring>& defines, ComPtr<IDxcBlob>* ppBlob) const
+HRESULT D3DShaderCompiler::CompileFromFileImpl(const wchar_t* file, const wchar_t* entryPoint, ShaderType target, const std::vector<std::wstring>& defines, ComPtr<IDxcBlob>* ppBlob) const
 {
 	// format target
-	std::wstring targetStr = target;
+	std::wstring targetStr = ShaderTypeToTargetStr(target);
 	targetStr += m_ShaderModelExtension;
 
 	std::vector<LPCWSTR> args;

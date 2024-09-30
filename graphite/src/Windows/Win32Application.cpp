@@ -15,6 +15,7 @@
 #include "Core.h"
 #include "imgui.h"
 #include "Application/BaseApplication.h"
+#include "Renderer/D3DException.h"
 
 HWND Win32Application::m_hwnd = nullptr;
 bool Win32Application::m_fullscreenMode = false;

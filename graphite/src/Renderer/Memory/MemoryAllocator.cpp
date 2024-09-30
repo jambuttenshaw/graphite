@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MemoryAllocator.h"
 
+#include "Renderer/D3DException.h"
 #include "Renderer/D3DGraphicsContext.h"
 
 

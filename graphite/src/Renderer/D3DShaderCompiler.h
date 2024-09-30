@@ -8,11 +8,22 @@ using Microsoft::WRL::ComPtr;
 class D3DShaderCompiler
 {
 public:
+	enum class ShaderType
+	{
+		Vertex = 0,
+		Hull,
+		Domain,
+		Geometry,
+		Pixel,
+		Compute,
+		Library,
+		Count
+	};
 
 	static HRESULT CompileFromFile(
 		const wchar_t* file,
 		const wchar_t* entryPoint,
-		const wchar_t* target,
+		ShaderType target,
 		const std::vector<std::wstring>& defines,
 		ComPtr<IDxcBlob>* ppBlob
 	)
@@ -47,7 +58,7 @@ private:
 	HRESULT CompileFromFileImpl(
 		const wchar_t* file,
 		const wchar_t* entryPoint,
-		const wchar_t* target,
+		ShaderType target,
 		const std::vector<std::wstring>& defines,
 		ComPtr<IDxcBlob>* ppBlob
 	) const;

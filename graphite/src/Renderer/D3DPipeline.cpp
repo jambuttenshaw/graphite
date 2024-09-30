@@ -38,7 +38,7 @@ void D3DGraphicsPipeline::Create(D3DGraphicsPipelineDesc* desc)
 	THROW_IF_FAIL(D3DShaderCompiler::CompileFromFile(
 		desc->VertexShader.ShaderPath,
 		desc->VertexShader.EntryPoint,
-		L"vs",
+		D3DShaderCompiler::ShaderType::Vertex,
 		desc->Defines,
 		&vs));
 	if (desc->PixelShader.ShaderPath)
@@ -46,7 +46,7 @@ void D3DGraphicsPipeline::Create(D3DGraphicsPipelineDesc* desc)
 		THROW_IF_FAIL(D3DShaderCompiler::CompileFromFile(
 			desc->PixelShader.ShaderPath,
 			desc->PixelShader.EntryPoint,
-			L"ps",
+			D3DShaderCompiler::ShaderType::Pixel,
 			desc->Defines,
 			&ps));
 	}
@@ -115,7 +115,7 @@ void D3DComputePipeline::Create(D3DComputePipelineDesc* desc)
 	// Create the compute pipeline state
 	{
 		ComPtr<IDxcBlob> computeShader;
-		THROW_IF_FAIL(D3DShaderCompiler::CompileFromFile(desc->Shader, desc->EntryPoint, L"cs", desc->Defines, &computeShader));
+		THROW_IF_FAIL(D3DShaderCompiler::CompileFromFile(desc->Shader, desc->EntryPoint, D3DShaderCompiler::ShaderType::Compute, desc->Defines, &computeShader));
 
 		D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.pRootSignature = m_RootSignature.Get();

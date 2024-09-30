@@ -7,6 +7,7 @@
 
 #include "pix.h"
 #include "DirectXTex/DirectXTex.h"
+#include "Renderer/D3DException.h"
 
 
 // Pipeline root signatures

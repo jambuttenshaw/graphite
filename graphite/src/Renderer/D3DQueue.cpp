@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "D3DQueue.h"
 
+#include "D3DException.h"
+
 
 D3DQueue::D3DQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE type, const wchar_t* name)
 	: m_QueueType(type)

@@ -6,6 +6,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#include "Renderer/D3DException.h"
 #include "Renderer/D3DGraphicsContext.h"
 
 

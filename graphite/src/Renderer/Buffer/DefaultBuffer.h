@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Renderer/D3DException.h"
 
 using Microsoft::WRL::ComPtr;
 

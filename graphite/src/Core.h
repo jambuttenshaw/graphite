@@ -1,23 +1,18 @@
 #pragma once
 
 #include "Framework/Log.h"
-#include "Renderer/D3DException.h"
 
 
 #ifdef _DEBUG
 
-#define THROW_IF_FAIL(x) { const HRESULT hr = x; if (FAILED(hr)) { LOG_FATAL(DXException(hr).ToString().c_str()); throw; }}
 #define ASSERT(x, msg) if (!(x)) { LOG_ERROR("Debug assertion failed in file ({0}) on line ({1}). Message: {2}", __FILE__, __LINE__, msg); DebugBreak(); }
-#define THROW_IF_FALSE(x, msg) if (!(x)) { LOG_ERROR(msg); DebugBreak(); }
 
 #define NOT_IMPLEMENTED ASSERT(false, "Not Implemented")
 #define DEPRECATED ASSERT(false, "Deprecated")
 
 #else
 
-#define THROW_IF_FAIL(x) (void)(x);
 #define ASSERT(x, msg)
-#define THROW_IF_FALSE(x, msg, ...) (void)(x);
 
 #define NOT_IMPLEMENTED
 #define DEPRECATED
