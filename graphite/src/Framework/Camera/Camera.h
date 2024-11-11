@@ -43,6 +43,8 @@ public:
 
 	inline const XMMATRIX& GetProjectionMatrix() { RebuildProjIfDirty(); return m_ProjectionMatrix; }
 
+	void Gui();
+
 private:
 	void RebuildViewIfDirty();
 	void RebuildProjIfDirty();

@@ -94,4 +94,6 @@ void CameraController::Gui()
 	ImGui::Checkbox("Lock Camera", &m_LockCamera);
 	ImGui::SliderFloat("Move Speed", &m_MoveSpeed, s_MinMoveSpeed, s_MaxMoveSpeed);
 	ImGui::SliderFloat("Mouse Sensitivity", &m_RotateSpeed, 0.01f, 1.0f);
+
+	m_Camera->Gui();
 }
