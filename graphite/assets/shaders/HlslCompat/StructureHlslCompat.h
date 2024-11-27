@@ -164,6 +164,7 @@ struct GlobalFogConstantBuffer
 struct TonemappingParametersConstantBuffer
 {
 	XMUINT2 OutputDimensions;
+	UINT EnableTonemapping;
 };
 
 

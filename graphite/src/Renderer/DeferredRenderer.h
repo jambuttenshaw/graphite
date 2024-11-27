@@ -98,6 +98,8 @@ private:
 	std::unique_ptr<VolumetricRendering> m_VolumeRenderer;
 	bool m_UseVolumetrics = true;
 
+	bool m_UseTonemapping = true;
+
 	// G-buffer resources
 	// The deferred renderer owns:
 	// - a collection of render targets for various purposes

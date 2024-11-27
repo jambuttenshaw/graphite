@@ -881,7 +881,8 @@ void DeferredRenderer::Tonemapping() const
 	const UINT clientHeight = g_D3DGraphicsContext->GetClientHeight();
 	const TonemappingParametersConstantBuffer cb
 	{
-		.OutputDimensions = { clientWidth, clientHeight }
+		.OutputDimensions = { clientWidth, clientHeight },
+		.EnableTonemapping = static_cast<UINT>(m_UseTonemapping)
 	};
 
 	// Set root arguments
@@ -921,6 +922,8 @@ void DeferredRenderer::DrawAllGeometry(ID3D12GraphicsCommandList* commandList, U
 void DeferredRenderer::DrawGui()
 {
 	ImGui::Text("Renderer");
+
+	ImGui::Checkbox("Enable Tonemapping", &m_UseTonemapping);
 
 	{
 		ImGui::Checkbox("Use Volumetrics", &m_UseVolumetrics);

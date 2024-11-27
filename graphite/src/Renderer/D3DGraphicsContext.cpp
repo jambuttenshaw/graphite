@@ -337,13 +337,18 @@ void D3DGraphicsContext::CreateAdapter()
 #else
 	// Enable debug layer
 	ComPtr<ID3D12Debug> debugController;
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+	HRESULT result = D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
+	if (SUCCEEDED(result))
 	{
 		debugController->EnableDebugLayer();
 
 		dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 
 		LOG_INFO("D3D12 Debug Layer Created")
+	}
+	else
+	{
+		LOG_ERROR(L"Failed to get debug interface. Error: {}", DXException(result).ToString());
 	}
 
 	// Enable DRED
@@ -415,7 +420,8 @@ void D3DGraphicsContext::CreateDevice()
 	// Set up the info queue for the device
 	// Debug layer must be enabled for this: so only perform this in debug
 	// Note that means that m_InfoQueue should always be checked for existence before use
-	if (SUCCEEDED(m_Device->QueryInterface(IID_PPV_ARGS(&m_InfoQueue))))
+	HRESULT result = (m_Device->QueryInterface(IID_PPV_ARGS(&m_InfoQueue)));
+	if (SUCCEEDED(result))
 	{
 		// Set up message callback
 		THROW_IF_FAIL(m_InfoQueue->RegisterMessageCallback(D3DDebugTools::D3DMessageHandler, D3D12_MESSAGE_CALLBACK_FLAG_NONE, nullptr, &m_MessageCallbackCookie));
@@ -424,6 +430,7 @@ void D3DGraphicsContext::CreateDevice()
 	}
 	else
 	{
+		LOG_ERROR(L"Failed to get info queue. Error: {}", DXException(result).ToString());
 		LOG_WARN("D3D Info Queue interface not available! D3D messages will not be received.");
 	}
 #endif
