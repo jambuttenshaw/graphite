@@ -77,6 +77,19 @@ namespace TonemappingRootSignature
 	};
 }
 
+namespace DelightingRootSignature
+{
+	enum Parameters
+	{
+		PassConstantBuffer = 0,
+		DelightingParametersConstantBuffer,
+		GBuffer,
+		LightingConstantBuffer,
+		OutputResource,
+		Count
+	};
+}
+
 namespace ESMDownsampleTransformRootSignature
 {
 	enum Value
@@ -338,6 +351,31 @@ void DeferredRenderer::CreatePipelines()
 		m_TonemappingPipeline.Create(&psoDesc);
 	}
 
+	// Create delighting pipeline
+	{
+		D3DComputePipelineDesc psoDesc = {};
+
+		CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
+		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, 0);
+		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
+
+		// Set up root parameters
+		CD3DX12_ROOT_PARAMETER1 rootParameters[DelightingRootSignature::Count];
+		rootParameters[DelightingRootSignature::PassConstantBuffer].InitAsConstantBufferView(0);
+		rootParameters[DelightingRootSignature::DelightingParametersConstantBuffer].InitAsConstants(SizeOfInUint32(DelightingParametersConstantBuffer), 1);
+		rootParameters[DelightingRootSignature::GBuffer].InitAsDescriptorTable(1, &ranges[0]);
+		rootParameters[DelightingRootSignature::LightingConstantBuffer].InitAsConstantBufferView(2);
+		rootParameters[DelightingRootSignature::OutputResource].InitAsDescriptorTable(1, &ranges[1]);
+
+		psoDesc.NumRootParameters = DelightingRootSignature::Count;
+		psoDesc.RootParameters = rootParameters;
+
+		psoDesc.Shader = L"assets/shaders/compute/postprocess/delighting_cs.hlsl";
+		psoDesc.EntryPoint = L"main";
+
+		m_DelightingPipeline.Create(&psoDesc);
+	}
+
 	// Create ESM downsample pipeline
 	{
 		D3DComputePipelineDesc psoDesc = {};
@@ -591,26 +629,30 @@ void DeferredRenderer::Render()
 		RenderVolumetrics();
 	}
 
-	// Switch resource states back
-	{
-		for (UINT rt = 0; rt < s_RTCount; rt++)
-		{
-			AddTransition(m_RenderTargets.at(rt), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		}
-		FlushBarriers();
-	}
-
 	// Perform post-processing on uav
 	{
 		PIXBeginEvent(commandList, PIX_COLOR_INDEX(9), "Post Processing");
+
+		if (m_EnableDelighting)
+		{
+			Delighting();
+		}
 
 		Tonemapping();
 
 		PIXEndEvent(commandList);
 	}
 
-	barriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(m_OutputResource.GetResource()));
-	FlushBarriers();
+	{
+		barriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(m_OutputResource.GetResource()));
+
+		// Switch resource states back
+		for (UINT rt = 0; rt < s_RTCount; rt++)
+		{
+			AddTransition(m_RenderTargets.at(rt), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		}
+		FlushBarriers();
+	}
 
 	// Update previous dimensions to current dimensions
 	m_PrevGBufferWidth = m_GBufferWidth;
@@ -898,6 +940,39 @@ void DeferredRenderer::Tonemapping() const
 	PIXEndEvent(commandList);
 }
 
+void DeferredRenderer::Delighting() const
+{
+	const auto commandList = g_D3DGraphicsContext->GetCommandList();
+
+	PIXBeginEvent(commandList, PIX_COLOR_INDEX(9), "Delighting");
+
+	// Lighting pass
+	m_DelightingPipeline.Bind(commandList);
+
+	const UINT clientWidth = g_D3DGraphicsContext->GetClientWidth();
+	const UINT clientHeight = g_D3DGraphicsContext->GetClientHeight();
+	const DelightingParametersConstantBuffer cb
+	{
+		.OutputDimensions = { clientWidth, clientHeight },
+	};
+
+	// Set root arguments
+	commandList->SetComputeRootConstantBufferView(DelightingRootSignature::PassConstantBuffer, g_D3DGraphicsContext->GetPassCBAddress());
+	commandList->SetComputeRoot32BitConstants(DelightingRootSignature::DelightingParametersConstantBuffer, SizeOfInUint32(cb), &cb, 0);
+	commandList->SetComputeRootDescriptorTable(DelightingRootSignature::GBuffer, m_SRVs.GetGPUHandle());
+	commandList->SetComputeRootConstantBufferView(DelightingRootSignature::LightingConstantBuffer, m_LightManager->GetLightingConstantBuffer());
+	commandList->SetComputeRootDescriptorTable(DelightingRootSignature::OutputResource, m_OutputUAV.GetGPUHandle());
+
+	// Uses 8 threads per group (fast ceiling of integer division)
+	const UINT threadGroupX = (clientWidth + 7) / 8;
+	const UINT threadGroupY = (clientHeight + 7) / 8;
+
+	commandList->Dispatch(threadGroupX, threadGroupY, 1);
+
+	PIXEndEvent(commandList);
+}
+
+
 
 void DeferredRenderer::DrawAllGeometry(ID3D12GraphicsCommandList* commandList, UINT objectCBParamIndex) const
 {
@@ -923,6 +998,7 @@ void DeferredRenderer::DrawGui()
 {
 	ImGui::Text("Renderer");
 
+	ImGui::Checkbox("Enable Delighting", &m_EnableDelighting);
 	ImGui::Checkbox("Enable Tonemapping", &m_UseTonemapping);
 
 	{

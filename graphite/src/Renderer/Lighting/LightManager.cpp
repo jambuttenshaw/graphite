@@ -26,7 +26,7 @@ LightManager::LightManager()
 	m_LightingCBStaging.DirectionalLight.Intensity = 2.0f;
 	m_LightingCBStaging.DirectionalLight.Color = { 1.0f, 1.0f, 1.0f };
 
-	m_LightingCBStaging.UseSHIrradiance = false;
+	m_LightingCBStaging.IndirectIllumination = IndirectIlluminationMethod::None;
 
 	m_LightingCBStaging.PointLightCount = s_MaxLights;
 
@@ -176,11 +176,11 @@ void LightManager::DrawGui()
 	{
 		ImGui::Text("Ambient Light");
 
-		static const char* diffuseIrradianceModes[] = {"Cubemap", "SH"};
-		int useSH = static_cast<int>(m_LightingCBStaging.UseSHIrradiance);
-		if (ImGui::Combo("Diffuse Irradiance Method", &useSH, diffuseIrradianceModes, ARRAYSIZE(diffuseIrradianceModes)))
+		static const char* indirectIlluminationModes[] = { "None", "Cubemap", "SH" };
+		int indirectMethod = static_cast<int>(m_LightingCBStaging.IndirectIllumination);
+		if (ImGui::Combo("Indirect Illumination Method", &indirectMethod, indirectIlluminationModes, ARRAYSIZE(indirectIlluminationModes)))
 		{
-			m_LightingCBStaging.UseSHIrradiance = static_cast<UINT>(useSH);
+			m_LightingCBStaging.IndirectIllumination = static_cast<IndirectIlluminationMethod>(indirectMethod);
 		}
 	}
 

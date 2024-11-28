@@ -73,6 +73,13 @@ struct FullscreenQuadProperties
 
 
 // Lighting structures
+enum IndirectIlluminationMethod : UINT
+{
+	None = 0,
+	EnvironmentMap,
+	SphericalHarmonics,
+};
+
 struct LightingConstantBuffer
 {
 	// Global directional light (the sun)
@@ -88,7 +95,7 @@ struct LightingConstantBuffer
 
 	// From "Stupid Spherical Harmonics (SH) Tricks"
 	XMFLOAT4 SkyIrradianceEnvironmentMap[7];
-	UINT UseSHIrradiance;
+	IndirectIlluminationMethod IndirectIllumination;
 
 	UINT PointLightCount;
 };
@@ -166,6 +173,13 @@ struct TonemappingParametersConstantBuffer
 	XMUINT2 OutputDimensions;
 	UINT EnableTonemapping;
 };
+
+
+struct DelightingParametersConstantBuffer
+{
+	XMUINT2 OutputDimensions;
+};
+
 
 
 // ESM

@@ -138,8 +138,28 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	}
 
 	// Calculate ambient lighting
-	const float3 ambient = g_LightCB.UseSHIrradiance ?
-		calculateAmbientLighting(
+	float3 ambient = float3(0.0f, 0.0f, 0.0f);
+	switch(g_LightCB.IndirectIllumination)
+	{
+	case IndirectIlluminationMethod::None:
+		break;
+	case IndirectIlluminationMethod::EnvironmentMap:
+		ambient = calculateAmbientLighting(
+			normal,
+			v,
+			albedo,
+			f0,
+			roughnessMetallic.x,
+			roughnessMetallic.y,
+			g_IrradianceMap,
+			g_BRDFIntegrationMap,
+			g_PrefilteredEnvironmentMap,
+			g_EnvironmentSampler,
+			g_BRDFIntegrationSampler
+		);
+		break;
+	case IndirectIlluminationMethod::SphericalHarmonics:
+		ambient = calculateAmbientLighting(
 			normal,
 			v,
 			albedo,
@@ -151,20 +171,9 @@ void main(uint3 DTid : SV_DispatchThreadID)
 			g_PrefilteredEnvironmentMap,
 			g_EnvironmentSampler,
 			g_BRDFIntegrationSampler
-		) :
-		calculateAmbientLighting(
-			normal,
-			v,
-			albedo,
-			f0,
-			roughnessMetallic.x, 
-			roughnessMetallic.y,
-			g_IrradianceMap,
-			g_BRDFIntegrationMap,
-			g_PrefilteredEnvironmentMap,
-			g_EnvironmentSampler,
-			g_BRDFIntegrationSampler
 		);
+		break;
+	}
 
 	lo += ambient;
 

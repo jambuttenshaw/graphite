@@ -84,6 +84,7 @@ private:
 
 	// Post processing
 	void Tonemapping() const;
+	void Delighting() const;
 
 	// Submits Draw calls for all geometry in the scene
 	void DrawAllGeometry(ID3D12GraphicsCommandList* commandList, UINT objectCBParamIndex) const;
@@ -96,9 +97,10 @@ private:
 	const MaterialManager* m_MaterialManager = nullptr;
 
 	std::unique_ptr<VolumetricRendering> m_VolumeRenderer;
-	bool m_UseVolumetrics = true;
+	bool m_UseVolumetrics = false;
 
-	bool m_UseTonemapping = true;
+	bool m_EnableDelighting = true;
+	bool m_UseTonemapping = false;
 
 	// G-buffer resources
 	// The deferred renderer owns:
@@ -148,6 +150,7 @@ private:
 	D3DGraphicsPipeline m_SkyboxPipeline;
 
 	D3DComputePipeline m_TonemappingPipeline;
+	D3DComputePipeline m_DelightingPipeline;
 
 	D3DComputePipeline m_ESMDownsamplePipeline;
 

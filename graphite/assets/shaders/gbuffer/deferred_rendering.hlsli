@@ -30,8 +30,8 @@ struct GeometryPass_VSToPS
 
 struct GeometryPass_PSOutput
 {
-	float3 Albedo : SV_TARGET0;
-	float3 Normal : SV_TARGET1;
+	float4 Albedo : SV_TARGET0;
+	float4 Normal : SV_TARGET1;
 	float2 RoughnessMetalness : SV_TARGET2;
 };
 

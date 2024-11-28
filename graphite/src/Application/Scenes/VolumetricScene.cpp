@@ -19,9 +19,9 @@ VolumetricScene::VolumetricScene(D3DApplication* application, UINT maxGeometryIn
 	Material* mat2 = m_Application->GetMaterialManager()->GetMaterial(2);
 	Material* mat3 = m_Application->GetMaterialManager()->GetMaterial(3);
 
-	mat1->SetAlbedo({ 0.6f, 0.2f, 1.0f })->SetRoughness(0.1f)->SetMetalness(1.0f);
-	mat2->SetAlbedo({ 0.0f, 0.1f, 0.3f })->SetRoughness(0.8f)->SetMetalness(0.0f);
-	mat3->SetAlbedo({ 0.6f, 0.2f, 0.1f })->SetRoughness(0.5f)->SetMetalness(1.0f);
+	mat1->SetAlbedo({ 0.6f, 0.2f, 1.0f })->SetRoughness(1.0f)->SetMetalness(0.0f);
+	mat2->SetAlbedo({ 0.0f, 0.1f, 0.3f })->SetRoughness(1.0f)->SetMetalness(0.0f);
+	mat3->SetAlbedo({ 0.6f, 0.2f, 0.1f })->SetRoughness(1.0f)->SetMetalness(0.0f);
 
 	{
 		Transform cubeTransform{ { 0.0f, -0.05f, 0.0f } };
