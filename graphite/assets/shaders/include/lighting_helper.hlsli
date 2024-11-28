@@ -80,7 +80,7 @@ float3 ggx_brdf(float3 v, float3 l, float3 n, float3 albedo, float3 f0, float ro
 	cdiff *= 1.0f - metallic;
 	
 	float3 fdiff = lambertian_diffuse(cdiff);
-	
+
 	return fdiff + fspec;
 }
 

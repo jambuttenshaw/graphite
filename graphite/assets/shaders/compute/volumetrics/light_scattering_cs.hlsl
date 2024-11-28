@@ -179,7 +179,8 @@ void main(uint3 DTid : SV_DispatchThreadID)
 
 	float3 in_scattering = emission; // add emission to light scattered into the cameras path at this location
 
-	const float sun_visibility = g_LightCB.DirectionalLight.UseESM ? GetVisibility_ESM(p_ws) : GetVisibility(p_ws); // Sample shadow map to get visibility
+	const float sun_visibility = (g_LightCB.DirectionalLight.ShadowMethod == DirectionalLightShadowMethod_ESM)
+								 ? GetVisibility_ESM(p_ws) : GetVisibility(p_ws); // Sample shadow map to get visibility
 
 	// Evaluate in-scattering from directional light
 	if (!(g_VolumeCB.Flags & VOLUME_FLAGS_DISABLE_SUN))

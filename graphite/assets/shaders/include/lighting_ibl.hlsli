@@ -127,7 +127,7 @@ float3 calculateAmbientLighting(
         
 	const float3 irradiance = irradianceMap.SampleLevel(environmentSampler, n, 0.0f).rgb;
 	const float3 diffuse = irradiance * albedo;
-        
+
     // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
 	const float MAX_REFLECTION_LOD = 4.0f;
 	const float3 r = normalize(reflect(-v, n));
@@ -135,7 +135,7 @@ float3 calculateAmbientLighting(
 	const float3 prefilteredColor = prefilterMap.SampleLevel(environmentSampler, r, roughness * MAX_REFLECTION_LOD).rgb;
 	const float2 brdf = brdfMap.SampleLevel(brdfSampler, float2(max(dot(n, v), 0.0f) + 0.01f, roughness), 0.0f).rg;
 	const float3 specular = prefilteredColor * (F * brdf.x + brdf.y);
-
+	
 	return kD * diffuse + specular;
 }
 

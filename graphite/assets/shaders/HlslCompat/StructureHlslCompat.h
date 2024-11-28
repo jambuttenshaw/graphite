@@ -75,9 +75,16 @@ struct FullscreenQuadProperties
 // Lighting structures
 enum IndirectIlluminationMethod : UINT
 {
-	None = 0,
-	EnvironmentMap,
-	SphericalHarmonics,
+	IndirectIlluminationMethod_None = 0,
+	IndirectIlluminationMethod_EnvironmentMap,
+	IndirectIlluminationMethod_SphericalHarmonics,
+};
+
+enum DirectionalLightShadowMethod : UINT
+{
+	DirectionalLightShadowMethod_None = 0,
+	DirectionalLightShadowMethod_ShadowMap,
+	DirectionalLightShadowMethod_ESM
 };
 
 struct LightingConstantBuffer
@@ -88,7 +95,7 @@ struct LightingConstantBuffer
 		XMFLOAT3 Direction;
 		float Intensity;
 		XMFLOAT3 Color;
-		UINT UseESM;
+		DirectionalLightShadowMethod ShadowMethod;
 
 		XMMATRIX ViewProjection;
 	} DirectionalLight;
@@ -178,6 +185,7 @@ struct TonemappingParametersConstantBuffer
 struct DelightingParametersConstantBuffer
 {
 	XMUINT2 OutputDimensions;
+	UINT ShowAlbedo;
 };
 
 

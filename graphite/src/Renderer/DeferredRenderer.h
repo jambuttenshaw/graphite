@@ -100,6 +100,8 @@ private:
 	bool m_UseVolumetrics = false;
 
 	bool m_EnableDelighting = true;
+	bool m_ShowAlbedo = false;
+
 	bool m_UseTonemapping = false;
 
 	// G-buffer resources

@@ -36,7 +36,7 @@ public:
 	ShadowMap& GetSunShadowMap() { return m_SunShadowMap; }
 
 	ExponentialShadowMap& GetSunESM() { return m_SunESM; }
-	inline bool IsUsingESM() const { return m_UseESM; }
+	inline bool IsUsingESM() const { return m_LightingCBStaging.DirectionalLight.ShadowMethod == DirectionalLightShadowMethod_ESM; }
 
 	D3D12_GPU_DESCRIPTOR_HANDLE GetShadowSamplers() const { return m_ShadowSamplers.GetGPUHandle(); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetShadowSampler(ShadowSampler sampler) const { return m_ShadowSamplers.GetGPUHandle(sampler); }
@@ -62,9 +62,7 @@ private:
 
 	XMMATRIX m_ShadowCameraProjectionMatrix;
 	ShadowMap m_SunShadowMap;	// Shadow map for the directional light
-
 	ExponentialShadowMap m_SunESM;
-	bool m_UseESM;
 
 	// Light GPU Resources
 	// This is a buffered resource so that light data can be modified between frames

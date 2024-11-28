@@ -19,14 +19,14 @@ void CartesianDirectionToSpherical(const XMFLOAT3& direction, float& phi, float&
 
 
 LightManager::LightManager()
-	: m_UseESM(false)
 {
 	// Populate default light properties
 	m_LightingCBStaging.DirectionalLight.Direction = { 0.0f, -0.7f, 0.7f };
 	m_LightingCBStaging.DirectionalLight.Intensity = 2.0f;
 	m_LightingCBStaging.DirectionalLight.Color = { 1.0f, 1.0f, 1.0f };
+	m_LightingCBStaging.DirectionalLight.ShadowMethod = DirectionalLightShadowMethod_ShadowMap;
 
-	m_LightingCBStaging.IndirectIllumination = IndirectIlluminationMethod::None;
+	m_LightingCBStaging.IndirectIllumination = IndirectIlluminationMethod_EnvironmentMap;
 
 	m_LightingCBStaging.PointLightCount = s_MaxLights;
 
@@ -112,8 +112,6 @@ void LightManager::UpdateLightingCB(const XMFLOAT3& eyePos)
 	const XMMATRIX viewProj = XMMatrixMultiply(view, m_ShadowCameraProjectionMatrix);
 	m_LightingCBStaging.DirectionalLight.ViewProjection = XMMatrixTranspose(viewProj);
 
-	m_LightingCBStaging.DirectionalLight.UseESM = m_UseESM;
-
 	m_IBL->PopulateSkyIrradianceSHConstants(m_LightingCBStaging.SkyIrradianceEnvironmentMap);
 }
 
@@ -170,7 +168,12 @@ void LightManager::DrawGui()
 			directionalLight.Intensity = max(0, directionalLight.Intensity);
 		}
 
-		ImGui::Checkbox("Use ESM", &m_UseESM);
+		static const char* shadowMethods[] = { "None", "ShadowMap", "ESM" };
+		int shadowMethod = static_cast<int>(m_LightingCBStaging.DirectionalLight.ShadowMethod);
+		if (ImGui::Combo("Directional Light Shadow Method", &shadowMethod, shadowMethods, ARRAYSIZE(shadowMethods)))
+		{
+			m_LightingCBStaging.DirectionalLight.ShadowMethod = static_cast<DirectionalLightShadowMethod>(shadowMethod);
+		}
 	}
 
 	{

@@ -85,7 +85,8 @@ void main(uint3 DTid : SV_DispatchThreadID)
 		const float3 brdf = ggx_brdf(v, l, normal, albedo, f0, roughnessMetallic.x, roughnessMetallic.y);
 
 		// determine visibility
-		float visible;
+		float visible = 1.0f;
+		if (g_LightCB.DirectionalLight.ShadowMethod != DirectionalLightShadowMethod_None)
 		{
 			float4 shadowPos = mul(worldPos, g_LightCB.DirectionalLight.ViewProjection);
 			shadowPos /= shadowPos.w;
@@ -96,14 +97,14 @@ void main(uint3 DTid : SV_DispatchThreadID)
 			const int2 offsets[9] =
 			{
 				{ -1, -1 },
-				{  0, -1 },
-				{  1, -1 },
-				{ -1,  0 },
-				{  0,  0 },
-				{  1,  0 },
-				{ -1,  1 },
-				{  0,  1 },
-				{  1,  1 }
+				{ 0, -1 },
+				{ 1, -1 },
+				{ -1, 0 },
+				{ 0, 0 },
+				{ 1, 0 },
+				{ -1, 1 },
+				{ 0, 1 },
+				{ 1, 1 }
 			};
 
 			float percentLit = 0.0f;
@@ -141,9 +142,9 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float3 ambient = float3(0.0f, 0.0f, 0.0f);
 	switch(g_LightCB.IndirectIllumination)
 	{
-	case IndirectIlluminationMethod::None:
+	case IndirectIlluminationMethod_None:
 		break;
-	case IndirectIlluminationMethod::EnvironmentMap:
+	case IndirectIlluminationMethod_EnvironmentMap:
 		ambient = calculateAmbientLighting(
 			normal,
 			v,
@@ -158,7 +159,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
 			g_BRDFIntegrationSampler
 		);
 		break;
-	case IndirectIlluminationMethod::SphericalHarmonics:
+	case IndirectIlluminationMethod_SphericalHarmonics:
 		ambient = calculateAmbientLighting(
 			normal,
 			v,

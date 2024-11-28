@@ -85,6 +85,8 @@ namespace DelightingRootSignature
 		DelightingParametersConstantBuffer,
 		GBuffer,
 		LightingConstantBuffer,
+		IrradianceMap,
+		IrradianceMapSampler,
 		OutputResource,
 		Count
 	};
@@ -355,9 +357,11 @@ void DeferredRenderer::CreatePipelines()
 	{
 		D3DComputePipelineDesc psoDesc = {};
 
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
+		CD3DX12_DESCRIPTOR_RANGE1 ranges[4];
 		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, 0);
-		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
+		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 1);
+		ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+		ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
 
 		// Set up root parameters
 		CD3DX12_ROOT_PARAMETER1 rootParameters[DelightingRootSignature::Count];
@@ -365,7 +369,9 @@ void DeferredRenderer::CreatePipelines()
 		rootParameters[DelightingRootSignature::DelightingParametersConstantBuffer].InitAsConstants(SizeOfInUint32(DelightingParametersConstantBuffer), 1);
 		rootParameters[DelightingRootSignature::GBuffer].InitAsDescriptorTable(1, &ranges[0]);
 		rootParameters[DelightingRootSignature::LightingConstantBuffer].InitAsConstantBufferView(2);
-		rootParameters[DelightingRootSignature::OutputResource].InitAsDescriptorTable(1, &ranges[1]);
+		rootParameters[DelightingRootSignature::IrradianceMap].InitAsDescriptorTable(1, &ranges[1]);
+		rootParameters[DelightingRootSignature::IrradianceMapSampler].InitAsDescriptorTable(1, &ranges[2]);
+		rootParameters[DelightingRootSignature::OutputResource].InitAsDescriptorTable(1, &ranges[3]);
 
 		psoDesc.NumRootParameters = DelightingRootSignature::Count;
 		psoDesc.RootParameters = rootParameters;
@@ -954,6 +960,7 @@ void DeferredRenderer::Delighting() const
 	const DelightingParametersConstantBuffer cb
 	{
 		.OutputDimensions = { clientWidth, clientHeight },
+		.ShowAlbedo = m_ShowAlbedo
 	};
 
 	// Set root arguments
@@ -961,6 +968,8 @@ void DeferredRenderer::Delighting() const
 	commandList->SetComputeRoot32BitConstants(DelightingRootSignature::DelightingParametersConstantBuffer, SizeOfInUint32(cb), &cb, 0);
 	commandList->SetComputeRootDescriptorTable(DelightingRootSignature::GBuffer, m_SRVs.GetGPUHandle());
 	commandList->SetComputeRootConstantBufferView(DelightingRootSignature::LightingConstantBuffer, m_LightManager->GetLightingConstantBuffer());
+	commandList->SetComputeRootDescriptorTable(DelightingRootSignature::IrradianceMap, m_LightManager->GetIBL()->GetSRVTable());
+	commandList->SetComputeRootDescriptorTable(DelightingRootSignature::IrradianceMapSampler, m_LightManager->GetIBL()->GetSamplerTable());
 	commandList->SetComputeRootDescriptorTable(DelightingRootSignature::OutputResource, m_OutputUAV.GetGPUHandle());
 
 	// Uses 8 threads per group (fast ceiling of integer division)
@@ -999,6 +1008,7 @@ void DeferredRenderer::DrawGui()
 	ImGui::Text("Renderer");
 
 	ImGui::Checkbox("Enable Delighting", &m_EnableDelighting);
+	ImGui::Checkbox("Show Albedo", &m_ShowAlbedo);
 	ImGui::Checkbox("Enable Tonemapping", &m_UseTonemapping);
 
 	{

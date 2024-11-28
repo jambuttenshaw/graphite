@@ -17,6 +17,13 @@ Texture2D<float> g_Depth : register(t3, space0);
 // Scene lighting
 ConstantBuffer<LightingConstantBuffer> g_LightCB : register(b2, space0);
 
+// Environmental lighting resources
+TextureCube g_IrradianceMap : register(t0, space1);
+
+// Samplers
+SamplerState g_EnvironmentSampler : register(s0, space0);
+
+
 RWTexture2D<float4> g_OutputResource : register(u0, space0);
 
 
@@ -25,6 +32,13 @@ void main(uint3 DTid : SV_DispatchThreadID)
 {
 	if (any(DTid.xy >= g_DelightingCB.OutputDimensions))
 	{
+		return;
+	}
+
+	if (g_DelightingCB.ShowAlbedo)
+	{
+		const float3 albedo = g_Albedo[DTid.xy];
+		g_OutputResource[DTid.xy] = float4(albedo, 1.0f);
 		return;
 	}
 
@@ -43,21 +57,22 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	// Un-project to world-space
 	//float4 worldPos = mul(float4(ndc, depth, 1.0f), g_PassCB.InvViewProj);
 	//worldPos = worldPos / worldPos.w;
-
-	// Perform delighting
-	const float3 n = g_Normal[DTid.xy];
-	//g_OutputResource[DTid.xy] = float4(n, 1.0f);
-	//return;
-
 	//const float3 w_o = normalize(g_PassCB.WorldEyePos - worldPos.xyz);
 
+	// Perform delighting
+	const float3 n = g_Normal[DTid.xy] * 2.0f - 1.0f;
+	
 	// Calculate light contribution from directional light
 	const float3 l_o = g_OutputResource[DTid.xy].rgb;
 
 	const float3 l = -normalize(g_LightCB.DirectionalLight.Direction);
 	const float3 w_i = g_LightCB.DirectionalLight.Color * g_LightCB.DirectionalLight.Intensity;
 
-	const float3 albedo = (PI * l_o) / (w_i * dot(n, l));
+	// Sample ambient lighting from irradiance map
+	const float3 ambient = (g_LightCB.IndirectIllumination != IndirectIlluminationMethod_None)
+							? g_IrradianceMap.SampleLevel(g_EnvironmentSampler, n, 0).rgb : float3(0.0f, 0.0f, 0.0f);
+
+	const float3 albedo = (PI * l_o) / (w_i * saturate(dot(n, l)) + PI * ambient);
 
 	g_OutputResource[DTid.xy] = float4(albedo, 1.0f);
 }
