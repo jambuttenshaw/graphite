@@ -47,4 +47,11 @@ public:
 	inline static int Sign(T val) {
 		return (T(0) < val) - (val < T(0));
 	}
+
+
+	inline static void CartesianDirectionToSpherical(const XMFLOAT3& direction, float& phi, float& theta)
+	{
+		theta = acosf(direction.y);
+		phi = Math::Sign(direction.z) * acosf(direction.x / sqrtf(direction.x * direction.x + direction.z * direction.z));
+	}
 };

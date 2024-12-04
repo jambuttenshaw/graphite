@@ -99,8 +99,15 @@ private:
 	std::unique_ptr<VolumetricRendering> m_VolumeRenderer;
 	bool m_UseVolumetrics = false;
 
+	// De-Lighting Params
 	bool m_EnableDelighting = true;
 	bool m_ShowAlbedo = false;
+
+	struct
+	{
+		XMFLOAT3 SunDirection = XMFLOAT3(0.0f, -1.0f, 0.0f);
+		float SunIntensity = 1.0f;
+	} m_DelightingInfo;
 
 	bool m_UseTonemapping = false;
 

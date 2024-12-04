@@ -4,9 +4,38 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
+#include "Math.h"
+
 
 namespace GuiHelpers
 {
+	// Adds a scoped ID to ImGui's ID stack
+	template<typename T>
+	class IDScope
+	{
+	public:
+		IDScope(T id)
+			: m_ID(id)
+		{
+			if (m_ID)
+			{
+				ImGui::PushID(m_ID);
+			}
+		}
+		~IDScope()
+		{
+			if (m_ID)
+			{
+				ImGui::PopID();
+			}
+		}
+
+		DISALLOW_COPY(IDScope)
+		DISALLOW_MOVE(IDScope)
+
+	private:
+		T m_ID = nullptr;
+	};
 
 	// Disables all ImGui items in the scope, can be conditional
 	class DisableScope
@@ -52,6 +81,32 @@ namespace GuiHelpers
 			return true;
 		}
 		return false;
-	};
+	}
+
+	inline bool DirectionAsSphericalCoordinates(const char* id, XMFLOAT3& inOutDirection)
+	{
+		IDScope idScope(id);
+
+		bool newDir = false;
+		float phi, theta;
+
+		Math::CartesianDirectionToSpherical(inOutDirection, phi, theta);
+
+		newDir |= ImGui::SliderAngle("Theta", &theta, 1.0f, 179.0f);
+		newDir |= ImGui::SliderAngle("Phi", &phi, -179.0f, 180.0f);
+		if (newDir)
+		{
+			const float sinTheta = sinf(theta);
+			const float cosTheta = cosf(theta);
+			const float sinPhi = sinf(phi);
+			const float cosPhi = cosf(phi);
+
+			inOutDirection.x = sinTheta * cosPhi;
+			inOutDirection.y = cosTheta;
+			inOutDirection.z = sinTheta * sinPhi;
+		}
+
+		return newDir;
+	}
 
 }

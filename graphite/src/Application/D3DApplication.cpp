@@ -472,15 +472,7 @@ bool D3DApplication::ImGuiApplicationInfo()
 
 			m_CameraController->Gui();
 		}
-		ImGui::Separator();
 
-		ImGui::Separator();
-
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(255, 255, 0)));
-		ImGui::Text("Renderer");
-		ImGui::PopStyleColor();
-
-		ImGui::Separator();
 		{
 			m_DeferredRenderer->DrawGui();
 		}

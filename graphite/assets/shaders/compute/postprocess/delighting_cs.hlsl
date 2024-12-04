@@ -65,8 +65,11 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	// Calculate light contribution from directional light
 	const float3 l_o = g_OutputResource[DTid.xy].rgb;
 
-	const float3 l = -normalize(g_LightCB.DirectionalLight.Direction);
-	const float3 w_i = g_LightCB.DirectionalLight.Color * g_LightCB.DirectionalLight.Intensity;
+	//const float3 l = -normalize(g_LightCB.DirectionalLight.Direction);
+	//const float3 w_i = g_LightCB.DirectionalLight.Color * g_LightCB.DirectionalLight.Intensity;
+
+	const float3 l = -normalize(g_DelightingCB.SunDirection);
+	const float3 w_i = g_DelightingCB.SunIntensity;
 
 	// Sample ambient lighting from irradiance map
 	const float3 ambient = (g_LightCB.IndirectIllumination != IndirectIlluminationMethod_None)

@@ -186,6 +186,11 @@ struct DelightingParametersConstantBuffer
 {
 	XMUINT2 OutputDimensions;
 	UINT ShowAlbedo;
+	float Padding;
+
+	// Lighting properties
+	XMFLOAT3 SunDirection;
+	float SunIntensity;
 };
 
 

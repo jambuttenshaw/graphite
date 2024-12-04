@@ -9,13 +9,7 @@
 
 #include <pix3.h>
 #include "imgui.h"
-
-
-void CartesianDirectionToSpherical(const XMFLOAT3& direction, float& phi, float& theta)
-{
-	theta = acosf(direction.y);
-	phi = Math::Sign(direction.z) * acosf(direction.x / sqrtf(direction.x * direction.x + direction.z * direction.z));
-}
+#include "Framework/GuiHelpers.h"
 
 
 LightManager::LightManager()
@@ -143,24 +137,7 @@ void LightManager::DrawGui()
 
 		auto& directionalLight = m_LightingCBStaging.DirectionalLight;
 
-		// Direction should be edited in spherical coordinates
-		bool newDir = false;
-		float phi, theta;
-		CartesianDirectionToSpherical(directionalLight.Direction, phi, theta);
-
-		newDir |= ImGui::SliderAngle("Theta", &theta, 1.0f, 179.0f);
-		newDir |= ImGui::SliderAngle("Phi", &phi, -179.0f, 180.0f);
-		if (newDir)
-		{
-			const float sinTheta = sinf(theta);
-			const float cosTheta = cosf(theta);
-			const float sinPhi = sinf(phi);
-			const float cosPhi = cosf(phi);
-
-			directionalLight.Direction.x = sinTheta * cosPhi;
-			directionalLight.Direction.y = cosTheta;
-			directionalLight.Direction.z = sinTheta * sinPhi;
-		}
+		GuiHelpers::DirectionAsSphericalCoordinates("DirectionalLight", directionalLight.Direction);
 
 		ImGui::ColorEdit3("Sun Color", &directionalLight.Color.x);
 		if (ImGui::DragFloat("Sun Intensity", &directionalLight.Intensity, 0.01f))

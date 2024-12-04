@@ -960,7 +960,10 @@ void DeferredRenderer::Delighting() const
 	const DelightingParametersConstantBuffer cb
 	{
 		.OutputDimensions = { clientWidth, clientHeight },
-		.ShowAlbedo = m_ShowAlbedo
+		.ShowAlbedo = m_ShowAlbedo,
+
+		.SunDirection = m_DelightingInfo.SunDirection,
+		.SunIntensity = m_DelightingInfo.SunIntensity
 	};
 
 	// Set root arguments
@@ -1005,11 +1008,34 @@ void DeferredRenderer::DrawAllGeometry(ID3D12GraphicsCommandList* commandList, U
 
 void DeferredRenderer::DrawGui()
 {
+	ImGui::Separator();
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(255, 255, 0)));
 	ImGui::Text("Renderer");
+	ImGui::PopStyleColor();
+	ImGui::Separator();
 
-	ImGui::Checkbox("Enable Delighting", &m_EnableDelighting);
-	ImGui::Checkbox("Show Albedo", &m_ShowAlbedo);
+	{
+		ImGui::Checkbox("Enable Delighting", &m_EnableDelighting);
+		GuiHelpers::DisableScope disable(!m_EnableDelighting);
+
+		if (ImGui::CollapsingHeader("Delighting"))
+		{
+			ImGui::Checkbox("Show Albedo", &m_ShowAlbedo);
+
+			ImGui::Text("Sun Properties");
+			GuiHelpers::DirectionAsSphericalCoordinates("DelightingDirectionalLight", m_DelightingInfo.SunDirection);
+			if (ImGui::DragFloat("Intensity", &m_DelightingInfo.SunIntensity, 0.01f))
+			{
+				m_DelightingInfo.SunIntensity = max(0, m_DelightingInfo.SunIntensity);
+			}
+		}
+	}
+
+	ImGui::Separator();
+
 	ImGui::Checkbox("Enable Tonemapping", &m_UseTonemapping);
+
+	ImGui::Separator();
 
 	{
 		ImGui::Checkbox("Use Volumetrics", &m_UseVolumetrics);
