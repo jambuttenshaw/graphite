@@ -15,5 +15,5 @@ public:
 
 std::unique_ptr<Graphite::Application> Graphite::CreateApplication()
 {
-	return std::move(std::make_unique<SampleApplication>());
+	return std::make_unique<SampleApplication>();
 }

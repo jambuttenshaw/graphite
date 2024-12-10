@@ -4,13 +4,12 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 
-
 namespace Graphite
 {
 	namespace Log
 	{
-		static std::shared_ptr<spdlog::logger> s_EngineLogger;
-		static std::shared_ptr<spdlog::logger> s_AppLogger;
+		std::shared_ptr<spdlog::logger> s_EngineLogger = nullptr;
+		std::shared_ptr<spdlog::logger> s_AppLogger = nullptr;
 
 		void InitLogging()
 		{

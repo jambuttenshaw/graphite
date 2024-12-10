@@ -10,5 +10,8 @@
 #endif
 
 
-
-// Assertions
+#ifdef _DEBUG
+	#define GRAPHITE_DEBUG
+#else
+	#define GRAPHITE_RELEASE
+#endif

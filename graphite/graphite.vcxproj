@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="src\Graphite.h" />
     <ClInclude Include="src\Graphite\Core\Application.h" />
+    <ClInclude Include="src\Graphite\Core\Assert.h" />
     <ClInclude Include="src\Graphite\Core\Core.h" />
     <ClInclude Include="src\Graphite\Core\EntryPoint.h" />
     <ClInclude Include="src\Graphite\Core\Log.h" />

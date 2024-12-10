@@ -19,7 +19,7 @@ namespace Graphite
 
 // Convenience logging macros
 
-#ifndef NDEBUG
+#ifdef GRAPHITE_DEBUG
 
 #define GRAPHITE_LOG_FATAL(...)		{::Graphite::Log::GetEngineLogger()->critical(__VA_ARGS__); throw;}
 #define GRAPHITE_LOG_ERROR(...)		 ::Graphite::Log::GetEngineLogger()->error(__VA_ARGS__);
