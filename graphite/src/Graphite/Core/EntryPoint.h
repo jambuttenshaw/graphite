@@ -6,9 +6,9 @@ int main()
 	Graphite::Log::InitLogging();
 	auto app = Graphite::CreateApplication();
 
-	app->Run();
+	int result = app->Run();
 
 	app.reset();
 
-	return 0;
+	return result;
 }

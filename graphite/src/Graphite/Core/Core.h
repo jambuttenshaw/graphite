@@ -15,3 +15,15 @@
 #else
 	#define GRAPHITE_RELEASE
 #endif
+
+
+// Class helpers
+#define DEFAULT_COPY(T) T(const T&) = default; \
+						T& operator=(const T&) = default;
+#define DEFAULT_MOVE(T) T(T&&) = default; \
+						T& operator=(T&&) = default;
+
+#define DELETE_COPY(T)  T(T&) = delete; \
+					    T& operator=(const T&) = delete;
+#define DELETE_MOVE(T)  T(T&&) = delete; \
+					    T& operator=(T&&) = delete;

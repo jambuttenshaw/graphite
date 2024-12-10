@@ -5,19 +5,23 @@
 
 namespace Graphite
 {
+	class WindowsWindow;
+
 
 	class GRAPHITE_API Application
 	{
 	public:
-		Application() = default;
-		virtual ~Application() = default;
+		Application();
+		virtual ~Application();
 
-		virtual void Run();
+		int Run();
+
+	protected:
+		// Interface for clients to implement
+		virtual void OnInit() {}
 
 	private:
-		uint32_t m_Width = 0;
-		uint32_t m_Height = 0;
-
+		std::unique_ptr<WindowsWindow> m_Window;
 	};
 
 	extern std::unique_ptr<Application> CreateApplication();

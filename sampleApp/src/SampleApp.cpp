@@ -5,7 +5,7 @@ class SampleApplication : public Graphite::Application
 {
 public:
 
-	virtual void Run() override
+	virtual void OnInit() override
 	{
 		APP_LOG_INFO("Client app is running!");
 
