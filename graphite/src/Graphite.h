@@ -3,7 +3,10 @@
 // Graphite master include file
 
 // Graphite Core 
-#include "Graphite/Core.h"
+#include "Graphite/Core/Core.h"
+#include "Graphite/Core/Log.h"
+
+#include "Graphite/Core/Application.h"
 
 /////// Entry Point ///////
-#include "Graphite/EntryPoint.h"
+#include "Graphite/Core/EntryPoint.h"

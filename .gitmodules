@@ -1,0 +1,3 @@
+[submodule "graphite/vendor/spdlog"]
+	path = graphite/vendor/spdlog
+	url = https://github.com/gabime/spdlog

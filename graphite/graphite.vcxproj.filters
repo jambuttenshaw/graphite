@@ -18,24 +18,30 @@
     <ClInclude Include="src\Graphite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\Core.h">
+    <ClInclude Include="src\Graphite\Core\Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\EntryPoint.h">
+    <ClInclude Include="src\Graphite\Core\EntryPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\Application.h">
+    <ClInclude Include="src\Graphite\Core\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphite\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Graphite\Core\Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Graphite\Application.cpp">
+    <ClCompile Include="src\Graphite\Core\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphite\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphite\Core\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
