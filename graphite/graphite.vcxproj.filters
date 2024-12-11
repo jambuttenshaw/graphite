@@ -36,7 +36,7 @@
     <ClInclude Include="src\Graphite\Core\Assert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\Window\WindowsWindow.h">
+    <ClInclude Include="src\Graphite\Window\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,7 +50,7 @@
     <ClCompile Include="src\Graphite\Core\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphite\Window\WindowsWindow.cpp">
+    <ClCompile Include="src\Graphite\Window\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

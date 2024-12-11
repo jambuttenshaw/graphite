@@ -89,7 +89,7 @@
     <ClInclude Include="src\Graphite\Core\EntryPoint.h" />
     <ClInclude Include="src\Graphite\Core\Log.h" />
     <ClInclude Include="src\Graphite\pch.h" />
-    <ClInclude Include="src\Graphite\Window\WindowsWindow.h" />
+    <ClInclude Include="src\Graphite\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphite\Core\Application.cpp" />
@@ -98,7 +98,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Graphite\Window\WindowsWindow.cpp" />
+    <ClCompile Include="src\Graphite\Window\Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
