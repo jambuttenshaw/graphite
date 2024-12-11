@@ -20,6 +20,7 @@ namespace Graphite
 		};
 
 		m_Window = std::make_unique<Window>(windowDesc);
+		m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 	}
 
 	Application::~Application()
@@ -37,6 +38,12 @@ namespace Graphite
 		} while (running);
 
 		return 0;
+	}
+
+
+	void Application::OnEvent(Event& event)
+	{
+		GRAPHITE_LOG_WARN("Received event!");
 	}
 
 }

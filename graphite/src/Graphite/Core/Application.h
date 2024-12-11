@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Graphite/Events/Event.h"
 
 
 namespace Graphite
@@ -19,6 +20,10 @@ namespace Graphite
 	protected:
 		// Interface for clients to implement
 		GRAPHITE_API virtual void OnInit() {}
+
+	private:
+
+		void OnEvent(Event& event);
 
 	private:
 		std::unique_ptr<Window> m_Window;

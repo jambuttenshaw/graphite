@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Window.h"
 
+#include "Graphite/Core/Assert.h"
 #include "Graphite/Core/Log.h"
 
 namespace Graphite
@@ -40,7 +41,10 @@ namespace Graphite
             nullptr,        // We have no parent window.
             nullptr,        // We aren't using menus.
             hInstance,
-            &m_WindowData); // Window user data - to retrieve event callback function in WinProc
+            nullptr);
+        GRAPHITE_LOG_INFO("{}", reinterpret_cast<LONG_PTR>(m_HWND));
+		// Window user data - to retrieve event callback function in WinProc
+        SetWindowLongPtr(m_HWND, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&m_WindowData));
 
         ShowWindow(m_HWND, SW_SHOWDEFAULT);
 
@@ -50,6 +54,12 @@ namespace Graphite
 	{
 		
 	}
+
+    void Window::SetEventCallback(const EventCallbackFn& eventCallback)
+    {
+        m_WindowData.EventCallbackFn = eventCallback;
+    }
+
 
 
     bool Window::OnUpdate() const
@@ -75,12 +85,14 @@ namespace Graphite
     // Window event callback handler
     LRESULT CALLBACK Window::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
-        WindowData& windowData = *reinterpret_cast<WindowData*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-
-        if (windowData.EventCallbackFn)
+        LONG_PTR userData = GetWindowLongPtr(hWnd, GWLP_USERDATA);
+        if (!userData)
         {
-            windowData.EventCallbackFn();
+            // No user data - cannot handle messages
+            return DefWindowProc(hWnd, message, wParam, lParam);
         }
+        WindowData& windowData = *reinterpret_cast<WindowData*>(userData);
+
 
         switch (message)
         {

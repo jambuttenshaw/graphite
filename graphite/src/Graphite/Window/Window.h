@@ -1,5 +1,6 @@
 #pragma once
 #include "Graphite/Core/Core.h"
+#include "Graphite/Events/Event.h"
 
 
 namespace Graphite
@@ -20,6 +21,9 @@ namespace Graphite
 	class Window
 	{
 	public:
+		using EventCallbackFn = std::function<void(Event&)>;
+
+	public:
 		Window(const GraphiteWindowDesc& windowDesc);
 		~Window();
 
@@ -28,6 +32,8 @@ namespace Graphite
 
 		inline uint32_t GetWidth() const { return m_Width; }
 		inline uint32_t GetHeight() const { return m_Height; }
+
+		void SetEventCallback(const EventCallbackFn& eventCallback);
 
 		// Returns false if window has closed
 		bool OnUpdate() const;
@@ -44,9 +50,10 @@ namespace Graphite
 		uint32_t m_Height = 0;
 		RECT m_WindowRect;
 
+		// Window data required by callbacks
 		struct WindowData
 		{
-			std::function<void()> EventCallbackFn;
+			EventCallbackFn EventCallbackFn;
 		};
 		WindowData m_WindowData;
 	};
