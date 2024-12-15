@@ -89,6 +89,9 @@
     <ClInclude Include="src\Graphite\Core\EntryPoint.h" />
     <ClInclude Include="src\Graphite\Core\Log.h" />
     <ClInclude Include="src\Graphite\Events\Event.h" />
+    <ClInclude Include="src\Graphite\Events\KeyboardEvent.h" />
+    <ClInclude Include="src\Graphite\Events\MouseEvent.h" />
+    <ClInclude Include="src\Graphite\Events\WindowEvent.h" />
     <ClInclude Include="src\Graphite\pch.h" />
     <ClInclude Include="src\Graphite\Window\Window.h" />
   </ItemGroup>

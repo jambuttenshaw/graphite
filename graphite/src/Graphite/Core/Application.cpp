@@ -4,6 +4,8 @@
 #include "Log.h"
 #include "Graphite/Window/Window.h"
 
+#include "Graphite/Events/WindowEvent.h"
+
 
 namespace Graphite
 {
@@ -31,11 +33,10 @@ namespace Graphite
 
 	int Application::Run()
 	{
-		bool running;
-		do {
-			running = m_Window->OnUpdate();
-
-		} while (running);
+		while (m_Running)
+		{
+			m_Window->BufferMessageQueue();
+		}
 
 		return 0;
 	}
@@ -43,7 +44,14 @@ namespace Graphite
 
 	void Application::OnEvent(Event& event)
 	{
-		GRAPHITE_LOG_WARN("Received event!");
+		EventDispatcher dispatcher(event);
+
+		// Handle window close events
+		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent&)
+			{
+				m_Running = false;
+				return true;
+			});
 	}
 
 }

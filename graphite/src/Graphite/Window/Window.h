@@ -35,8 +35,9 @@ namespace Graphite
 
 		void SetEventCallback(const EventCallbackFn& eventCallback);
 
-		// Returns false if window has closed
-		bool OnUpdate() const;
+		// Process all new window messages and submit them to the message buffer
+		// Returns false when the window has terminated the event loop
+		void BufferMessageQueue() const;
 
 	private:
 		// static event callback function - specific window specified through hWnd param

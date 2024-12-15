@@ -1,4 +1,4 @@
 #pragma once
 
-// Use Graphite PCH
-#include "Graphite/pch.h"
+// Include STL required by Graphite
+#include "Graphite.h"

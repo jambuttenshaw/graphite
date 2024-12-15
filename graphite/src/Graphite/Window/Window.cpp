@@ -4,6 +4,11 @@
 #include "Graphite/Core/Assert.h"
 #include "Graphite/Core/Log.h"
 
+#include "Graphite/Events/WindowEvent.h"
+#include "Graphite/Events/KeyboardEvent.h"
+#include "Graphite/Events/MouseEvent.h"
+
+
 namespace Graphite
 {
 
@@ -42,7 +47,7 @@ namespace Graphite
             nullptr,        // We aren't using menus.
             hInstance,
             nullptr);
-        GRAPHITE_LOG_INFO("{}", reinterpret_cast<LONG_PTR>(m_HWND));
+
 		// Window user data - to retrieve event callback function in WinProc
         SetWindowLongPtr(m_HWND, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&m_WindowData));
 
@@ -62,23 +67,16 @@ namespace Graphite
 
 
 
-    bool Window::OnUpdate() const
+    void Window::BufferMessageQueue() const
     {
         // Main sample loop.
         MSG msg = {};
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
-            if (msg.message == WM_QUIT)
-            {
-                return false;
-            }
-
             // Process any messages in the queue.
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-
-        return true;
     }
 
 
@@ -96,13 +94,50 @@ namespace Graphite
 
         switch (message)
         {
+        default:
+            // Handle any messages the switch statement doesn't
+            return DefWindowProc(hWnd, message, wParam, lParam);
+
+            // Window events
         case WM_DESTROY:
-            PostQuitMessage(0);
+        {
+            WindowCloseEvent event;
+            windowData.EventCallbackFn(event);
+            return 0;
+	    }
+            // Keyboard events
+        case WM_KEYDOWN:
+	        {
+            KeyPressedEvent event(static_cast<int32_t>(wParam));
+            windowData.EventCallbackFn(event);
+            return 0;
+	        }
+        case WM_KEYUP:
+        {
+            KeyReleasedEvent event(static_cast<int32_t>(wParam));
+            windowData.EventCallbackFn(event);
+            return 0;
+        }
+            // Mouse events
+        case WM_MOUSEMOVE:
+            return 0;
+        case WM_LBUTTONDOWN:
+            return 0;
+        case WM_MBUTTONDOWN:
+            return 0;
+        case WM_RBUTTONDOWN:
+            return 0;
+        case WM_LBUTTONUP:
+            return 0;
+        case WM_MBUTTONUP:
+            return 0;
+        case WM_RBUTTONUP:
+            return 0;
+        case WM_MOUSEWHEEL:
             return 0;
         }
 
-        // Handle any messages the switch statement didn't.
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        GRAPHITE_ASSERT(false, "Missing return statement within switch case.");
     }
 
 

@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Graphite.h>
 
 class SampleApplication : public Graphite::Application
 {
