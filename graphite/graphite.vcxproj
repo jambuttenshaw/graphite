@@ -92,6 +92,7 @@
     <ClInclude Include="src\Graphite\Events\KeyboardEvent.h" />
     <ClInclude Include="src\Graphite\Events\MouseEvent.h" />
     <ClInclude Include="src\Graphite\Events\WindowEvent.h" />
+    <ClInclude Include="src\Graphite\Input\KeyCodes.h" />
     <ClInclude Include="src\Graphite\pch.h" />
     <ClInclude Include="src\Graphite\Window\Window.h" />
   </ItemGroup>

@@ -32,5 +32,7 @@
 #include "Graphite/Events/KeyboardEvent.h"
 #include "Graphite/Events/MouseEvent.h"
 
+#include "Graphite/Input/KeyCodes.h"
+
 /////// Entry Point ///////
 #include "Graphite/Core/EntryPoint.h"

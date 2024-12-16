@@ -35,7 +35,12 @@ namespace Graphite
 	{
 		while (m_Running)
 		{
-			m_Window->BufferMessageQueue();
+			// First buffer all messages from all systems capable of submitting events
+
+			// Get all events from window system / OS
+			Window::BufferMessages();
+
+			// TODO: Process the buffered events separately
 		}
 
 		return 0;
@@ -50,6 +55,7 @@ namespace Graphite
 		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent&)
 			{
 				m_Running = false;
+				// Event has been handled
 				return true;
 			});
 	}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include "Graphite/Input/KeyCodes.h"
 
 
 namespace Graphite
@@ -9,14 +10,14 @@ namespace Graphite
 	class GRAPHITE_API KeyPressedEvent : public Event
 	{
 	public:
-		KeyPressedEvent(int32_t keyCode)
+		KeyPressedEvent(KeyCode keyCode)
 			: m_KeyCode(keyCode)
 		{}
 		virtual ~KeyPressedEvent() = default;
 
 		DEFINE_EVENT_TYPE(KeyPressed, EventCategoryInput | EventCategoryKeyboard);
 
-		inline int32_t GetKeyCode() const { return m_KeyCode; }
+		inline KeyCode GetKeyCode() const { return m_KeyCode; }
 
 		virtual std::string ToString() const override
 		{
@@ -26,14 +27,14 @@ namespace Graphite
 		}
 
 	private:
-		int32_t m_KeyCode = 0;
+		KeyCode m_KeyCode = 0;
 	};
 
 
 	class GRAPHITE_API KeyReleasedEvent : public Event
 	{
 	public:
-		KeyReleasedEvent(int32_t keyCode)
+		KeyReleasedEvent(KeyCode keyCode)
 			: m_KeyCode(keyCode)
 		{
 		}
@@ -41,7 +42,7 @@ namespace Graphite
 
 		DEFINE_EVENT_TYPE(KeyPressed, EventCategoryInput | EventCategoryKeyboard);
 
-		inline int32_t GetKeyCode() const { return m_KeyCode; }
+		inline KeyCode GetKeyCode() const { return m_KeyCode; }
 
 		virtual std::string ToString() const override
 		{
@@ -51,7 +52,7 @@ namespace Graphite
 		}
 
 	private:
-		int32_t m_KeyCode = 0;
+		KeyCode m_KeyCode = 0;
 	};
 
 }

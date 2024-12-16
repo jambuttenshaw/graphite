@@ -20,6 +20,8 @@ namespace Graphite
 
 	class Window
 	{
+		struct WindowData;
+			
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 
@@ -30,30 +32,38 @@ namespace Graphite
 		DELETE_COPY(Window);
 		DELETE_MOVE(Window);
 
-		inline uint32_t GetWidth() const { return m_Width; }
-		inline uint32_t GetHeight() const { return m_Height; }
+		inline uint32_t GetWidth() const { return m_WindowData.Width; }
+		inline uint32_t GetHeight() const { return m_WindowData.Height; }
 
 		void SetEventCallback(const EventCallbackFn& eventCallback);
 
-		// Process all new window messages and submit them to the message buffer
-		// Returns false when the window has terminated the event loop
-		void BufferMessageQueue() const;
+	public:
+		// Process all new messages and submit them to the message buffer
+		// This is a window-agnostic process, but it is still pertinent to the window system
+		static void BufferMessages();
 
 	private:
 		// static event callback function - specific window specified through hWnd param
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
+		// Helper function that checks for and submits a resize event
+		static void WindowResize(WindowData& windowData);
+
 	private:
 		// Window handle
 		HWND m_HWND = nullptr;
 
-		uint32_t m_Width = 0;
-		uint32_t m_Height = 0;
-		RECT m_WindowRect;
-
 		// Window data required by callbacks
 		struct WindowData
 		{
+			uint32_t Width = 0;
+			uint32_t Height = 0;
+
+			// To avoid unnecessary resize events if the size didn't actually change
+			bool Resizing = false;
+			uint32_t PreviousWidth = 0;
+			uint32_t PreviousHeight = 0;
+
 			EventCallbackFn EventCallbackFn;
 		};
 		WindowData m_WindowData;

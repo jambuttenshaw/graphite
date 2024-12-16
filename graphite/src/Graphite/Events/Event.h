@@ -10,7 +10,7 @@ namespace Graphite
 	{
 		None = 0,
 		// Window events
-		WindowClose, WindowBeginResize, WindowResize, WindowEndResize, WindowToggleFullscreen,
+		WindowClose, WindowResize, WindowToggleFullscreen,
 		// Keyboard events
 		KeyPressed, KeyReleased,
 		// Mouse events

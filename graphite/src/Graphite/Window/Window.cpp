@@ -29,10 +29,13 @@ namespace Graphite
         windowClass.lpszClassName = windowDesc.WindowName.c_str();
         RegisterClassEx(&windowClass);
 
-        m_Width = windowDesc.Width;
-        m_Height = windowDesc.Height;
-        m_WindowRect = { 0, 0, static_cast<LONG>(m_Width), static_cast<LONG>(m_Height) };
-        AdjustWindowRect(&m_WindowRect, WS_OVERLAPPEDWINDOW, FALSE);
+        m_WindowData.Width = windowDesc.Width;
+        m_WindowData.Height = windowDesc.Height;
+        m_WindowData.PreviousWidth = windowDesc.Width;
+        m_WindowData.PreviousHeight = windowDesc.Height;
+
+        RECT windowRect = { 0, 0, static_cast<LONG>(m_WindowData.Width), static_cast<LONG>(m_WindowData.Height) };
+        AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
         // Create the window and store a handle to it.
         m_HWND = CreateWindow(
@@ -41,8 +44,8 @@ namespace Graphite
             WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
-            m_WindowRect.right - m_WindowRect.left,
-            m_WindowRect.bottom - m_WindowRect.top,
+            windowRect.right - windowRect.left,
+            windowRect.bottom - windowRect.top,
             nullptr,        // We have no parent window.
             nullptr,        // We aren't using menus.
             hInstance,
@@ -67,7 +70,7 @@ namespace Graphite
 
 
 
-    void Window::BufferMessageQueue() const
+    void Window::BufferMessages()
     {
         // Main sample loop.
         MSG msg = {};
@@ -108,36 +111,108 @@ namespace Graphite
             // Keyboard events
         case WM_KEYDOWN:
 	        {
-            KeyPressedEvent event(static_cast<int32_t>(wParam));
+            KeyPressedEvent event(static_cast<KeyCode>(wParam));
             windowData.EventCallbackFn(event);
             return 0;
 	        }
         case WM_KEYUP:
         {
-            KeyReleasedEvent event(static_cast<int32_t>(wParam));
+            KeyReleasedEvent event(static_cast<KeyCode>(wParam));
             windowData.EventCallbackFn(event);
             return 0;
         }
             // Mouse events
         case WM_MOUSEMOVE:
+	    {
+            MouseMovedEvent event(static_cast<uint32_t>(LOWORD(lParam)), static_cast<uint32_t>(HIWORD(lParam)));
+            windowData.EventCallbackFn(event);
             return 0;
+	    }
         case WM_LBUTTONDOWN:
+	    {
+            MouseButtonPressedEvent event(MouseButtons::KEY_LBUTTON);
+            windowData.EventCallbackFn(event);
             return 0;
+	    }
         case WM_MBUTTONDOWN:
+	    {
+            MouseButtonPressedEvent event(MouseButtons::KEY_MBUTTON);
+            windowData.EventCallbackFn(event);
             return 0;
+	    }
         case WM_RBUTTONDOWN:
+	    {
+            MouseButtonPressedEvent event(MouseButtons::KEY_RBUTTON);
+            windowData.EventCallbackFn(event);
             return 0;
+	    }
         case WM_LBUTTONUP:
+	    {
+            MouseButtonReleasedEvent event(MouseButtons::KEY_LBUTTON);
+            windowData.EventCallbackFn(event);
             return 0;
+	    }
         case WM_MBUTTONUP:
+	    {
+            MouseButtonReleasedEvent event(MouseButtons::KEY_MBUTTON);
+            windowData.EventCallbackFn(event);
             return 0;
+	    }
         case WM_RBUTTONUP:
+	    {
+            MouseButtonReleasedEvent event(MouseButtons::KEY_RBUTTON);
+            windowData.EventCallbackFn(event);
             return 0;
+	    }
         case WM_MOUSEWHEEL:
+	    {
+            MouseScrolledEvent event(static_cast<int32_t>(GET_WHEEL_DELTA_WPARAM(wParam)));
+            windowData.EventCallbackFn(event);
             return 0;
+	    }
+        // Resize events
+        case WM_ENTERSIZEMOVE:
+	    {
+            windowData.Resizing = true;
+            return 0;
+	    }
+        case WM_SIZE:
+	    {
+            // Called when the window is being actively resized.
+            // We don't want to submit resize events in this stage - we want to wait until resizing is complete
+            windowData.Width = LOWORD(lParam);
+            windowData.Height = HIWORD(lParam);
+
+            if (wParam == SIZE_MAXIMIZED || (wParam == SIZE_RESTORED && !windowData.Resizing))
+            {
+				// An enter/exit size move isn't sent in this situation
+                // so the resize event will have to be submitted at this point
+                WindowResize(windowData);
+            }
+            return 0;
+	    }
+        case WM_EXITSIZEMOVE:
+	    {
+            windowData.Resizing = false;
+
+            WindowResize(windowData);
+            return 0;
+	    }
         }
 
-        GRAPHITE_ASSERT(false, "Missing return statement within switch case.");
+        GRAPHITE_ASSERT(false, "Missing return statement within switch case - return 0 to indicate the message has been handled.");
+    }
+
+    void Window::WindowResize(WindowData& windowData)
+    {
+        if (windowData.Width != windowData.PreviousWidth || windowData.Height != windowData.PreviousHeight)
+        {
+            windowData.PreviousWidth = windowData.Width;
+            windowData.PreviousHeight = windowData.Height;
+
+            WindowResizeEvent event(windowData.Width, windowData.Height);
+            windowData.EventCallbackFn(event);
+        }
     }
 
 
