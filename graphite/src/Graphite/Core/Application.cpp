@@ -6,6 +6,9 @@
 
 #include "Graphite/Events/WindowEvent.h"
 
+// Graphics
+#include "Graphite/RHI/GraphicsContext.h"
+
 
 namespace Graphite
 {
@@ -21,8 +24,12 @@ namespace Graphite
 			.WindowTitle = L"Graphite Engine"
 		};
 
+		// Create window
 		m_Window = std::make_unique<Window>(windowDesc);
 		m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
+
+		// Create graphics context
+		m_GraphicsContext = std::make_unique<GraphicsContext>();
 	}
 
 	Application::~Application()

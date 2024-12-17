@@ -7,13 +7,16 @@
 namespace Graphite
 {
 	class Window;
-
+	class GraphicsContext;
 
 	class Application
 	{
 	public:
 		GRAPHITE_API Application();
 		GRAPHITE_API virtual ~Application();
+
+		GRAPHITE_API_DELETE_COPY(Application);
+		GRAPHITE_API_DEFAULT_MOVE(Application);
 
 		GRAPHITE_API int Run();
 
@@ -24,6 +27,9 @@ namespace Graphite
 	private:
 
 		void OnEvent(Event& event);
+
+	protected:
+		std::unique_ptr<GraphicsContext> m_GraphicsContext;
 
 	private:
 		bool m_Running = true;

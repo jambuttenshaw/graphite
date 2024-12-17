@@ -27,3 +27,15 @@
 					    T& operator=(const T&) = delete;
 #define DELETE_MOVE(T)  T(T&&) = delete; \
 					    T& operator=(T&&) = delete;
+
+// Exported versions
+#define GRAPHITE_API_DEFAULT_COPY(T) GRAPHITE_API T(const T&) = default; \
+									 GRAPHITE_API T& operator=(const T&) = default;
+#define GRAPHITE_API_DEFAULT_MOVE(T) GRAPHITE_API T(T&&) = default; \
+									 GRAPHITE_API T& operator=(T&&) = default;
+
+#define GRAPHITE_API_DELETE_COPY(T)  GRAPHITE_API T(T&) = delete; \
+									 GRAPHITE_API T& operator=(const T&) = delete;
+#define GRAPHITE_API_DELETE_MOVE(T)  GRAPHITE_API T(T&&) = delete; \
+									 GRAPHITE_API T& operator=(T&&) = delete;
+

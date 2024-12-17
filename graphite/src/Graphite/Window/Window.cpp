@@ -17,6 +17,8 @@ namespace Graphite
 
 	Window::Window(const GraphiteWindowDesc& windowDesc)
 	{
+        GRAPHITE_LOG_INFO("Creating window at resolution: ({}x{})", windowDesc.Width, windowDesc.Height);
+
         const HINSTANCE hInstance = GetModuleHandle(nullptr);
 
         // Initialize the window class.
@@ -55,7 +57,6 @@ namespace Graphite
         SetWindowLongPtr(m_HWND, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&m_WindowData));
 
         ShowWindow(m_HWND, SW_SHOWDEFAULT);
-
 	}
 
 	Window::~Window()
