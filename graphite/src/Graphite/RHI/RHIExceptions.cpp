@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Exceptions.h"
+#include "RHIExceptions.h"
 
 #include <comdef.h>
 

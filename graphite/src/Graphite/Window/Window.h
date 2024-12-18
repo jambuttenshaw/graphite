@@ -35,6 +35,8 @@ namespace Graphite
 		inline uint32_t GetWidth() const { return m_WindowData.Width; }
 		inline uint32_t GetHeight() const { return m_WindowData.Height; }
 
+		inline HWND GetHandle() const { return m_HWND; }
+
 		void SetEventCallback(const EventCallbackFn& eventCallback);
 
 	public:

@@ -1,13 +1,16 @@
 #include "pch.h"
 #include "GraphicsContext.h"
 
-#include "Exceptions.h"
+#include "RHIExceptions.h"
 #include "Graphite/Core/Assert.h"
 
 
 namespace Graphite
 {
-	GraphicsContext::GraphicsContext()
+	GraphicsContext::GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc)
+		: m_BackBufferWidth(contextDesc.BackBufferWidth)
+		, m_BackBufferHeight(contextDesc.BackBufferHeight)
+		, m_BackBufferFormat(contextDesc.BackBufferFormat)
 	{
 		static bool s_GraphicsContextExists = false;
 		GRAPHITE_ASSERT(!s_GraphicsContextExists, "Only one graphics context may exist!");
@@ -18,14 +21,125 @@ namespace Graphite
 		// Initialization
 		CreateAdapter();
 		CreateDevice();
+		CreateCommandQueues();
+		CreateSwapChain(contextDesc.WindowHandle);
+		CreateCommandAllocator();
+		CreateCommandList();
+		CreateFrameResources();
+
+		// Close the command list and execute it to begin the initial GPU set up
+		// The main loop will expect the command list to be closed
+		DX_THROW_IF_FAIL(m_CommandList->Close());
+		ID3D12CommandList* ppCommandLists[] = { m_CommandList.Get() };
+		const auto fenceValue = m_DirectQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+		m_FrameResources.at(m_CurrentBackBuffer).SetFence(fenceValue);
+
+		// Wait for any GPU work executed on startup to finish before continuing
+		m_DirectQueue->WaitForIdleCPUBlocking();
 
 		GRAPHITE_LOG_INFO("D3D12 Graphics Context created successfully.");
 	}
 
 	GraphicsContext::~GraphicsContext()
 	{
+		// Wait for all work on GPU to complete before releasing resources
+		WaitForGPUIdle();
+	}
+
+
+	void GraphicsContext::BeginFrame()
+	{
+		m_FrameResources.at(m_CurrentBackBuffer).ResetAllocator();
+		// Command lists must be reset after ExecuteCommandList() is called and before it is repopulated
+		DX_THROW_IF_FAIL(m_CommandList->Reset(m_FrameResources.at(m_CurrentBackBuffer).GetCommandAllocator(), nullptr));
+	}
+
+	void GraphicsContext::EndFrame()
+	{
+		DX_THROW_IF_FAIL(m_CommandList->Close());
+
+		// Execute the command list
+		ID3D12CommandList* ppCommandLists[] = { m_CommandList.Get() };
+		const auto fenceValue = m_DirectQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+		m_FrameResources.at(m_CurrentBackBuffer).SetFence(fenceValue);
+	}
+
+	void GraphicsContext::Present()
+	{
+		const UINT interval = m_VSync ? 1 : 0;
+		const UINT flags = (m_TearingSupport && m_WindowedMode && !m_VSync) ? DXGI_PRESENT_ALLOW_TEARING : 0;
+
+		const HRESULT result = m_SwapChain->Present(interval, flags);
+		if (FAILED(result))
+		{
+			switch (result)
+			{
+			case DXGI_ERROR_DEVICE_RESET:
+			case DXGI_ERROR_DEVICE_REMOVED:
+				GRAPHITE_LOG_FATAL("Present failed: Device Removed.");
+				break;
+			default:
+				GRAPHITE_LOG_FATAL("Present failed: Unknown Error.");
+				break;
+			}
+		}
+
+		MoveToNextFrame();
+	}
+
+	void GraphicsContext::ClearBackBuffer()
+	{
 		
 	}
+
+	void GraphicsContext::ResizeBackBuffer(uint32_t width, uint32_t height)
+	{
+		GRAPHITE_ASSERT(width && height, "Invalid back buffer size!");
+
+		GRAPHITE_LOG_INFO("Resizing back buffers to ({}x{})", width, height);
+		m_BackBufferWidth = width;
+		m_BackBufferHeight = height;
+
+		// Free previous swap chain render targets and descriptors
+
+		// Wait until idle
+		WaitForGPUIdle();
+		DX_THROW_IF_FAIL(m_CommandList->Reset(m_DirectCommandAllocator.Get(), nullptr));
+
+		// Resize
+		const auto flags = m_TearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+		DX_THROW_IF_FAIL(m_SwapChain->ResizeBuffers(s_BackBufferCount, m_BackBufferWidth, m_BackBufferHeight, m_BackBufferFormat, flags));
+
+		m_CurrentBackBuffer = m_SwapChain->GetCurrentBackBufferIndex();
+
+		BOOL fullscreenState;
+		DX_THROW_IF_FAIL(m_SwapChain->GetFullscreenState(&fullscreenState, nullptr));
+		m_WindowedMode = !fullscreenState;
+
+		// Submit required work to re-init buffers
+		DX_THROW_IF_FAIL(m_CommandList->Close());
+		ID3D12CommandList* ppCommandLists[] = { m_CommandList.Get() };
+		const auto fenceValue = m_DirectQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+		m_FrameResources.at(m_CurrentBackBuffer).SetFence(fenceValue);
+
+		// Wait for GPU to finish its work before continuing
+		m_DirectQueue->WaitForIdleCPUBlocking();
+	}
+
+	void GraphicsContext::WaitForGPUIdle() const
+	{
+		m_DirectQueue->WaitForIdleCPUBlocking();
+		m_ComputeQueue->WaitForIdleCPUBlocking();
+		m_CopyQueue->WaitForIdleCPUBlocking();
+	}
+
+
+	/*
+	 * Graphics Context Initialization
+	 */
 
 	void GraphicsContext::CreateAdapter()
 	{
@@ -125,4 +239,82 @@ namespace Graphite
 		}
 #endif
 	}
+
+	void GraphicsContext::CreateCommandQueues()
+	{
+		m_DirectQueue = std::make_unique<CommandQueue>(m_Device.Get(), D3D12_COMMAND_LIST_TYPE_DIRECT, L"Direct Command Queue");
+		m_ComputeQueue = std::make_unique<CommandQueue>(m_Device.Get(), D3D12_COMMAND_LIST_TYPE_COMPUTE, L"Compute Command Queue");
+		m_CopyQueue = std::make_unique<CommandQueue>(m_Device.Get(), D3D12_COMMAND_LIST_TYPE_COPY, L"Copy Command Queue");
+	}
+
+
+	void GraphicsContext::CreateSwapChain(HWND windowHandle)
+	{
+		// Describe and create the swap chain
+		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+		swapChainDesc.BufferCount = s_BackBufferCount;
+		swapChainDesc.Width = m_BackBufferWidth;
+		swapChainDesc.Height = m_BackBufferHeight;
+		swapChainDesc.Format = m_BackBufferFormat;
+		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+		swapChainDesc.SampleDesc.Count = 1;
+		swapChainDesc.Flags = m_TearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+
+		ComPtr<IDXGISwapChain1> swapChain;
+		DX_THROW_IF_FAIL(m_Factory->CreateSwapChainForHwnd(
+			m_DirectQueue->GetRHIQueue(), // Swap chain needs the queue so that it can force a flush on it.
+			windowHandle,
+			&swapChainDesc,
+			nullptr,
+			nullptr,
+			&swapChain
+		));
+
+		// Currently no support for fullscreen transitions
+		DX_THROW_IF_FAIL(m_Factory->MakeWindowAssociation(windowHandle, DXGI_MWA_NO_ALT_ENTER));
+
+		DX_THROW_IF_FAIL(swapChain.As(&m_SwapChain));
+		m_CurrentBackBuffer = m_SwapChain->GetCurrentBackBufferIndex();
+
+		BOOL fullscreenState;
+		DX_THROW_IF_FAIL(m_SwapChain->GetFullscreenState(&fullscreenState, nullptr));
+		m_WindowedMode = !fullscreenState;
+	}
+
+	void GraphicsContext::CreateCommandAllocator()
+	{
+		DX_THROW_IF_FAIL(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_DirectCommandAllocator)));
+		m_DirectCommandAllocator->SetName(L"Graphics Context Direct Command Allocator");
+	}
+
+	void GraphicsContext::CreateCommandList()
+	{
+		// Create the command list
+		DX_THROW_IF_FAIL(m_Device->CreateCommandList(0,
+			D3D12_COMMAND_LIST_TYPE_DIRECT,
+			m_DirectCommandAllocator.Get(), nullptr,
+			IID_PPV_ARGS(&m_CommandList)));
+		m_CommandList->SetName(L"Graphics Context Command List");
+	}
+
+	void GraphicsContext::CreateFrameResources()
+	{
+		for (uint32_t i = 0; i < s_BackBufferCount; i++)
+		{
+			m_FrameResources.at(i).Init(m_Device.Get(), i);
+		}
+	}
+
+
+
+	void GraphicsContext::MoveToNextFrame()
+	{
+		m_CurrentBackBuffer = m_SwapChain->GetCurrentBackBufferIndex();
+
+		// If they are still being processed by the GPU, then wait until they are ready
+		m_DirectQueue->WaitForFenceCPUBlocking(m_FrameResources.at(m_CurrentBackBuffer).GetFenceValue());
+	}
+
+
 }

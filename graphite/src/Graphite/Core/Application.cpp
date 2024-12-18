@@ -15,11 +15,13 @@ namespace Graphite
 
 	Application::Application()
 	{
+		constexpr uint32_t defaultWidth = 1600;
+		constexpr uint32_t defaultHeight = 900;
 
 		// Describe the window we want to create
 		GraphiteWindowDesc windowDesc = {
-			.Width = 1600,
-			.Height = 900,
+			.Width = defaultWidth,
+			.Height = defaultHeight,
 			.WindowName = L"GraphiteMainWindow",
 			.WindowTitle = L"Graphite Engine"
 		};
@@ -29,7 +31,14 @@ namespace Graphite
 		m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
 		// Create graphics context
-		m_GraphicsContext = std::make_unique<GraphicsContext>();
+		GraphiteGraphicsContextDesc graphicsContextDesc
+		{
+			.WindowHandle = m_Window->GetHandle(),
+			.BackBufferWidth = defaultWidth,
+			.BackBufferHeight = defaultHeight,
+			.BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM
+		};
+		m_GraphicsContext = std::make_unique<GraphicsContext>(graphicsContextDesc);
 	}
 
 	Application::~Application()
@@ -48,6 +57,20 @@ namespace Graphite
 			Window::BufferMessages();
 
 			// TODO: Process the buffered events separately
+
+
+			// Update frame
+
+
+			// Render frame
+			{
+				m_GraphicsContext->BeginFrame();
+
+				// Perform all rendering
+
+				m_GraphicsContext->EndFrame();
+				m_GraphicsContext->Present();
+			}
 		}
 
 		return 0;
@@ -63,6 +86,13 @@ namespace Graphite
 			{
 				m_Running = false;
 				// Event has been handled
+				return true;
+			});
+
+		// Handle window resize events
+		dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& event)
+			{
+				this->m_GraphicsContext->ResizeBackBuffer(event.GetWidth(), event.GetHeight());
 				return true;
 			});
 	}

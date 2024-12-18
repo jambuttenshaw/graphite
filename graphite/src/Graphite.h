@@ -21,6 +21,8 @@
 #include <queue>
 #include <deque>
 
+#include <mutex>
+
 
 // Graphite Core 
 #include "Graphite/Core/Core.h"
