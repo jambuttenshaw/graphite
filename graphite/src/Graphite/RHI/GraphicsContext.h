@@ -1,7 +1,10 @@
 #pragma once
-#include "CommandQueue.h"
-#include "FrameResources.h"
+
 #include "Graphite/Core/Core.h"
+
+#include "CommandQueue.h"
+#include "DescriptorHeap.h"
+#include "FrameResources.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -47,6 +50,7 @@ namespace Graphite
 
 		void ResizeBackBuffer(uint32_t width, uint32_t height);
 
+		void DeferResourceRelease(const ComPtr<IUnknown>& resource);
 		void WaitForGPUIdle() const;
 
 	public:
@@ -65,13 +69,21 @@ namespace Graphite
 		// Initialization
 		void CreateAdapter();
 		void CreateDevice();
+
 		void CreateCommandQueues();
 		void CreateSwapChain(HWND windowHandle);
+
+		void CreateDescriptorHeaps();
+
 		void CreateFrameResources(uint32_t allocatorPoolSize);
 		void CreateRecordingContexts(uint32_t recordingContextCount);
 
 	private:
 		void MoveToNextFrame();
+
+		void ProcessDeferrals(uint32_t frameIndex);
+		// NOTE: this is only safe to do so when GPU is idle
+		void ProcessAllDeferrals();
 
 	private:
 		// Feature support
@@ -109,6 +121,13 @@ namespace Graphite
 		size_t m_OpenRecordingContexts = 0;				// The number of recording contexts currently active, that should be closed before the end of the frame
 
 		std::vector<ID3D12CommandList*> m_PendingCommandLists;
+
+		// Descriptor heaps
+		DescriptorHeap m_ResourceHeap;
+		DescriptorHeap m_SamplerHeap;
+
+		DescriptorHeap m_DSVHeap;
+		DescriptorHeap m_RTVHeap;
 
 		// State
 		uint32_t m_CurrentBackBuffer = 0;

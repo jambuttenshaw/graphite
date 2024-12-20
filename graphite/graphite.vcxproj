@@ -98,6 +98,7 @@
     <ClInclude Include="src\Graphite\pch.h" />
     <ClInclude Include="src\Graphite\RHI\CommandQueue.h" />
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
+    <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h" />
     <ClInclude Include="src\Graphite\RHI\FrameResources.h" />
     <ClInclude Include="src\Graphite\RHI\RHIExceptions.h" />
     <ClInclude Include="src\Graphite\RHI\GraphicsContext.h" />
@@ -112,6 +113,7 @@
     </ClCompile>
     <ClCompile Include="src\Graphite\RHI\CommandQueue.cpp" />
     <ClCompile Include="src\Graphite\RHI\CommandRecordingContext.cpp" />
+    <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp" />
     <ClCompile Include="src\Graphite\RHI\FrameResources.cpp" />
     <ClCompile Include="src\Graphite\RHI\RHIExceptions.cpp" />
     <ClCompile Include="src\Graphite\RHI\GraphicsContext.cpp" />

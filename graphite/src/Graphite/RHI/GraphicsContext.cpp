@@ -27,14 +27,21 @@ namespace Graphite
 		// Initialization
 		CreateAdapter();
 		CreateDevice();
+
 		CreateCommandQueues();
 		CreateSwapChain(contextDesc.WindowHandle);
+
+		CreateDescriptorHeaps();
+
 		CreateFrameResources(contextDesc.MaxRecordingContextsPerFrame);
 		CreateRecordingContexts(contextDesc.MaxRecordingContextsPerFrame);
 
 		// In case any set-up work was performed by the graphics context
 		m_FrameResources.at(m_CurrentBackBuffer).SetFence(m_DirectQueue->Signal());
 		m_DirectQueue->WaitForIdleCPUBlocking();
+
+		// Release temporary resources created during init
+		ProcessAllDeferrals();
 
 		GRAPHITE_LOG_INFO("D3D12 Graphics Context created successfully.");
 	}
@@ -43,6 +50,8 @@ namespace Graphite
 	{
 		// Wait for all work on GPU to complete before releasing resources
 		WaitForGPUIdle();
+
+		ProcessAllDeferrals();
 	}
 
 
@@ -114,6 +123,7 @@ namespace Graphite
 		}
 
 		MoveToNextFrame();
+		ProcessDeferrals(m_CurrentBackBuffer);
 	}
 
 	void GraphicsContext::ResizeBackBuffer(uint32_t width, uint32_t height)
@@ -129,6 +139,8 @@ namespace Graphite
 		// Wait until idle
 		WaitForGPUIdle();
 
+		ProcessAllDeferrals();
+
 		// Resize
 		const auto flags = m_TearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 		DX_THROW_IF_FAIL(m_SwapChain->ResizeBuffers(s_BackBufferCount, m_BackBufferWidth, m_BackBufferHeight, m_BackBufferFormat, flags));
@@ -143,6 +155,11 @@ namespace Graphite
 
 		// Wait for GPU to finish its work before continuing
 		m_DirectQueue->WaitForIdleCPUBlocking();
+	}
+
+	void GraphicsContext::DeferResourceRelease(const ComPtr<IUnknown>& resource)
+	{
+		m_FrameResources.at(m_CurrentBackBuffer).DeferRelease(resource);
 	}
 
 	void GraphicsContext::WaitForGPUIdle() const
@@ -298,6 +315,15 @@ namespace Graphite
 		m_WindowedMode = !fullscreenState;
 	}
 
+	void GraphicsContext::CreateDescriptorHeaps()
+	{
+		m_ResourceHeap.Init(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1024, false, L"Resource Descriptor Heap");
+		m_SamplerHeap.Init(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 16, false, L"Sampler Descriptor Heap");
+
+		m_DSVHeap.Init(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 64, true, L"DSV Descriptor Heap");
+		m_RTVHeap.Init(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 64, true, L"RTV Descriptor Heap");
+	}
+
 	void GraphicsContext::CreateFrameResources(uint32_t allocatorPoolSize)
 	{
 		for (uint32_t i = 0; i < s_BackBufferCount; i++)
@@ -329,5 +355,22 @@ namespace Graphite
 
 		// If they are still being processed by the GPU, then wait until they are ready
 		m_DirectQueue->WaitForFenceCPUBlocking(m_FrameResources.at(m_CurrentBackBuffer).GetFenceValue());
+	}
+
+	void GraphicsContext::ProcessDeferrals(uint32_t frameIndex)
+	{
+		m_FrameResources[frameIndex].ProcessDeferrals();
+
+		m_ResourceHeap.ProcessDeferredFree(frameIndex);
+		m_SamplerHeap.ProcessDeferredFree(frameIndex);
+
+		m_DSVHeap.ProcessDeferredFree(frameIndex);
+		m_RTVHeap.ProcessDeferredFree(frameIndex);
+	}
+
+	void GraphicsContext::ProcessAllDeferrals()
+	{
+		for (UINT n = 0; n < s_BackBufferCount; ++n)
+			ProcessDeferrals(n);
 	}
 }

@@ -7,15 +7,6 @@
 
 namespace Graphite
 {
-	FrameResources::FrameResources()
-	{
-		
-	}
-
-	FrameResources::~FrameResources()
-	{
-		
-	}
 
 	void FrameResources::Init(ID3D12Device* device, uint32_t frameResourcesIndex, uint32_t allocatorPoolSize)
 	{
@@ -53,5 +44,16 @@ namespace Graphite
 	}
 
 
+	void FrameResources::DeferRelease(const ComPtr<IUnknown>& resource)
+	{
+		m_DeferredReleases.push_back(resource);
+	}
+
+	void FrameResources::ProcessDeferrals()
+	{
+		// As long as the ComPtr's held in the collection aren't held anywhere else,
+		// then the resources pointed to will be automatically released
+		m_DeferredReleases.clear();
+	}
 
 }

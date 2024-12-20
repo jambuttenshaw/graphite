@@ -14,8 +14,8 @@ namespace Graphite
 	class FrameResources
 	{
 	public:
-		FrameResources();
-		~FrameResources();
+		FrameResources() = default;
+		~FrameResources() = default;
 
 		DELETE_COPY(FrameResources)
 		DEFAULT_MOVE(FrameResources)
@@ -43,6 +43,9 @@ namespace Graphite
 			m_FenceValue = fence;
 		}
 
+		void DeferRelease(const ComPtr<IUnknown>& resource);
+		void ProcessDeferrals();
+
 	private:
 		// A pool of allocators is used to facilitate multithreaded command recording
 		std::vector<ComPtr<ID3D12CommandAllocator>> m_AllocatorPool;
@@ -51,5 +54,10 @@ namespace Graphite
 		// Update the fence value for the frame resources whenever work is submitted in a frame
 		// - then when you wait on the fence value for those frame resources, all work that was submitted in that frame will be complete
 		UINT64 m_FenceValue = 0;
+
+		// Resources to be released when the GPU is finished with them
+		// A release collection is required per frame resources to ensure that
+		// the GPU is not currently using any of the resources
+		std::vector<ComPtr<IUnknown>> m_DeferredReleases;
 	};
 }
