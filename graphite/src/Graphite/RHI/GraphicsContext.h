@@ -8,6 +8,9 @@ using Microsoft::WRL::ComPtr;
 
 namespace Graphite
 {
+	class CommandRecordingContext;
+
+
 	struct GraphiteGraphicsContextDesc
 	{
 		// The window that the graphics context is being created for
@@ -17,6 +20,9 @@ namespace Graphite
 		uint32_t BackBufferWidth;
 		uint32_t BackBufferHeight;
 		DXGI_FORMAT BackBufferFormat;
+
+		// For multithreaded command recording
+		uint32_t MaxRecordingContextsPerFrame;
 	};
 
 	class GraphicsContext
@@ -32,9 +38,12 @@ namespace Graphite
 		void BeginFrame();
 		void EndFrame();
 
-		void Present();
+		// Multiple recording contexts can be active at a time
+		// This is to facilitate multithreaded command recording
+		CommandRecordingContext* AcquireRecordingContext();
+		void CloseRecordingContext(CommandRecordingContext* recordingContext);
 
-		void ClearBackBuffer();
+		void Present();
 
 		void ResizeBackBuffer(uint32_t width, uint32_t height);
 
@@ -58,9 +67,8 @@ namespace Graphite
 		void CreateDevice();
 		void CreateCommandQueues();
 		void CreateSwapChain(HWND windowHandle);
-		void CreateCommandAllocator();
-		void CreateCommandList();
-		void CreateFrameResources();
+		void CreateFrameResources(uint32_t allocatorPoolSize);
+		void CreateRecordingContexts(uint32_t recordingContextCount);
 
 	private:
 		void MoveToNextFrame();
@@ -91,11 +99,16 @@ namespace Graphite
 		std::unique_ptr<CommandQueue> m_ComputeQueue;
 		std::unique_ptr<CommandQueue> m_CopyQueue;
 
-		ComPtr<ID3D12CommandAllocator> m_DirectCommandAllocator;	// Used for non-frame-specific allocations (startup, resize swap chain, etc)
-		ComPtr<ID3D12GraphicsCommandList> m_CommandList;
-
 		// Frame resources
 		std::array<FrameResources, s_BackBufferCount> m_FrameResources;
+
+		std::vector<CommandRecordingContext> m_RecordingContexts;
+		std::mutex m_RecordingContextAcquisitionMutex;
+
+		size_t m_RecordingContextsUsedThisFrame = 0;	// The number of recording contexts that were acquired at any point during the frame
+		size_t m_OpenRecordingContexts = 0;				// The number of recording contexts currently active, that should be closed before the end of the frame
+
+		std::vector<ID3D12CommandList*> m_PendingCommandLists;
 
 		// State
 		uint32_t m_CurrentBackBuffer = 0;

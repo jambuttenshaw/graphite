@@ -64,6 +64,14 @@ namespace Graphite
 		return Signal();
 	}
 
+	UINT64 CommandQueue::Signal()
+	{
+		std::lock_guard lock(m_FenceMutex);
+		m_CommandQueue->Signal(m_Fence.Get(), m_NextFenceValue);
+
+		return m_NextFenceValue++;
+	}
+
 	void CommandQueue::InsertWait(UINT64 fenceValue) const
 	{
 		DX_THROW_IF_FAIL(m_CommandQueue->Wait(m_Fence.Get(), fenceValue));
@@ -122,13 +130,5 @@ namespace Graphite
 		}
 
 		return m_LastCompletedFenceValue;
-	}
-
-	UINT64 CommandQueue::Signal()
-	{
-		std::lock_guard lock(m_FenceMutex);
-		m_CommandQueue->Signal(m_Fence.Get(), m_NextFenceValue);
-
-		return m_NextFenceValue++;
 	}
 }

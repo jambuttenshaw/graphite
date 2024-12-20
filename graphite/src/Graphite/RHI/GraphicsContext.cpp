@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GraphicsContext.h"
 
+#include "CommandRecordingContext.h"
 #include "RHIExceptions.h"
 #include "Graphite/Core/Assert.h"
 
@@ -16,6 +17,11 @@ namespace Graphite
 		GRAPHITE_ASSERT(!s_GraphicsContextExists, "Only one graphics context may exist!");
 		s_GraphicsContextExists = true;
 
+		// Validate description
+		GRAPHITE_ASSERT(contextDesc.WindowHandle, "Invalid window handle.");
+		GRAPHITE_ASSERT(contextDesc.BackBufferWidth && contextDesc.BackBufferHeight, "Invalid back buffer dimensions.");
+		GRAPHITE_ASSERT(contextDesc.MaxRecordingContextsPerFrame, "Invalid MaxRecordingContextsPerFrame.");
+
 		GRAPHITE_LOG_INFO("Creating D3D12 Graphics Context...");
 
 		// Initialization
@@ -23,19 +29,11 @@ namespace Graphite
 		CreateDevice();
 		CreateCommandQueues();
 		CreateSwapChain(contextDesc.WindowHandle);
-		CreateCommandAllocator();
-		CreateCommandList();
-		CreateFrameResources();
+		CreateFrameResources(contextDesc.MaxRecordingContextsPerFrame);
+		CreateRecordingContexts(contextDesc.MaxRecordingContextsPerFrame);
 
-		// Close the command list and execute it to begin the initial GPU set up
-		// The main loop will expect the command list to be closed
-		DX_THROW_IF_FAIL(m_CommandList->Close());
-		ID3D12CommandList* ppCommandLists[] = { m_CommandList.Get() };
-		const auto fenceValue = m_DirectQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-		m_FrameResources.at(m_CurrentBackBuffer).SetFence(fenceValue);
-
-		// Wait for any GPU work executed on startup to finish before continuing
+		// In case any set-up work was performed by the graphics context
+		m_FrameResources.at(m_CurrentBackBuffer).SetFence(m_DirectQueue->Signal());
 		m_DirectQueue->WaitForIdleCPUBlocking();
 
 		GRAPHITE_LOG_INFO("D3D12 Graphics Context created successfully.");
@@ -50,21 +48,50 @@ namespace Graphite
 
 	void GraphicsContext::BeginFrame()
 	{
-		m_FrameResources.at(m_CurrentBackBuffer).ResetAllocator();
-		// Command lists must be reset after ExecuteCommandList() is called and before it is repopulated
-		DX_THROW_IF_FAIL(m_CommandList->Reset(m_FrameResources.at(m_CurrentBackBuffer).GetCommandAllocator(), nullptr));
+		// Reset allocators so they can be distributed when requested
+		m_FrameResources.at(m_CurrentBackBuffer).ResetAllAllocators();
 	}
 
 	void GraphicsContext::EndFrame()
 	{
-		DX_THROW_IF_FAIL(m_CommandList->Close());
+		// Ensure all recording contexts have been returned to the graphics context
+		GRAPHITE_ASSERT(m_OpenRecordingContexts == 0, "Some recording contexts were not closed before EndFrame.");
 
-		// Execute the command list
-		ID3D12CommandList* ppCommandLists[] = { m_CommandList.Get() };
-		const auto fenceValue = m_DirectQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
+		// Execute all recording contexts that were populated this frame
+		UINT64 fenceValue = m_DirectQueue->ExecuteCommandLists(static_cast<UINT>(m_PendingCommandLists.size()), m_PendingCommandLists.data());
 		m_FrameResources.at(m_CurrentBackBuffer).SetFence(fenceValue);
+
+		m_PendingCommandLists.clear();
+		m_RecordingContextsUsedThisFrame = 0;
 	}
+
+	CommandRecordingContext* GraphicsContext::AcquireRecordingContext()
+	{
+		std::lock_guard<std::mutex> lockGuard(m_RecordingContextAcquisitionMutex);
+
+		GRAPHITE_ASSERT(m_RecordingContextsUsedThisFrame < m_RecordingContexts.size(), "Exceeded recording context limit.");
+
+		FrameResources& frameResources = m_FrameResources.at(m_CurrentBackBuffer);
+
+		CommandRecordingContext* recordingContext = &m_RecordingContexts.at(m_RecordingContextsUsedThisFrame++);
+		recordingContext->Reset(frameResources.GetNextCommandAllocator());
+
+		m_OpenRecordingContexts++;
+		return recordingContext;
+	}
+
+	void GraphicsContext::CloseRecordingContext(CommandRecordingContext* recordingContext)
+	{
+		std::lock_guard<std::mutex> lockGuard(m_RecordingContextAcquisitionMutex);
+
+		GRAPHITE_ASSERT(recordingContext, "Nullptr recording context");
+
+		recordingContext->Close();
+		m_PendingCommandLists.push_back(recordingContext->GetCommandList());
+
+		m_OpenRecordingContexts--;
+	}
+
 
 	void GraphicsContext::Present()
 	{
@@ -89,11 +116,6 @@ namespace Graphite
 		MoveToNextFrame();
 	}
 
-	void GraphicsContext::ClearBackBuffer()
-	{
-		
-	}
-
 	void GraphicsContext::ResizeBackBuffer(uint32_t width, uint32_t height)
 	{
 		GRAPHITE_ASSERT(width && height, "Invalid back buffer size!");
@@ -106,7 +128,6 @@ namespace Graphite
 
 		// Wait until idle
 		WaitForGPUIdle();
-		DX_THROW_IF_FAIL(m_CommandList->Reset(m_DirectCommandAllocator.Get(), nullptr));
 
 		// Resize
 		const auto flags = m_TearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
@@ -118,12 +139,7 @@ namespace Graphite
 		DX_THROW_IF_FAIL(m_SwapChain->GetFullscreenState(&fullscreenState, nullptr));
 		m_WindowedMode = !fullscreenState;
 
-		// Submit required work to re-init buffers
-		DX_THROW_IF_FAIL(m_CommandList->Close());
-		ID3D12CommandList* ppCommandLists[] = { m_CommandList.Get() };
-		const auto fenceValue = m_DirectQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-		m_FrameResources.at(m_CurrentBackBuffer).SetFence(fenceValue);
+		m_FrameResources.at(m_CurrentBackBuffer).SetFence(m_DirectQueue->Signal());
 
 		// Wait for GPU to finish its work before continuing
 		m_DirectQueue->WaitForIdleCPUBlocking();
@@ -282,30 +298,29 @@ namespace Graphite
 		m_WindowedMode = !fullscreenState;
 	}
 
-	void GraphicsContext::CreateCommandAllocator()
-	{
-		DX_THROW_IF_FAIL(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_DirectCommandAllocator)));
-		m_DirectCommandAllocator->SetName(L"Graphics Context Direct Command Allocator");
-	}
-
-	void GraphicsContext::CreateCommandList()
-	{
-		// Create the command list
-		DX_THROW_IF_FAIL(m_Device->CreateCommandList(0,
-			D3D12_COMMAND_LIST_TYPE_DIRECT,
-			m_DirectCommandAllocator.Get(), nullptr,
-			IID_PPV_ARGS(&m_CommandList)));
-		m_CommandList->SetName(L"Graphics Context Command List");
-	}
-
-	void GraphicsContext::CreateFrameResources()
+	void GraphicsContext::CreateFrameResources(uint32_t allocatorPoolSize)
 	{
 		for (uint32_t i = 0; i < s_BackBufferCount; i++)
 		{
-			m_FrameResources.at(i).Init(m_Device.Get(), i);
+			m_FrameResources.at(i).Init(m_Device.Get(), i, allocatorPoolSize);
 		}
 	}
 
+	void GraphicsContext::CreateRecordingContexts(uint32_t recordingContextCount)
+	{
+		m_RecordingContexts.reserve(recordingContextCount);
+		m_PendingCommandLists.reserve(recordingContextCount);
+
+		for (uint32_t i = 0; i < recordingContextCount; i++)
+		{
+			auto allocator = m_FrameResources.at(m_CurrentBackBuffer).GetNextCommandAllocator();
+			CommandRecordingContext context{ m_Device.Get(), allocator, D3D12_COMMAND_LIST_TYPE_DIRECT};
+			// Contexts are open by default - but should be closed before the main loop begins
+			context.Close();
+
+			m_RecordingContexts.emplace_back(std::move(context));
+		}
+	}
 
 
 	void GraphicsContext::MoveToNextFrame()
@@ -315,6 +330,4 @@ namespace Graphite
 		// If they are still being processed by the GPU, then wait until they are ready
 		m_DirectQueue->WaitForFenceCPUBlocking(m_FrameResources.at(m_CurrentBackBuffer).GetFenceValue());
 	}
-
-
 }

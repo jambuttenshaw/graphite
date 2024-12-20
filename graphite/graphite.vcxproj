@@ -97,6 +97,7 @@
     <ClInclude Include="src\Graphite\Input\KeyCodes.h" />
     <ClInclude Include="src\Graphite\pch.h" />
     <ClInclude Include="src\Graphite\RHI\CommandQueue.h" />
+    <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
     <ClInclude Include="src\Graphite\RHI\FrameResources.h" />
     <ClInclude Include="src\Graphite\RHI\RHIExceptions.h" />
     <ClInclude Include="src\Graphite\RHI\GraphicsContext.h" />
@@ -110,6 +111,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Graphite\RHI\CommandQueue.cpp" />
+    <ClCompile Include="src\Graphite\RHI\CommandRecordingContext.cpp" />
     <ClCompile Include="src\Graphite\RHI\FrameResources.cpp" />
     <ClCompile Include="src\Graphite\RHI\RHIExceptions.cpp" />
     <ClCompile Include="src\Graphite\RHI\GraphicsContext.cpp" />

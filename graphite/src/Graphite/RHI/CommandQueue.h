@@ -14,10 +14,11 @@ namespace Graphite
 		~CommandQueue();
 
 		DELETE_COPY(CommandQueue)
-			DEFAULT_MOVE(CommandQueue)
+		DEFAULT_MOVE(CommandQueue)
 
-			// Execute work
-			UINT64 ExecuteCommandLists(UINT count, ID3D12CommandList** ppCommandLists);
+		// Execute work
+		UINT64 ExecuteCommandLists(UINT count, ID3D12CommandList** ppCommandLists);
+		UINT64 Signal();
 
 		// GPU wait
 		void InsertWait(UINT64 fenceValue) const;
@@ -37,9 +38,6 @@ namespace Graphite
 		// Resources
 		inline ID3D12CommandQueue* GetRHIQueue() const { return m_CommandQueue.Get(); }
 		inline ID3D12Fence* GetFence() const { return m_Fence.Get(); }
-
-	private:
-		UINT64 Signal();
 
 	private:
 		// D3D12 resources

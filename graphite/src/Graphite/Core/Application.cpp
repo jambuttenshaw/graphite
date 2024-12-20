@@ -34,9 +34,13 @@ namespace Graphite
 		GraphiteGraphicsContextDesc graphicsContextDesc
 		{
 			.WindowHandle = m_Window->GetHandle(),
+
 			.BackBufferWidth = defaultWidth,
 			.BackBufferHeight = defaultHeight,
-			.BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM
+			.BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM,
+
+			// Allow for one recording context per CPU core
+			.MaxRecordingContextsPerFrame = std::thread::hardware_concurrency()
 		};
 		m_GraphicsContext = std::make_unique<GraphicsContext>(graphicsContextDesc);
 	}
@@ -67,6 +71,11 @@ namespace Graphite
 				m_GraphicsContext->BeginFrame();
 
 				// Perform all rendering
+				{
+					CommandRecordingContext* recordingContext = m_GraphicsContext->AcquireRecordingContext();
+					// Record commands
+					m_GraphicsContext->CloseRecordingContext(recordingContext);
+				}
 
 				m_GraphicsContext->EndFrame();
 				m_GraphicsContext->Present();
