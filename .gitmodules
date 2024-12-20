@@ -1,6 +1,6 @@
 [submodule "graphite/vendor/spdlog"]
 	path = graphite/vendor/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "Graphite/vendor/DirectX-Headers"]
-	path = Graphite/vendor/DirectX-Headers
+[submodule "graphite/vendor/DirectX-Headers"]
+	path = graphite/vendor/DirectX-Headers
 	url = https://github.com/microsoft/DirectX-Headers
