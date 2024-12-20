@@ -32,9 +32,11 @@ namespace Graphite
 		CreateSwapChain(contextDesc.WindowHandle);
 
 		CreateDescriptorHeaps();
+		CreateBackBufferRTVs();
 
-		CreateFrameResources(contextDesc.MaxRecordingContextsPerFrame);
-		CreateRecordingContexts(contextDesc.MaxRecordingContextsPerFrame);
+		const uint32_t totalRecordingContexts = contextDesc.MaxRecordingContextsPerFrame + s_InternalCommandRecordingContexts;
+		CreateFrameResources(totalRecordingContexts);
+		CreateRecordingContexts(totalRecordingContexts);
 
 		// In case any set-up work was performed by the graphics context
 		m_FrameResources.at(m_CurrentBackBuffer).SetFence(m_DirectQueue->Signal());
@@ -48,6 +50,8 @@ namespace Graphite
 
 	GraphicsContext::~GraphicsContext()
 	{
+		m_BackBufferRTVs.Free();
+
 		// Wait for all work on GPU to complete before releasing resources
 		WaitForGPUIdle();
 
@@ -59,6 +63,21 @@ namespace Graphite
 	{
 		// Reset allocators so they can be distributed when requested
 		m_FrameResources.at(m_CurrentBackBuffer).ResetAllAllocators();
+
+		// Internal command list that sets up the frame
+		// This is required as the order in which applications work will execute cannot be known
+		{
+			CommandRecordingContext* recordingContext = AcquireRecordingContext();
+
+			// Transition back buffer to be used as a render target
+			const auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+				m_BackBuffers.at(m_CurrentBackBuffer).Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			recordingContext->GetCommandList()->ResourceBarrier(1, &barrier);
+
+			CloseRecordingContext(recordingContext);
+		}
+
+		FlushPendingCommandLists();
 	}
 
 	void GraphicsContext::EndFrame()
@@ -67,10 +86,23 @@ namespace Graphite
 		GRAPHITE_ASSERT(m_OpenRecordingContexts == 0, "Some recording contexts were not closed before EndFrame.");
 
 		// Execute all recording contexts that were populated this frame
-		UINT64 fenceValue = m_DirectQueue->ExecuteCommandLists(static_cast<UINT>(m_PendingCommandLists.size()), m_PendingCommandLists.data());
-		m_FrameResources.at(m_CurrentBackBuffer).SetFence(fenceValue);
+		// TODO: Allow earlier work submission? This could work with a render pass system - but would require rework of allocator pooling (pool per render pass)
+		FlushPendingCommandLists();
 
-		m_PendingCommandLists.clear();
+
+		// Finally submit internal command list that ends the frame
+		{
+			CommandRecordingContext* recordingContext = AcquireRecordingContext();
+
+			// Transition back buffer to be used as a render target
+			const auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+				m_BackBuffers.at(m_CurrentBackBuffer).Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+			recordingContext->GetCommandList()->ResourceBarrier(1, &barrier);
+
+			CloseRecordingContext(recordingContext);
+		}
+		FlushPendingCommandLists();
+
 		m_RecordingContextsUsedThisFrame = 0;
 	}
 
@@ -78,7 +110,7 @@ namespace Graphite
 	{
 		std::lock_guard<std::mutex> lockGuard(m_RecordingContextAcquisitionMutex);
 
-		GRAPHITE_ASSERT(m_RecordingContextsUsedThisFrame < m_RecordingContexts.size(), "Exceeded recording context limit.");
+		GRAPHITE_ASSERT(m_RecordingContextsUsedThisFrame < (m_RecordingContexts.size() - s_InternalCommandRecordingContexts), "Exceeded application recording context limit.");
 
 		FrameResources& frameResources = m_FrameResources.at(m_CurrentBackBuffer);
 
@@ -324,6 +356,24 @@ namespace Graphite
 		m_RTVHeap.Init(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 64, true, L"RTV Descriptor Heap");
 	}
 
+	void GraphicsContext::CreateBackBufferRTVs()
+	{
+		m_BackBufferRTVs = m_RTVHeap.Allocate(s_BackBufferCount);
+		GRAPHITE_ASSERT(m_BackBufferRTVs.IsValid(), "RTV descriptor alloc failed");
+
+		// Create an RTV for each frame
+		for (UINT n = 0; n < s_BackBufferCount; n++)
+		{
+			DX_THROW_IF_FAIL(m_SwapChain->GetBuffer(n, IID_PPV_ARGS(&m_BackBuffers.at(n))));
+			m_Device->CreateRenderTargetView(m_BackBuffers.at(n).Get(), nullptr, m_BackBufferRTVs.GetCPUHandle(n));
+#ifdef GRAPHITE_DEBUG
+			std::wstring name(L"Back Buffer ");
+			name += std::to_wstring(n);
+			DX_THROW_IF_FAIL(m_BackBuffers.at(n)->SetName(name.c_str()));
+#endif
+		}
+	}
+
 	void GraphicsContext::CreateFrameResources(uint32_t allocatorPoolSize)
 	{
 		for (uint32_t i = 0; i < s_BackBufferCount; i++)
@@ -348,6 +398,14 @@ namespace Graphite
 		}
 	}
 
+
+	void GraphicsContext::FlushPendingCommandLists()
+	{
+		UINT64 fenceValue = m_DirectQueue->ExecuteCommandLists(static_cast<UINT>(m_PendingCommandLists.size()), m_PendingCommandLists.data());
+		m_FrameResources.at(m_CurrentBackBuffer).SetFence(fenceValue);
+
+		m_PendingCommandLists.clear();
+	}
 
 	void GraphicsContext::MoveToNextFrame()
 	{

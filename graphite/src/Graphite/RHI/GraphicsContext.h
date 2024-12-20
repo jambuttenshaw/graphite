@@ -61,6 +61,8 @@ namespace Graphite
 		inline uint32_t GetBackBufferWidth() const { return m_BackBufferWidth; }
 		inline uint32_t GetBackBufferHeight() const { return m_BackBufferHeight; }
 
+		inline D3D12_CPU_DESCRIPTOR_HANDLE GetBackBufferRenderTargetView() const { return m_BackBufferRTVs.GetCPUHandle(m_CurrentBackBuffer); }
+
 		// VSync
 		inline bool GetVSync() const { return m_VSync; }
 		inline void SetVSync(bool vsync) { m_VSync = vsync; }
@@ -74,11 +76,15 @@ namespace Graphite
 		void CreateSwapChain(HWND windowHandle);
 
 		void CreateDescriptorHeaps();
+		void CreateBackBufferRTVs();
 
 		void CreateFrameResources(uint32_t allocatorPoolSize);
 		void CreateRecordingContexts(uint32_t recordingContextCount);
 
 	private:
+
+		void FlushPendingCommandLists();
+
 		void MoveToNextFrame();
 
 		void ProcessDeferrals(uint32_t frameIndex);
@@ -117,6 +123,8 @@ namespace Graphite
 		std::vector<CommandRecordingContext> m_RecordingContexts;
 		std::mutex m_RecordingContextAcquisitionMutex;
 
+		inline static constexpr int32_t s_InternalCommandRecordingContexts = 2;	// Some recording contexts are reserved for graphics context use
+																				// One for beginning and one for ending the frame
 		size_t m_RecordingContextsUsedThisFrame = 0;	// The number of recording contexts that were acquired at any point during the frame
 		size_t m_OpenRecordingContexts = 0;				// The number of recording contexts currently active, that should be closed before the end of the frame
 
@@ -128,6 +136,10 @@ namespace Graphite
 
 		DescriptorHeap m_DSVHeap;
 		DescriptorHeap m_RTVHeap;
+
+		// Back buffer resources and descriptors
+		std::array<ComPtr<ID3D12Resource>, s_BackBufferCount> m_BackBuffers;
+		DescriptorAllocation m_BackBufferRTVs;
 
 		// State
 		uint32_t m_CurrentBackBuffer = 0;

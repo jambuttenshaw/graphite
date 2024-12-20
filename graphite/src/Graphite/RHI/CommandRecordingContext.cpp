@@ -2,6 +2,7 @@
 #include "CommandRecordingContext.h"
 
 #include "RHIExceptions.h"
+#include "Graphite/Core/Assert.h"
 
 
 namespace Graphite
@@ -31,4 +32,14 @@ namespace Graphite
 		DX_THROW_IF_FAIL(m_CommandList->Close());
 		m_IsClosed = true;
 	}
+
+
+	// Command implementations
+
+	void CommandRecordingContext::ClearRenderTargetView(D3D12_CPU_DESCRIPTOR_HANDLE renderTargetView, float* clearColor) const
+	{
+		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
+		m_CommandList->ClearRenderTargetView(renderTargetView, clearColor, 0, nullptr);
+	}
+
 }

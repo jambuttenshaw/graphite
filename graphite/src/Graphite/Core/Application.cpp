@@ -7,6 +7,7 @@
 #include "Graphite/Events/WindowEvent.h"
 
 // Graphics
+#include "Graphite/RHI/CommandRecordingContext.h"
 #include "Graphite/RHI/GraphicsContext.h"
 
 
@@ -73,7 +74,11 @@ namespace Graphite
 				// Perform all rendering
 				{
 					CommandRecordingContext* recordingContext = m_GraphicsContext->AcquireRecordingContext();
+
 					// Record commands
+					float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+					recordingContext->ClearRenderTargetView(m_GraphicsContext->GetBackBufferRenderTargetView(), clearColor);
+
 					m_GraphicsContext->CloseRecordingContext(recordingContext);
 				}
 

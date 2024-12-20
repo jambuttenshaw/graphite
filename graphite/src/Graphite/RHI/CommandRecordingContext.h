@@ -20,12 +20,12 @@ namespace Graphite
 		DEFAULT_MOVE(CommandRecordingContext);
 
 		// Command recording API
-
+		void ClearRenderTargetView(D3D12_CPU_DESCRIPTOR_HANDLE renderTargetView, float* clearColor) const;
 
 	public:
 		// Getters
 
-		ID3D12CommandList* GetCommandList() const { return m_CommandList.Get(); }
+		ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList.Get(); }
 
 		bool IsClosed() const { return m_IsClosed; }
 
