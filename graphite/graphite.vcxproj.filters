@@ -72,7 +72,13 @@
     <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\RHI\ResourceManager.h">
+    <ClInclude Include="src\Graphite\RHI\Resources\ResourceFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphite\RHI\Resources\GPUResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphite\RHI\Resources\Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -107,7 +113,10 @@
     <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphite\RHI\ResourceManager.cpp">
+    <ClCompile Include="src\Graphite\RHI\Resources\ResourceFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphite\RHI\Resources\GPUResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

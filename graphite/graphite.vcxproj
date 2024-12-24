@@ -102,7 +102,9 @@
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
     <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h" />
     <ClInclude Include="src\Graphite\RHI\FrameResources.h" />
-    <ClInclude Include="src\Graphite\RHI\ResourceManager.h" />
+    <ClInclude Include="src\Graphite\RHI\Resources\Buffer.h" />
+    <ClInclude Include="src\Graphite\RHI\Resources\GPUResource.h" />
+    <ClInclude Include="src\Graphite\RHI\Resources\ResourceFactory.h" />
     <ClInclude Include="src\Graphite\RHI\RHIExceptions.h" />
     <ClInclude Include="src\Graphite\RHI\GraphicsContext.h" />
     <ClInclude Include="src\Graphite\Window\Window.h" />
@@ -118,7 +120,8 @@
     <ClCompile Include="src\Graphite\RHI\CommandRecordingContext.cpp" />
     <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp" />
     <ClCompile Include="src\Graphite\RHI\FrameResources.cpp" />
-    <ClCompile Include="src\Graphite\RHI\ResourceManager.cpp" />
+    <ClCompile Include="src\Graphite\RHI\Resources\GPUResource.cpp" />
+    <ClCompile Include="src\Graphite\RHI\Resources\ResourceFactory.cpp" />
     <ClCompile Include="src\Graphite\RHI\RHIExceptions.cpp" />
     <ClCompile Include="src\Graphite\RHI\GraphicsContext.cpp" />
     <ClCompile Include="src\Graphite\Window\Window.cpp" />

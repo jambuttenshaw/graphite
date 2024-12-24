@@ -2,7 +2,7 @@
 #include "GraphicsContext.h"
 
 #include "CommandRecordingContext.h"
-#include "ResourceManager.h"
+#include "Resources/ResourceFactory.h"
 #include "RHIExceptions.h"
 #include "Graphite/Core/Assert.h"
 
@@ -29,7 +29,7 @@ namespace Graphite
 		CreateAdapter();
 		CreateDevice();
 
-		ResourceManager::Get().CreateAllocator(m_Adapter.Get(), m_Device.Get());
+		ResourceFactory::Get().CreateResourceAllocator(m_Adapter.Get(), m_Device.Get());
 
 		CreateCommandQueues();
 		CreateSwapChain(contextDesc.WindowHandle);
@@ -60,7 +60,7 @@ namespace Graphite
 
 		ProcessAllDeferrals();
 
-		ResourceManager::Get().DestroyAllocator();
+		ResourceFactory::Get().DestroyResourceAllocator();
 	}
 
 
