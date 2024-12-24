@@ -52,13 +52,14 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include;vendor/D3D12MemoryAllocator/include</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;dxguid.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3D12MemoryAllocator.lib;d3d12.lib;dxgi.lib;dxguid.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -72,7 +73,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include;vendor/D3D12MemoryAllocator/include</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -80,7 +81,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;dxguid.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3D12MemoryAllocator.lib;d3d12.lib;dxgi.lib;dxguid.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -100,6 +102,7 @@
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
     <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h" />
     <ClInclude Include="src\Graphite\RHI\FrameResources.h" />
+    <ClInclude Include="src\Graphite\RHI\ResourceManager.h" />
     <ClInclude Include="src\Graphite\RHI\RHIExceptions.h" />
     <ClInclude Include="src\Graphite\RHI\GraphicsContext.h" />
     <ClInclude Include="src\Graphite\Window\Window.h" />
@@ -115,6 +118,7 @@
     <ClCompile Include="src\Graphite\RHI\CommandRecordingContext.cpp" />
     <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp" />
     <ClCompile Include="src\Graphite\RHI\FrameResources.cpp" />
+    <ClCompile Include="src\Graphite\RHI\ResourceManager.cpp" />
     <ClCompile Include="src\Graphite\RHI\RHIExceptions.cpp" />
     <ClCompile Include="src\Graphite\RHI\GraphicsContext.cpp" />
     <ClCompile Include="src\Graphite\Window\Window.cpp" />

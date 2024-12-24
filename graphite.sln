@@ -9,6 +9,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sampleApp", "sampleApp\samp
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphite", "graphite\graphite.vcxproj", "{EDA88BD9-5F63-48A9-8251-5C296AC42786}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD7486D1-DA4B-4E98-A4B9-D5B4CB51EAB3} = {FD7486D1-DA4B-4E98-A4B9-D5B4CB51EAB3}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D12MemoryAllocator", "graphite\vendor\D3D12MemoryAllocator.vcxproj", "{FD7486D1-DA4B-4E98-A4B9-D5B4CB51EAB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +29,10 @@ Global
 		{EDA88BD9-5F63-48A9-8251-5C296AC42786}.Debug|x64.Build.0 = Debug|x64
 		{EDA88BD9-5F63-48A9-8251-5C296AC42786}.Release|x64.ActiveCfg = Release|x64
 		{EDA88BD9-5F63-48A9-8251-5C296AC42786}.Release|x64.Build.0 = Release|x64
+		{FD7486D1-DA4B-4E98-A4B9-D5B4CB51EAB3}.Debug|x64.ActiveCfg = Debug|x64
+		{FD7486D1-DA4B-4E98-A4B9-D5B4CB51EAB3}.Debug|x64.Build.0 = Debug|x64
+		{FD7486D1-DA4B-4E98-A4B9-D5B4CB51EAB3}.Release|x64.ActiveCfg = Release|x64
+		{FD7486D1-DA4B-4E98-A4B9-D5B4CB51EAB3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
