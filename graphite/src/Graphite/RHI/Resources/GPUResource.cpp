@@ -7,9 +7,10 @@
 namespace Graphite
 {
 
-	GPUResource::GPUResource(D3D12MA::Allocation* allocation)
+	GPUResource::GPUResource(D3D12MA::Allocation* allocation, ResourceAccessFlags accessFlags)
 		: m_Allocation(allocation)
 		, m_Resource(allocation->GetResource())
+		, m_AccessFlags(accessFlags)
 	{
 		
 	}

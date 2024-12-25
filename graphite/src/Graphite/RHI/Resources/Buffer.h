@@ -1,4 +1,5 @@
 #pragma once
+
 #include "GPUResource.h"
 
 #include "Graphite/Core/Core.h"
@@ -11,70 +12,35 @@ namespace Graphite
 {
 
 	// Upload buffer, templated by the number of elements it contains
-	template <typename T>
 	class UploadBuffer : public GPUResource
 	{
+	protected:
 		friend class ResourceFactory;
-		UploadBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride)
-			: GPUResource(allocation)
-			, m_ElementCount(elementCount)
-			, m_ElementStride(elementStride)
-			, m_InstanceCount(instanceCount)
-			, m_InstanceStride(elementCount * elementStride)
-		{
-			// Map buffer to be able to write to it
-			DX_THROW_IF_FAIL(m_Resource->Map(0, nullptr, reinterpret_cast<void**>(&m_MappedData)));
-		}
+		UploadBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride);
 	public:
-		virtual ~UploadBuffer()
-		{
-			if (m_MappedData)
-			{
-				m_Resource->Unmap(0, nullptr);
-			}
-		};
+		virtual ~UploadBuffer();
 
 		DELETE_COPY(UploadBuffer);
 		DEFAULT_MOVE(UploadBuffer);
 
 		// Getters
+		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::UploadBuffer; }
+
 		inline uint32_t GetElementCount() const { return m_ElementCount; }
 		inline uint32_t GetElementStride() const { return m_ElementStride; }
+
 		inline uint32_t GetInstanceCount() const { return m_InstanceCount; }
 		inline uint32_t GetInstanceStride() const { return m_InstanceStride; }
 
-		inline D3D12_GPU_VIRTUAL_ADDRESS GetAddressOfElement(uint32_t element, uint32_t instance) const
-		{
-			GRAPHITE_ASSERT(element < m_ElementCount && instance < m_InstanceCount, "Out of bounds access.");
-			return GetAddress() + (instance * m_InstanceStride) + (element * m_ElementStride);
-		}
+		D3D12_GPU_VIRTUAL_ADDRESS GetAddressOfElement(uint32_t element, uint32_t instance) const;
 
 		// Populate buffer
-		// Note: sizeof(T) likely won't equal element stride, as stride may have been padded
-		void CopyElement(uint32_t element, uint32_t instance, const T& data) const
-		{
-			GRAPHITE_ASSERT(element < m_ElementCount && instance < m_InstanceCount, "Out of bounds access.");
-			memcpy(GetMappedAddressOfElement(element, instance), &data, sizeof(T));
-		}
-		void CopyElements(uint32_t start, uint32_t count, uint32_t instance, const T* const data) const
-		{
-			GRAPHITE_ASSERT(start + count - 1 < m_ElementCount && instance < m_InstanceCount, "Out of bounds access.");
-			memcpy(GetMappedAddressOfElement(start, instance), data, count * sizeof(T));
-		}
-		void SetElements(uint32_t start, uint32_t count, uint32_t instance, int value) const
-		{
-			GRAPHITE_ASSERT(start + count - 1 < m_ElementCount && instance < m_InstanceCount, "Out of bounds access.");
-			memset(GetMappedAddressOfElement(start, instance), value, count * m_ElementStride);
-		}
+		void CopyElement(uint32_t element, uint32_t instance, const void* data, uint64_t elementSize) const;
 
 	private:
 		// For writing use only
 		// Helper function to find offset
-		inline uint8_t* GetMappedAddressOfElement(uint32_t element, uint32_t instance) const
-		{
-			GRAPHITE_ASSERT(element < m_ElementCount && instance < m_InstanceCount, "Out of bounds access.");
-			return m_MappedData + static_cast<uint64_t>(instance * m_InstanceStride) + static_cast<uint64_t>(element * m_ElementStride);
-		}
+		uint64_t GetElementOffset(uint32_t element, uint32_t instance) const;
 
 	private:
 		uint32_t m_ElementCount;
@@ -85,6 +51,76 @@ namespace Graphite
 
 		// Mapped pointer to write to buffer
 		uint8_t* m_MappedData;
+	};
+
+
+	class ConstantBuffer : public UploadBuffer
+	{
+	protected:
+		friend class ResourceFactory;
+		ConstantBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride)
+			: UploadBuffer(allocation, elementCount, instanceCount, elementStride)
+		{}
+	public:
+		virtual ~ConstantBuffer() = default;
+
+		DELETE_COPY(ConstantBuffer);
+		DEFAULT_MOVE(ConstantBuffer);
+
+		// Getters
+		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::ConstantBuffer; }
+	};
+
+
+	class ByteAddressBuffer : public GPUResource
+	{
+	protected:
+		friend class ResourceFactory;
+		ByteAddressBuffer(D3D12MA::Allocation* allocation, bool readOnly);
+	public:
+		virtual ~ByteAddressBuffer() = default;
+
+		DELETE_COPY(ByteAddressBuffer);
+		DEFAULT_MOVE(ByteAddressBuffer);
+
+		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::ByteAddressBuffer; }
+	};
+
+
+	class StructuredBuffer : public ByteAddressBuffer
+	{
+	protected:
+		friend class ResourceFactory;
+		StructuredBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, bool readOnly)
+			: ByteAddressBuffer(allocation, readOnly)
+			, m_ElementCount(elementCount)
+		{}
+	public:
+		virtual ~StructuredBuffer() = default;
+
+		DELETE_COPY(StructuredBuffer);
+		DEFAULT_MOVE(StructuredBuffer);
+
+		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::StructuredBuffer; }
+		inline uint32_t GetElementCount() const { return m_ElementCount; }
+
+	private:
+		uint32_t m_ElementCount;
+	};
+
+
+	class ReadbackBuffer : public GPUResource
+	{
+	protected:
+		friend class ResourceFactory;
+		ReadbackBuffer(D3D12MA::Allocation* allocation);
+	public:
+		virtual ~ReadbackBuffer() = default;
+
+		DELETE_COPY(ReadbackBuffer);
+		DEFAULT_MOVE(ReadbackBuffer);
+
+		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::ReadbackBuffer; }
 	};
 
 }

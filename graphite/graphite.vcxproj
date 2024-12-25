@@ -120,6 +120,7 @@
     <ClCompile Include="src\Graphite\RHI\CommandRecordingContext.cpp" />
     <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp" />
     <ClCompile Include="src\Graphite\RHI\FrameResources.cpp" />
+    <ClCompile Include="src\Graphite\RHI\Resources\Buffer.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\GPUResource.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\ResourceFactory.cpp" />
     <ClCompile Include="src\Graphite\RHI\RHIExceptions.cpp" />

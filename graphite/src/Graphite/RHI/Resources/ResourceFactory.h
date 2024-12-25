@@ -1,9 +1,13 @@
 #pragma once
 
 #include "Buffer.h"
-#include "D3D12MemAlloc.h"
 #include "Graphite/RHI/RHIExceptions.h"
 
+namespace D3D12MA
+{
+	class Allocator;
+	class Allocation;
+}
 
 namespace Graphite
 {
@@ -29,60 +33,43 @@ namespace Graphite
 
 		// Instanced buffers are used to allow safe writing of memory from the CPU each frame through a common object
 		// The client writing to the buffer doesn't have to worry about the underlying structure of the resource
+		std::unique_ptr<UploadBuffer> CreateUploadBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementSize, uint32_t elementAlignment) const;
 		template <typename T>
-		std::unique_ptr<UploadBuffer<T>> CreateUploadBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementAlignment)
+		std::unique_ptr<UploadBuffer> CreateUploadBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementAlignment) const
 		{
-			// Calculate properties of the required memory
-
-			// Align the element stride to be a multiple of alignment
-			uint64_t elementStride = sizeof(T);
-			if (elementAlignment > 0)
-			{
-				AlignSize(elementStride, elementAlignment);
-			}
-			const uint64_t width = elementStride * elementCount * instanceCount;
-
-			// Allocate memory for the buffer
-			// Flags don't apply to default heap memory
-			const auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(width, D3D12_RESOURCE_FLAG_NONE, 0);
-			D3D12MA::ALLOCATION_DESC allocDesc = {};
-			allocDesc.HeapType = D3D12_HEAP_TYPE_UPLOAD;
-
-			// Allocate memory
-			// TODO: Don't throw on failure
-			D3D12MA::Allocation* allocation;
-			DX_THROW_IF_FAIL(m_Allocator->CreateResource(
-				&allocDesc,
-				&resourceDesc,
-				D3D12_RESOURCE_STATE_COMMON,
-				nullptr,
-				&allocation,
-				IID_NULL, nullptr);)
-
-			auto buffer = std::unique_ptr<UploadBuffer<T>>(new UploadBuffer<T>(allocation, elementCount, instanceCount, static_cast<uint32_t>(elementStride)));
-			return std::move(buffer);
+			return CreateUploadBuffer(elementCount, instanceCount, sizeof(T), elementAlignment);
 		}
 
+
+		std::unique_ptr<ConstantBuffer> CreateConstantBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementSize) const;
 		template <typename T>
-		using ConstantBuffer = UploadBuffer<T>;
-		// Constant Buffers are upload buffers with alignment requirements
-		template <typename T>
-		std::unique_ptr<ConstantBuffer<T>> CreateConstantBuffer(uint32_t elementCount, uint32_t instanceCount)
+		std::unique_ptr<UploadBuffer> CreateConstantBuffer(uint32_t elementCount, uint32_t instanceCount) const
 		{
-			return std::move(CreateUploadBuffer<T>(elementCount, instanceCount, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
+			return CreateConstantBuffer(elementCount, instanceCount, sizeof(T));
 		}
 
-		// ByteAddressBuffer/DefaultBuffer
-		void CreateByteAddress();
-		void CreateStructuredBuffer();
-		void CreateReadbackBuffer();
+
+		std::unique_ptr<ByteAddressBuffer> CreateByteAddressBuffer(uint64_t width, bool readOnly) const;
+
+
+		std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(uint32_t elementCount, uint32_t elementSize, bool readOnly) const;
+		template <typename T>
+		std::unique_ptr<UploadBuffer> CreateStructuredBuffer(uint32_t elementCount, bool readOnly) const
+		{
+			return CreateStructuredBuffer(elementCount, sizeof(T), readOnly);
+		}
+		
+
+		std::unique_ptr<ReadbackBuffer> CreateReadbackBuffer(uint64_t width) const;
 
 		// Textures
 		void CreateTexture();
 
 	private:
+		// Helper functions
 		static uint64_t AlignSize(uint64_t size, uint64_t alignment);
 
+		D3D12MA::Allocation* AllocateBuffer(D3D12_HEAP_TYPE heap, uint64_t width, D3D12_RESOURCE_FLAGS flags) const;
 	private:
 		D3D12MA::Allocator* m_Allocator = nullptr;
 	};
