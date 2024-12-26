@@ -7,10 +7,13 @@
 #include "Graphite/Events/WindowEvent.h"
 
 // Graphics
-#include "Graphite/RHI/CommandRecordingContext.h"
 #include "Graphite/RHI/GraphicsContext.h"
+#include "Graphite/RHI/CommandRecordingContext.h"
+
 #include "Graphite/RHI/Resources/Geometry.h"
+
 #include "Graphite/RHI/Resources/ResourceFactory.h"
+#include "Graphite/RHI/Pipelines/PipelineFactory.h"
 
 
 namespace Graphite
@@ -66,6 +69,22 @@ namespace Graphite
 
 		m_VertexBuffer->CopyVertexData(3, vertices);
 		m_IndexBuffer->CopyIndexData(3, indices);
+
+		// Create graphics pipeline
+		GraphicsPipelineDescription psoDesc
+		{
+			.InputVertexLayout = &Vertex_Position::VertexInputLayout,
+			.VertexShader = {
+				.FilePath = L"../graphite/assets/shaders/shaders.hlsl",
+				.EntryPoint = L"VSMain"
+			},
+			.PixelShader = {
+				.FilePath = L"../graphite/assets/shaders/shaders.hlsl",
+				.EntryPoint = L"PSMain"
+			}
+		};
+
+		m_GraphicsPipeline = PipelineFactory::Get().CreateGraphicsPipeline(psoDesc);
 	}
 
 	Application::~Application()

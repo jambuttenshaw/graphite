@@ -12,6 +12,8 @@ namespace Graphite
 	class VertexBuffer;
 	class IndexBuffer;
 
+	class GraphicsPipeline;
+
 	class Application
 	{
 	public:
@@ -43,6 +45,8 @@ namespace Graphite
 		// Application data
 		std::unique_ptr<VertexBuffer> m_VertexBuffer;
 		std::unique_ptr<IndexBuffer> m_IndexBuffer;
+
+		std::unique_ptr<GraphicsPipeline> m_GraphicsPipeline;
 	};
 
 	extern std::unique_ptr<Application> CreateApplication();

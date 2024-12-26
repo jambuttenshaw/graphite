@@ -5,6 +5,7 @@
 #include "Resources/ResourceFactory.h"
 #include "RHIExceptions.h"
 #include "Graphite/Core/Assert.h"
+#include "Pipelines/PipelineFactory.h"
 
 
 namespace Graphite
@@ -30,6 +31,7 @@ namespace Graphite
 		CreateDevice();
 
 		ResourceFactory::Get().CreateResourceAllocator(m_Adapter.Get(), m_Device.Get());
+		PipelineFactory::Get().Initialize(m_Device.Get());
 
 		CreateCommandQueues();
 		CreateSwapChain(contextDesc.WindowHandle);

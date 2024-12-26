@@ -22,6 +22,7 @@
 #include <queue>
 #include <deque>
 
+#include <optional>
 #include <mutex>
 
 

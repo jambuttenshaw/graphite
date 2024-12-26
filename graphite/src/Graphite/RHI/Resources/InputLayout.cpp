@@ -32,6 +32,7 @@ namespace Graphite
 				.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
 				.InstanceDataStepRate = 0
 			};
+			m_InputLayout.push_back(desc);
 			layoutSizeInBytes += element.NumChannels * sizeof(uint32_t);
 		}
 
