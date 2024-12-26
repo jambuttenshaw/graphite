@@ -89,8 +89,6 @@ namespace Graphite
 
 	Application::~Application()
 	{
-		m_VertexBuffer.reset();
-		m_IndexBuffer.reset();
 	}
 
 
@@ -117,9 +115,29 @@ namespace Graphite
 				{
 					CommandRecordingContext* recordingContext = m_GraphicsContext->AcquireRecordingContext();
 
+					// Set viewport
+					D3D12_VIEWPORT viewports = {0.0f, 0.0f, static_cast<float>(m_Window->GetWidth()), static_cast<float>(m_Window->GetHeight())};
+					recordingContext->SetViewports({ &viewports, 1 });
+					D3D12_RECT scissorRect = { 0, 0, static_cast<LONG>(m_Window->GetWidth()), static_cast<LONG>(m_Window->GetHeight()) };
+					recordingContext->SetScissorRects({ &scissorRect, 1 });
+
 					// Record commands
+					auto rtv = m_GraphicsContext->GetBackBufferRenderTargetView();
 					float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-					recordingContext->ClearRenderTargetView(m_GraphicsContext->GetBackBufferRenderTargetView(), clearColor);
+					recordingContext->ClearRenderTargetView(rtv, clearColor);
+
+					recordingContext->SetRenderTargets({ &rtv, 1 }, std::nullopt);
+
+					recordingContext->SetPipelineState(m_GraphicsPipeline->GetPipelineState());
+					recordingContext->SetGraphicsRootSignature(m_GraphicsPipeline->GetRootSignature());
+
+					recordingContext->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+					recordingContext->SetIndexBuffer(m_IndexBuffer->GetIndexBufferView());
+					const auto& vb = m_VertexBuffer->GetVertexBufferView();
+					recordingContext->SetVertexBuffers(0, { &vb, 1 });
+
+					recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetIndexCount(), 1, 0, 0, 0);
 
 					m_GraphicsContext->CloseRecordingContext(recordingContext);
 				}
@@ -128,6 +146,9 @@ namespace Graphite
 				m_GraphicsContext->Present();
 			}
 		}
+
+		// Wait for all GPU work to finish before cleaning up
+		m_GraphicsContext->WaitForGPUIdle();
 
 		return 0;
 	}

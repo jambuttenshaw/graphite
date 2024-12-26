@@ -51,13 +51,15 @@ namespace Graphite
 
 		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::VertexBuffer; }
 
+		inline uint32_t GetVertexCount() const { return m_VertexCount; }
+		inline uint32_t GetVertexStride() const { return m_VertexStride; }
 		inline const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return m_VertexBufferView; }
 
 		void CopyVertexData(uint32_t vertexCount, const void* vertexData) const;
 
 	private:
 		uint32_t m_VertexCount;
-		uint32_t m_VertexStide;
+		uint32_t m_VertexStride;
 
 		D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
 	};
@@ -79,6 +81,8 @@ namespace Graphite
 
 		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::IndexBuffer; }
 
+		inline uint32_t GetIndexCount() const { return m_IndexCount; }
+		inline uint32_t GetIndexSizeInBytes() const { return m_IndexSizeInBytes; }
 		inline const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return m_IndexBufferView; }
 
 		void CopyIndexData(uint32_t indexCount, const void* indexData) const;

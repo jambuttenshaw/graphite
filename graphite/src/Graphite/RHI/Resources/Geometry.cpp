@@ -25,7 +25,7 @@ namespace Graphite
 			static_cast<ResourceAccessFlags>(ResourceAccess_GPURead | (dynamic ? ResourceAccess_CPUWrite : ResourceAccess_None))
 			)
 		, m_VertexCount(vertexCount)
-		, m_VertexStide(vertexStride)
+		, m_VertexStride(vertexStride)
 	{
 		m_VertexBufferView = D3D12_VERTEX_BUFFER_VIEW{
 			.BufferLocation = GetAddress(),
@@ -44,7 +44,7 @@ namespace Graphite
 		DX_THROW_IF_FAIL(m_Resource->Map(0, nullptr, reinterpret_cast<void**>(&mappedData)));
 
 		// Copy vertex data into the buffer
-		uint64_t size = vertexCount * m_VertexStide;
+		uint64_t size = vertexCount * m_VertexStride;
 		memcpy(mappedData, vertexData, size);
 
 		m_Resource->Unmap(0, nullptr);

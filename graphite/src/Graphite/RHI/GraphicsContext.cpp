@@ -55,10 +55,10 @@ namespace Graphite
 
 	GraphicsContext::~GraphicsContext()
 	{
-		m_BackBufferRTVs.Free();
-
 		// Wait for all work on GPU to complete before releasing resources
 		WaitForGPUIdle();
+
+		m_BackBufferRTVs.Free();
 
 		ProcessAllDeferrals();
 
@@ -123,6 +123,7 @@ namespace Graphite
 
 		CommandRecordingContext* recordingContext = &m_RecordingContexts.at(m_RecordingContextsUsedThisFrame++);
 		recordingContext->Reset(frameResources.GetNextCommandAllocator());
+		recordingContext->SetDescriptorHeaps(m_ResourceHeap.GetHeap(), m_SamplerHeap.GetHeap());
 
 		m_OpenRecordingContexts++;
 		return recordingContext;

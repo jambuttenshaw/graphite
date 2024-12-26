@@ -21,6 +21,7 @@
 #include <array>
 #include <queue>
 #include <deque>
+#include <span>
 
 #include <optional>
 #include <mutex>
