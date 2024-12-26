@@ -9,6 +9,8 @@
 // Graphics
 #include "Graphite/RHI/CommandRecordingContext.h"
 #include "Graphite/RHI/GraphicsContext.h"
+#include "Graphite/RHI/Resources/Geometry.h"
+#include "Graphite/RHI/Resources/ResourceFactory.h"
 
 
 namespace Graphite
@@ -44,11 +46,32 @@ namespace Graphite
 			.MaxRecordingContextsPerFrame = std::thread::hardware_concurrency()
 		};
 		m_GraphicsContext = std::make_unique<GraphicsContext>(graphicsContextDesc);
+
+
+		// Create resources
+
+		// Define geometry
+		Vertex_Position vertices[] = {
+			{ { -0.5f, -0.5f, 0.0f } },
+			{ { 0.0f, 0.5f, 0.0f } },
+			{ { 0.5f, -0.5f, 0.0f } },
+		};
+		uint16_t indices[] = {
+			0, 1, 2
+		};
+
+		// Create vertex and index buffer
+		m_VertexBuffer = ResourceFactory::Get().CreateVertexBuffer(3, Vertex_Position::VertexInputLayout.GetVertexStride(), true);
+		m_IndexBuffer = ResourceFactory::Get().CreateIndexBuffer(3, sizeof(indices[0]), true);
+
+		m_VertexBuffer->CopyVertexData(3, vertices);
+		m_IndexBuffer->CopyIndexData(3, indices);
 	}
 
 	Application::~Application()
 	{
-		
+		m_VertexBuffer.reset();
+		m_IndexBuffer.reset();
 	}
 
 

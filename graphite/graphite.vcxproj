@@ -52,7 +52,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include;vendor/D3D12MemoryAllocator/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include;vendor/D3D12MemoryAllocator/include;vendor/glm/</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -73,7 +73,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include;vendor/D3D12MemoryAllocator/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include;vendor/D3D12MemoryAllocator/include;vendor/glm/</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -103,7 +103,9 @@
     <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h" />
     <ClInclude Include="src\Graphite\RHI\FrameResources.h" />
     <ClInclude Include="src\Graphite\RHI\Resources\Buffer.h" />
+    <ClInclude Include="src\Graphite\RHI\Resources\Geometry.h" />
     <ClInclude Include="src\Graphite\RHI\Resources\GPUResource.h" />
+    <ClInclude Include="src\Graphite\RHI\Resources\InputLayout.h" />
     <ClInclude Include="src\Graphite\RHI\Resources\ResourceFactory.h" />
     <ClInclude Include="src\Graphite\RHI\RHIExceptions.h" />
     <ClInclude Include="src\Graphite\RHI\GraphicsContext.h" />
@@ -121,7 +123,9 @@
     <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp" />
     <ClCompile Include="src\Graphite\RHI\FrameResources.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\Buffer.cpp" />
+    <ClCompile Include="src\Graphite\RHI\Resources\Geometry.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\GPUResource.cpp" />
+    <ClCompile Include="src\Graphite\RHI\Resources\InputLayout.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\ResourceFactory.cpp" />
     <ClCompile Include="src\Graphite\RHI\RHIExceptions.cpp" />
     <ClCompile Include="src\Graphite\RHI\GraphicsContext.cpp" />

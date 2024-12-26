@@ -41,3 +41,8 @@
 
 #include <wrl.h>
 #include <shellapi.h>
+
+
+// Maths library
+#include <glm/glm.hpp>
+// Math library extensions

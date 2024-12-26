@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Buffer.h"
+#include "Geometry.h"
 #include "Graphite/RHI/RHIExceptions.h"
 
 namespace D3D12MA
@@ -61,6 +62,12 @@ namespace Graphite
 		
 
 		std::unique_ptr<ReadbackBuffer> CreateReadbackBuffer(uint64_t width) const;
+
+
+		// Vertex / Index
+		std::unique_ptr<VertexBuffer> CreateVertexBuffer(uint32_t vertexCount, uint32_t vertexStride, bool dynamic) const;
+		std::unique_ptr<IndexBuffer> CreateIndexBuffer(uint32_t indexCount, uint32_t indexSizeInBytes, bool dynamic) const;
+
 
 		// Textures
 		void CreateTexture();

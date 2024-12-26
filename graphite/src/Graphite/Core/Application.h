@@ -9,6 +9,9 @@ namespace Graphite
 	class Window;
 	class GraphicsContext;
 
+	class VertexBuffer;
+	class IndexBuffer;
+
 	class Application
 	{
 	public:
@@ -35,6 +38,11 @@ namespace Graphite
 		bool m_Running = true;
 
 		std::unique_ptr<Window> m_Window;
+
+
+		// Application data
+		std::unique_ptr<VertexBuffer> m_VertexBuffer;
+		std::unique_ptr<IndexBuffer> m_IndexBuffer;
 	};
 
 	extern std::unique_ptr<Application> CreateApplication();

@@ -115,6 +115,37 @@ namespace Graphite
 	}
 
 
+	std::unique_ptr<VertexBuffer> ResourceFactory::CreateVertexBuffer(uint32_t vertexCount, uint32_t vertexStride, bool dynamic) const
+	{
+		auto heapType = (dynamic) ? D3D12_HEAP_TYPE_UPLOAD : D3D12_HEAP_TYPE_DEFAULT;
+		uint64_t width = static_cast<uint64_t>(vertexCount * vertexStride);
+
+		auto allocation = AllocateBuffer(
+			heapType,
+			width,
+			D3D12_RESOURCE_FLAG_NONE
+		);
+
+		auto buffer = std::unique_ptr<VertexBuffer>(new VertexBuffer(allocation, vertexCount, vertexStride, dynamic));
+		return std::move(buffer);
+	}
+
+	std::unique_ptr<IndexBuffer> ResourceFactory::CreateIndexBuffer(uint32_t indexCount, uint32_t indexSizeInBytes, bool dynamic) const
+	{
+		auto heapType = (dynamic) ? D3D12_HEAP_TYPE_UPLOAD : D3D12_HEAP_TYPE_DEFAULT;
+		uint64_t width = static_cast<uint64_t>(indexCount * indexSizeInBytes);
+
+		auto allocation = AllocateBuffer(
+			heapType,
+			width,
+			D3D12_RESOURCE_FLAG_NONE
+		);
+
+		auto buffer = std::unique_ptr<IndexBuffer>(new IndexBuffer(allocation, indexCount, indexSizeInBytes, dynamic));
+		return std::move(buffer);
+	}
+
+
 	// --- Helper Functions ---
 
 	uint64_t ResourceFactory::AlignSize(uint64_t size, uint64_t alignment)
