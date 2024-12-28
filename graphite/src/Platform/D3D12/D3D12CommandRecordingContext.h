@@ -29,13 +29,13 @@ namespace Graphite::D3D12
 
 		virtual void SetGraphicsPipelineState(const GraphicsPipeline& pipelineState) const override;
 
-		virtual void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const override;
+		virtual void SetPrimitiveTopology(GraphiteTopology topology) const override;
 
 		virtual void SetViewports(std::span<const Viewport> viewports) const override;
 		virtual void SetScissorRects(std::span<const Rectangle> rects) const override;
 
-		virtual void SetVertexBuffers(uint32_t startSlot, std::span<const D3D12_VERTEX_BUFFER_VIEW> vertexBuffers) const override;
-		virtual void SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW& indexBuffer) const override;
+		virtual void SetVertexBuffers(uint32_t startSlot, std::span<const VertexBufferView> vertexBuffers) const override;
+		virtual void SetIndexBuffer(const IndexBufferView& indexBuffer) const override;
 
 		virtual void DrawInstanced(uint32_t vertexCountPerInstance, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance) const override;
 		virtual void DrawIndexedInstanced(uint32_t indexCountPerInstance, uint32_t instanceCount, uint32_t startIndex, uint32_t startVertex, uint32_t startInstance) const override;

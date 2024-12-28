@@ -99,7 +99,7 @@ namespace Graphite::D3D12
 			static_cast<uint64_t>(elementCount * elementSize),
 			flags);
 
-		auto buffer = std::unique_ptr<StructuredBuffer>(new D3D12StructuredBuffer(allocation, elementCount, readOnly));
+		auto buffer = std::unique_ptr<StructuredBuffer>(new D3D12StructuredBuffer(allocation, elementCount, elementSize, readOnly));
 		return std::move(buffer);
 	}
 

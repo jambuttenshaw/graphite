@@ -51,7 +51,7 @@ namespace Graphite
 
 		// Getters
 		virtual GPUResourceType GetResourceType() const = 0;
-		virtual GraphiteGPUVirtualAddress GetResourceAddress() const = 0;
+		virtual GPUVirtualAddress GetResourceAddress() const = 0;
 
 		inline ResourceAccessFlags GetAccessFlags() const { return m_AccessFlags; }
 		inline bool CheckAccessFlags(ResourceAccessFlags flags) const { return m_AccessFlags & flags; }

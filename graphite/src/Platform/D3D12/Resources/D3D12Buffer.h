@@ -19,8 +19,8 @@ namespace Graphite::D3D12
 		DEFAULT_MOVE(D3D12UploadBuffer);
 
 		// Getters
-		inline virtual GraphiteGPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
-		virtual GraphiteGPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const override;
+		inline virtual GPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
+		virtual GPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const override;
 
 		// Populate buffer
 		virtual void CopyElement(uint32_t element, uint32_t instance, const void* data, uint64_t dataSize) const override;
@@ -44,8 +44,8 @@ namespace Graphite::D3D12
 		DEFAULT_MOVE(D3D12ConstantBuffer);
 
 		// Getters
-		inline virtual GraphiteGPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
-		virtual GraphiteGPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const override;
+		inline virtual GPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
+		virtual GPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const override;
 
 		// Populate buffer
 		virtual void CopyElement(uint32_t element, uint32_t instance, const void* data, uint64_t dataSize) const override;
@@ -72,7 +72,7 @@ namespace Graphite::D3D12
 		DELETE_COPY(D3D12ByteAddressBuffer);
 		DEFAULT_MOVE(D3D12ByteAddressBuffer);
 
-		inline virtual GraphiteGPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
+		inline virtual GPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
 	};
 
 
@@ -80,8 +80,8 @@ namespace Graphite::D3D12
 	{
 	protected:
 		friend class D3D12ResourceFactory;
-		D3D12StructuredBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, bool readOnly)
-			: StructuredBuffer(elementCount, readOnly)
+		D3D12StructuredBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, uint32_t elementSize, bool readOnly)
+			: StructuredBuffer(elementCount, elementSize, readOnly)
 			, D3D12Resource(allocation)
 		{
 		}
@@ -91,7 +91,7 @@ namespace Graphite::D3D12
 		DELETE_COPY(D3D12StructuredBuffer);
 		DEFAULT_MOVE(D3D12StructuredBuffer);
 
-		inline virtual GraphiteGPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
+		inline virtual GPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
 	};
 
 
@@ -109,6 +109,6 @@ namespace Graphite::D3D12
 		DELETE_COPY(D3D12ReadbackBuffer);
 		DEFAULT_MOVE(D3D12ReadbackBuffer);
 
-		inline virtual GraphiteGPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
+		inline virtual GPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
 	};
 }

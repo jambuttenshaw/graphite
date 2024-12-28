@@ -14,6 +14,7 @@
 
 #include "Graphite/RHI/Resources/ResourceFactory.h"
 #include "Graphite/RHI/Pipelines/GraphicsPipeline.h"
+#include "Graphite/RHI/Resources/ResourceViews.h"
 
 
 #include "Platform/D3D12/D3D12GraphicsContext.h"
@@ -135,23 +136,13 @@ namespace Graphite
 
 					recordingContext->SetGraphicsPipelineState(*m_GraphicsPipeline);
 
-					recordingContext->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+					recordingContext->SetPrimitiveTopology(GraphiteTopology_TRIANGLELIST);
 
-					D3D12_INDEX_BUFFER_VIEW ibv
-					{
-						.BufferLocation = m_IndexBuffer->GetResourceAddress(),
-						.SizeInBytes = m_IndexBuffer->GetElementCount() * m_IndexBuffer->GetElementStride(),
-						.Format = DXGI_FORMAT_R16_UINT
-					};
-					D3D12_VERTEX_BUFFER_VIEW vbv
-					{
-						.BufferLocation = m_VertexBuffer->GetResourceAddress(),
-						.SizeInBytes = m_VertexBuffer->GetElementCount() * m_VertexBuffer->GetElementStride(),
-						.StrideInBytes = m_VertexBuffer->GetElementStride()
-					};
+					VertexBufferView vbv = VertexBufferView::Create(*m_VertexBuffer);
+					IndexBufferView ibv = IndexBufferView::Create(*m_IndexBuffer);
 
+					recordingContext->SetVertexBuffers(0, { &vbv, 1});
 					recordingContext->SetIndexBuffer(ibv);
-					recordingContext->SetVertexBuffers(0, { &vbv, 1 });
 
 					recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
 

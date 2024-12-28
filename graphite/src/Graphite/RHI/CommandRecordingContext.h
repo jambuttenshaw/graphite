@@ -11,6 +11,9 @@ namespace Graphite
 	class DescriptorHeap;
 	class GraphicsPipeline;
 
+	struct VertexBufferView;
+	struct IndexBufferView;
+
 
 	class CommandRecordingContext
 	{
@@ -33,13 +36,13 @@ namespace Graphite
 
 		virtual void SetGraphicsPipelineState(const GraphicsPipeline& pipelineState) const = 0;
 
-		virtual void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const = 0;
+		virtual void SetPrimitiveTopology(GraphiteTopology topology) const = 0;
 
 		virtual void SetViewports(std::span<const Viewport> viewports) const = 0;
 		virtual void SetScissorRects(std::span<const Rectangle> rects) const = 0;
 
-		virtual void SetVertexBuffers(uint32_t startSlot, std::span<const D3D12_VERTEX_BUFFER_VIEW> vertexBuffers) const = 0;
-		virtual void SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW& indexBuffer) const = 0;
+		virtual void SetVertexBuffers(uint32_t startSlot, std::span<const VertexBufferView> vertexBuffers) const = 0;
+		virtual void SetIndexBuffer(const IndexBufferView& indexBuffer) const = 0;
 
 		virtual void DrawInstanced(uint32_t vertexCountPerInstance, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance) const = 0;
 		virtual void DrawIndexedInstanced(uint32_t indexCountPerInstance, uint32_t instanceCount, uint32_t startIndex, uint32_t startVertex, uint32_t startInstance) const = 0;

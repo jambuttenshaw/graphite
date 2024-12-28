@@ -1,10 +1,14 @@
 #include "graphite_pch.h"
 #include "D3D12CommandRecordingContext.h"
 
-#include "D3D12DescriptorHeap.h"
 #include "Graphite/Core/Assert.h"
-#include "Platform/D3D12/D3D12Exceptions.h"
+
+#include "D3D12Exceptions.h"
+#include "D3D12DescriptorHeap.h"
+#include "D3D12Types.h"
+
 #include "Pipelines/D3D12GraphicsPipeline.h"
+#include "Resources/D3D12ResourceViews.h"
 
 
 namespace Graphite::D3D12
@@ -74,10 +78,10 @@ namespace Graphite::D3D12
 		m_CommandList->SetGraphicsRootSignature(nativePipeline.GetRootSignature());
 	}
 
-	void D3D12CommandRecordingContext::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const
+	void D3D12CommandRecordingContext::SetPrimitiveTopology(GraphiteTopology topology) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->IASetPrimitiveTopology(topology);
+		m_CommandList->IASetPrimitiveTopology(GraphiteTopologyToD3D12Topology(topology));
 	}
 
 	void D3D12CommandRecordingContext::SetViewports(std::span<const Viewport> viewports) const
@@ -92,16 +96,24 @@ namespace Graphite::D3D12
 		m_CommandList->RSSetScissorRects(static_cast<UINT>(rects.size()), reinterpret_cast<const D3D12_RECT*>(rects.data()));
 	}
 
-	void D3D12CommandRecordingContext::SetVertexBuffers(uint32_t startSlot, std::span<const D3D12_VERTEX_BUFFER_VIEW> vertexBuffers) const
+	void D3D12CommandRecordingContext::SetVertexBuffers(uint32_t startSlot, std::span<const VertexBufferView> vertexBuffers) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->IASetVertexBuffers(startSlot, static_cast<UINT>(vertexBuffers.size()), vertexBuffers.data());
+
+		std::vector<D3D12_VERTEX_BUFFER_VIEW> vbs(vertexBuffers.size());
+		for (size_t i = 0; i < vbs.size(); i++)
+		{
+			vbs.at(i) = GraphiteVBVToD3D12VBV(vertexBuffers[i]);
+		}
+
+		m_CommandList->IASetVertexBuffers(startSlot, static_cast<UINT>(vbs.size()), vbs.data());
 	}
 
-	void D3D12CommandRecordingContext::SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW& indexBuffer) const
+	void D3D12CommandRecordingContext::SetIndexBuffer(const IndexBufferView& indexBuffer) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->IASetIndexBuffer(&indexBuffer);
+		D3D12_INDEX_BUFFER_VIEW ibv = GraphiteIBVToD3D12IBV(indexBuffer);
+		m_CommandList->IASetIndexBuffer(&ibv);
 	}
 
 	void D3D12CommandRecordingContext::DrawInstanced(uint32_t vertexCountPerInstance, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance) const

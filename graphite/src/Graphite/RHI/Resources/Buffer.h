@@ -29,7 +29,7 @@ namespace Graphite
 		inline uint32_t GetInstanceCount() const { return m_InstanceCount; }
 		inline uint32_t GetInstanceStride() const { return m_InstanceStride; }
 
-		virtual GraphiteGPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const = 0;
+		virtual GPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const = 0;
 
 		// Populate buffer
 		virtual void CopyElement(uint32_t element, uint32_t instance, const void* data, uint64_t dataSize) const = 0;
@@ -86,9 +86,10 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		StructuredBuffer(uint32_t elementCount, bool readOnly)
+		StructuredBuffer(uint32_t elementCount, uint32_t elementSize, bool readOnly)
 			: ByteAddressBuffer(readOnly)
 			, m_ElementCount(elementCount)
+			, m_ElementSize(elementSize)
 		{}
 	public:
 		virtual ~StructuredBuffer() = default;
@@ -97,10 +98,13 @@ namespace Graphite
 		DEFAULT_MOVE(StructuredBuffer);
 
 		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::StructuredBuffer; }
+
 		inline uint32_t GetElementCount() const { return m_ElementCount; }
+		inline uint32_t GetElementSize() const { return m_ElementSize; }
 
 	private:
 		uint32_t m_ElementCount;
+		uint32_t m_ElementSize;
 	};
 
 

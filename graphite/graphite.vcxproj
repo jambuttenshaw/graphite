@@ -101,6 +101,7 @@
     <ClInclude Include="src\Graphite\Layers\LayerStack.h" />
     <ClInclude Include="src\Graphite\graphite_pch.h" />
     <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h" />
+    <ClInclude Include="src\Graphite\RHI\Resources\ResourceViews.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12CommandQueue.h" />
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12CommandRecordingContext.h" />
@@ -124,6 +125,7 @@
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12Buffer.h" />
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12Resource.h" />
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12ResourceFactory.h" />
+    <ClInclude Include="src\Platform\D3D12\Resources\D3D12ResourceViews.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphite\Core\Application.cpp" />
@@ -133,6 +135,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Graphite\RHI\Resources\ResourceViews.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12CommandQueue.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12CommandRecordingContext.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeap.cpp" />
@@ -153,6 +156,7 @@
     <ClCompile Include="src\Platform\D3D12\Resources\D3D12Buffer.cpp" />
     <ClCompile Include="src\Platform\D3D12\Resources\D3D12Resource.cpp" />
     <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceFactory.cpp" />
+    <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceViews.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\shaders.hlsl">

@@ -23,7 +23,7 @@ namespace Graphite::D3D12
 		}
 	}
 
-	GraphiteGPUVirtualAddress D3D12UploadBuffer::GetAddressOfElement(uint32_t element, uint32_t instance) const
+	GPUVirtualAddress D3D12UploadBuffer::GetAddressOfElement(uint32_t element, uint32_t instance) const
 	{
 		return GetResourceAddress() + GetElementOffset(element, instance);
 	}
@@ -56,7 +56,7 @@ namespace Graphite::D3D12
 		}
 	}
 
-	GraphiteGPUVirtualAddress D3D12ConstantBuffer::GetAddressOfElement(uint32_t element, uint32_t instance) const
+	GPUVirtualAddress D3D12ConstantBuffer::GetAddressOfElement(uint32_t element, uint32_t instance) const
 	{
 		return GetResourceAddress() + GetElementOffset(element, instance);
 	}
