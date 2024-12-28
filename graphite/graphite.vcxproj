@@ -97,6 +97,8 @@
     <ClInclude Include="src\Graphite\Events\MouseEvent.h" />
     <ClInclude Include="src\Graphite\Events\WindowEvent.h" />
     <ClInclude Include="src\Graphite\Input\KeyCodes.h" />
+    <ClInclude Include="src\Graphite\Layers\Layer.h" />
+    <ClInclude Include="src\Graphite\Layers\LayerStack.h" />
     <ClInclude Include="src\Graphite\pch.h" />
     <ClInclude Include="src\Graphite\RHI\CommandQueue.h" />
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
@@ -117,6 +119,7 @@
   <ItemGroup>
     <ClCompile Include="src\Graphite\Core\Application.cpp" />
     <ClCompile Include="src\Graphite\Core\Log.cpp" />
+    <ClCompile Include="src\Graphite\Layers\LayerStack.cpp" />
     <ClCompile Include="src\Graphite\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

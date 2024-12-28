@@ -50,7 +50,6 @@ namespace Graphite
 		};
 		m_GraphicsContext = std::make_unique<GraphicsContext>(graphicsContextDesc);
 
-
 		// Create resources
 
 		// Define geometry
@@ -105,7 +104,10 @@ namespace Graphite
 
 
 			// Update frame
-
+			for (auto& layer : m_LayerStack)
+			{
+				layer->OnUpdate();
+			}
 
 			// Render frame
 			{
@@ -116,7 +118,7 @@ namespace Graphite
 					CommandRecordingContext* recordingContext = m_GraphicsContext->AcquireRecordingContext();
 
 					// Set viewport
-					D3D12_VIEWPORT viewports = {0.0f, 0.0f, static_cast<float>(m_Window->GetWidth()), static_cast<float>(m_Window->GetHeight())};
+					D3D12_VIEWPORT viewports = { 0.0f, 0.0f, static_cast<float>(m_Window->GetWidth()), static_cast<float>(m_Window->GetHeight()) };
 					recordingContext->SetViewports({ &viewports, 1 });
 					D3D12_RECT scissorRect = { 0, 0, static_cast<LONG>(m_Window->GetWidth()), static_cast<LONG>(m_Window->GetHeight()) };
 					recordingContext->SetScissorRects({ &scissorRect, 1 });
@@ -153,6 +155,15 @@ namespace Graphite
 		return 0;
 	}
 
+	Layer* Application::PushLayer(std::unique_ptr<Layer> layer)
+	{
+		return m_LayerStack.PushLayer(std::move(layer));
+	}
+
+	Layer* Application::PushOverlay(std::unique_ptr<Layer> layer)
+	{
+		return m_LayerStack.PushOverlay(std::move(layer));
+	}
 
 	void Application::OnEvent(Event& event)
 	{
@@ -172,6 +183,17 @@ namespace Graphite
 				this->m_GraphicsContext->ResizeBackBuffer(event.GetWidth(), event.GetHeight());
 				return true;
 			});
+
+
+		// Dispatch events to layers in reverse order - to be received by overlays first
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
+		{
+			(*--it)->OnEvent(event);
+			if (event.IsHandled())
+			{
+				break;
+			}
+		}
 	}
 
 }

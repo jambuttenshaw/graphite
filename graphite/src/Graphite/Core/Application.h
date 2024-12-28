@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Graphite/Events/Event.h"
+#include "Graphite/Layers/LayerStack.h"
 
 
 namespace Graphite
@@ -25,6 +26,10 @@ namespace Graphite
 
 		GRAPHITE_API int Run();
 
+		// Manipulate layer stack
+		GRAPHITE_API Layer* PushLayer(std::unique_ptr<Layer> layer);
+		GRAPHITE_API Layer* PushOverlay(std::unique_ptr<Layer> layer);
+
 	protected:
 		// Interface for clients to implement
 		GRAPHITE_API virtual void OnInit() {}
@@ -39,14 +44,13 @@ namespace Graphite
 	private:
 		bool m_Running = true;
 
+		LayerStack m_LayerStack;
 		std::unique_ptr<Window> m_Window;
 
+		std::unique_ptr<Graphite::VertexBuffer> m_VertexBuffer;
+		std::unique_ptr<Graphite::IndexBuffer> m_IndexBuffer;
 
-		// Application data
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
-
-		std::unique_ptr<GraphicsPipeline> m_GraphicsPipeline;
+		std::unique_ptr<Graphite::GraphicsPipeline> m_GraphicsPipeline;
 	};
 
 	extern std::unique_ptr<Application> CreateApplication();

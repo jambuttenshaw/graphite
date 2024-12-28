@@ -1,14 +1,29 @@
 #include "pch.h"
 
+
+class GameLayer : public Graphite::Layer
+{
+public:
+
+	virtual void OnAttach() override
+	{
+		// Setup
+
+	}
+
+	virtual void OnUpdate() override
+	{
+		
+	}
+};
+
 class SampleApplication : public Graphite::Application
 {
 public:
 
 	virtual void OnInit() override
 	{
-		APP_LOG_INFO("Client app is running!");
-
-		Graphite::Application::Run();
+		(void)PushLayer(std::make_unique<GameLayer>());
 	}
 };
 
