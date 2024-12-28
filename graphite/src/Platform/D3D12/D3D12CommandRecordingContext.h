@@ -31,8 +31,8 @@ namespace Graphite::D3D12
 
 		virtual void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const override;
 
-		virtual void SetViewports(std::span<const D3D12_VIEWPORT> viewports) const override;
-		virtual void SetScissorRects(std::span<const D3D12_RECT> rects) const override;
+		virtual void SetViewports(std::span<const Viewport> viewports) const override;
+		virtual void SetScissorRects(std::span<const Rectangle> rects) const override;
 
 		virtual void SetVertexBuffers(uint32_t startSlot, std::span<const D3D12_VERTEX_BUFFER_VIEW> vertexBuffers) const override;
 		virtual void SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW& indexBuffer) const override;

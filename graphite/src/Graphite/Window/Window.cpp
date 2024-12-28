@@ -64,6 +64,29 @@ namespace Graphite
 		
 	}
 
+    Viewport Window::GetDefaultViewport() const
+    {
+        return {
+            0.0f,
+        	0.0f,
+            static_cast<float>(m_WindowData.Width),
+            static_cast<float>(m_WindowData.Height),
+            0.0f,
+        	1.0f
+        };
+    }
+
+    Rectangle Window::GetDefaultRectangle() const
+    {
+        return {
+            0,
+            0,
+            static_cast<int32_t>(m_WindowData.Width),
+            static_cast<int32_t>(m_WindowData.Height),
+        };
+    }
+
+
     void Window::SetEventCallback(const EventCallbackFn& eventCallback)
     {
         m_WindowData.EventCallbackFn = eventCallback;

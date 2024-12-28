@@ -23,4 +23,27 @@ namespace Graphite
 		GraphiteDescriptorHeap_SAMPLER
 	};
 
+
+	struct Viewport
+	{
+		float Left;
+		float Top;
+
+		float Width;
+		float Height;
+
+		float MinDepth;
+		float MaxDepth;
+	};
+
+	// General purpose rectangle definition
+	struct Rectangle
+	{
+		int32_t Left;
+		int32_t Top;
+
+		int32_t Width;
+		int32_t Height;
+	};
+
 }

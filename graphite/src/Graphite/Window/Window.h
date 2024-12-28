@@ -2,6 +2,9 @@
 #include "Graphite/Core/Core.h"
 #include "Graphite/Events/Event.h"
 
+// TODO: Move types used by Window into a more general header
+#include "Graphite/RHI/RHITypes.h"
+
 
 namespace Graphite
 {
@@ -34,6 +37,9 @@ namespace Graphite
 
 		inline uint32_t GetWidth() const { return m_WindowData.Width; }
 		inline uint32_t GetHeight() const { return m_WindowData.Height; }
+
+		Viewport GetDefaultViewport() const;
+		Rectangle GetDefaultRectangle() const;
 
 		inline HWND GetHandle() const { return m_HWND; }
 

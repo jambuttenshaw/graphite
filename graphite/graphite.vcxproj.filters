@@ -149,9 +149,6 @@
     <ClCompile Include="src\Platform\D3D12\D3D12FrameResources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphite\RHI\CommandRecordingContext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

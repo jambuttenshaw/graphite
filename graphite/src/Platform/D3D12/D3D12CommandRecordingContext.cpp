@@ -80,16 +80,16 @@ namespace Graphite::D3D12
 		m_CommandList->IASetPrimitiveTopology(topology);
 	}
 
-	void D3D12CommandRecordingContext::SetViewports(std::span<const D3D12_VIEWPORT> viewports) const
+	void D3D12CommandRecordingContext::SetViewports(std::span<const Viewport> viewports) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->RSSetViewports(static_cast<UINT>(viewports.size()), viewports.data());
+		m_CommandList->RSSetViewports(static_cast<UINT>(viewports.size()), reinterpret_cast<const D3D12_VIEWPORT*>(viewports.data()));
 	}
 
-	void D3D12CommandRecordingContext::SetScissorRects(std::span<const D3D12_RECT> rects) const
+	void D3D12CommandRecordingContext::SetScissorRects(std::span<const Rectangle> rects) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->RSSetScissorRects(static_cast<UINT>(rects.size()), rects.data());
+		m_CommandList->RSSetScissorRects(static_cast<UINT>(rects.size()), reinterpret_cast<const D3D12_RECT*>(rects.data()));
 	}
 
 	void D3D12CommandRecordingContext::SetVertexBuffers(uint32_t startSlot, std::span<const D3D12_VERTEX_BUFFER_VIEW> vertexBuffers) const

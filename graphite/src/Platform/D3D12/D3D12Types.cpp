@@ -35,6 +35,19 @@ namespace Graphite::D3D12
 		return D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;
 	}
 
+	D3D12_VIEWPORT GraphiteViewportToD3D12Viewport(const Viewport& viewport)
+	{
+		return {
+			.TopLeftX = viewport.Left,
+			.TopLeftY = viewport.Top,
+			.Width = viewport.Width,
+			.Height = viewport.Height,
+			.MinDepth = viewport.MinDepth,
+			.MaxDepth = viewport.MaxDepth
+		};
+	}
+
+
 
 	static DXGI_FORMAT NumChannelsToFormat(uint32_t numChannels)
 	{

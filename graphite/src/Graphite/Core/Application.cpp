@@ -120,9 +120,10 @@ namespace Graphite
 					CommandRecordingContext* recordingContext = m_GraphicsContext->AcquireRecordingContext();
 
 					// Set viewport
-					D3D12_VIEWPORT viewports = { 0.0f, 0.0f, static_cast<float>(m_Window->GetWidth()), static_cast<float>(m_Window->GetHeight()) };
+					Viewport viewports = m_Window->GetDefaultViewport();
 					recordingContext->SetViewports({ &viewports, 1 });
-					D3D12_RECT scissorRect = { 0, 0, static_cast<LONG>(m_Window->GetWidth()), static_cast<LONG>(m_Window->GetHeight()) };
+
+					Rectangle scissorRect = m_Window->GetDefaultRectangle();
 					recordingContext->SetScissorRects({ &scissorRect, 1 });
 
 					// Record commands

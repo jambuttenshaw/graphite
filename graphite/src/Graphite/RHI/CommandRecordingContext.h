@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Graphite/Core/Core.h"
+#include "RHITypes.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -34,8 +35,8 @@ namespace Graphite
 
 		virtual void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const = 0;
 
-		virtual void SetViewports(std::span<const D3D12_VIEWPORT> viewports) const = 0;
-		virtual void SetScissorRects(std::span<const D3D12_RECT> rects) const = 0;
+		virtual void SetViewports(std::span<const Viewport> viewports) const = 0;
+		virtual void SetScissorRects(std::span<const Rectangle> rects) const = 0;
 
 		virtual void SetVertexBuffers(uint32_t startSlot, std::span<const D3D12_VERTEX_BUFFER_VIEW> vertexBuffers) const = 0;
 		virtual void SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW& indexBuffer) const = 0;
