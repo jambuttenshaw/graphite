@@ -13,7 +13,7 @@
 #include "Graphite/RHI/Resources/Geometry.h"
 
 #include "Graphite/RHI/Resources/ResourceFactory.h"
-#include "Graphite/RHI/Pipelines/PipelineFactory.h"
+#include "Graphite/RHI/Pipelines/GraphicsPipeline.h"
 
 
 #include "Platform/D3D12/D3D12GraphicsContext.h"
@@ -85,7 +85,7 @@ namespace Graphite
 			}
 		};
 
-		m_GraphicsPipeline = PipelineFactory::Get().CreateGraphicsPipeline(psoDesc);
+		m_GraphicsPipeline = GraphicsPipeline::Create(*m_GraphicsContext, psoDesc);
 	}
 
 	Application::~Application()
@@ -132,8 +132,7 @@ namespace Graphite
 
 					recordingContext->SetRenderTargets({ &rtv, 1 }, std::nullopt);
 
-					recordingContext->SetPipelineState(m_GraphicsPipeline->GetPipelineState());
-					recordingContext->SetGraphicsRootSignature(m_GraphicsPipeline->GetRootSignature());
+					recordingContext->SetGraphicsPipelineState(*m_GraphicsPipeline);
 
 					recordingContext->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

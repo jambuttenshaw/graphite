@@ -8,6 +8,7 @@ using Microsoft::WRL::ComPtr;
 namespace Graphite
 {
 	class DescriptorHeap;
+	class GraphicsPipeline;
 
 
 	class CommandRecordingContext
@@ -29,8 +30,7 @@ namespace Graphite
 
 		virtual void SetRenderTargets(std::span<const D3D12_CPU_DESCRIPTOR_HANDLE> rtvRange, std::optional<D3D12_CPU_DESCRIPTOR_HANDLE> dsv) const = 0;
 
-		virtual void SetPipelineState(ID3D12PipelineState* pipelineState) const = 0;
-		virtual void SetGraphicsRootSignature(ID3D12RootSignature* rootSignature) const = 0;
+		virtual void SetGraphicsPipelineState(const GraphicsPipeline& pipelineState) const = 0;
 
 		virtual void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const = 0;
 

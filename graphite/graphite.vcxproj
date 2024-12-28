@@ -107,7 +107,6 @@
     <ClInclude Include="src\Platform\D3D12\D3D12DescriptorHeap.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12FrameResources.h" />
     <ClInclude Include="src\Graphite\RHI\Pipelines\GraphicsPipeline.h" />
-    <ClInclude Include="src\Graphite\RHI\Pipelines\PipelineFactory.h" />
     <ClInclude Include="src\Graphite\RHI\Pipelines\ShaderCompiler.h" />
     <ClInclude Include="src\Graphite\RHI\Resources\Buffer.h" />
     <ClInclude Include="src\Graphite\RHI\Resources\Geometry.h" />
@@ -120,6 +119,8 @@
     <ClInclude Include="src\Graphite\Window\Window.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GraphicsContext.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12Types.h" />
+    <ClInclude Include="src\Platform\D3D12\Pipelines\D3D12GraphicsPipeline.h" />
+    <ClInclude Include="src\Platform\D3D12\Pipelines\D3D12ShaderCompiler.h" />
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12Buffer.h" />
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12Resource.h" />
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12ResourceFactory.h" />
@@ -138,7 +139,6 @@
     <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeap.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12FrameResources.cpp" />
     <ClCompile Include="src\Graphite\RHI\Pipelines\GraphicsPipeline.cpp" />
-    <ClCompile Include="src\Graphite\RHI\Pipelines\PipelineFactory.cpp" />
     <ClCompile Include="src\Graphite\RHI\Pipelines\ShaderCompiler.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\Buffer.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\Geometry.cpp" />
@@ -150,6 +150,8 @@
     <ClCompile Include="src\Graphite\Window\Window.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GraphicsContext.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12Types.cpp" />
+    <ClCompile Include="src\Platform\D3D12\Pipelines\D3D12GraphicsPipeline.cpp" />
+    <ClCompile Include="src\Platform\D3D12\Pipelines\D3D12ShaderCompiler.cpp" />
     <ClCompile Include="src\Platform\D3D12\Resources\D3D12Buffer.cpp" />
     <ClCompile Include="src\Platform\D3D12\Resources\D3D12Resource.cpp" />
     <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceFactory.cpp" />

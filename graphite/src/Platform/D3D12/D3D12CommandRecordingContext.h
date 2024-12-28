@@ -27,8 +27,7 @@ namespace Graphite::D3D12
 
 		virtual void SetRenderTargets(std::span<const D3D12_CPU_DESCRIPTOR_HANDLE> rtvRange, std::optional<D3D12_CPU_DESCRIPTOR_HANDLE> dsv) const override;
 
-		virtual void SetPipelineState(ID3D12PipelineState* pipelineState) const override;
-		virtual void SetGraphicsRootSignature(ID3D12RootSignature* rootSignature) const override;
+		virtual void SetGraphicsPipelineState(const GraphicsPipeline& pipelineState) const override;
 
 		virtual void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const override;
 

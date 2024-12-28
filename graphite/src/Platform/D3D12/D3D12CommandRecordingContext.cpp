@@ -4,6 +4,7 @@
 #include "D3D12DescriptorHeap.h"
 #include "Graphite/Core/Assert.h"
 #include "Graphite/RHI/RHIExceptions.h"
+#include "Pipelines/D3D12GraphicsPipeline.h"
 
 
 namespace Graphite::D3D12
@@ -65,16 +66,12 @@ namespace Graphite::D3D12
 		m_CommandList->OMSetRenderTargets(static_cast<UINT>(rtvRange.size()), rtvRange.data(), true, dsv.has_value() ? &dsv.value() : nullptr);
 	}
 
-	void D3D12CommandRecordingContext::SetPipelineState(ID3D12PipelineState* pipelineState) const
+	void D3D12CommandRecordingContext::SetGraphicsPipelineState(const GraphicsPipeline& pipelineState) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->SetPipelineState(pipelineState);
-	}
-
-	void D3D12CommandRecordingContext::SetGraphicsRootSignature(ID3D12RootSignature* rootSignature) const
-	{
-		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->SetGraphicsRootSignature(rootSignature);
+		const D3D12GraphicsPipeline& nativePipeline = dynamic_cast<const D3D12GraphicsPipeline&>(pipelineState);
+		m_CommandList->SetPipelineState(nativePipeline.GetPipelineState());
+		m_CommandList->SetGraphicsRootSignature(nativePipeline.GetRootSignature());
 	}
 
 	void D3D12CommandRecordingContext::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const

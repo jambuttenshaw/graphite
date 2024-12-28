@@ -38,50 +38,56 @@ namespace Graphite
 	public:
 		// Default constructor creates a null bytecode
 		ShaderBytecode();
-		ShaderBytecode(IDxcBlob* shaderBlob);
+		ShaderBytecode(uint64_t bufferSize, void* bufferPointer);
 
-		~ShaderBytecode() = default;
+		virtual ~ShaderBytecode() = default;
 
 		DEFAULT_COPY(ShaderBytecode);
 		DEFAULT_MOVE(ShaderBytecode);
 
-		inline bool IsValid() const { return m_Bytecode.pShaderBytecode != nullptr; }
-		inline D3D12_SHADER_BYTECODE GetBytecode() const { return m_Bytecode; }
+		bool IsValid() const { return m_BufferPointer != nullptr; };
 
-	public:
-		// Null bytecode object when a shader type is not desired in a pipeline
-		static ShaderBytecode NullShaderBytecode;
+		uint64_t GetBufferSize() const { return m_BufferSize; }
+		void* GetBufferPointer() const { return m_BufferPointer; }
 
-	private:
-		ComPtr<IDxcBlob> m_Blob;
-		D3D12_SHADER_BYTECODE m_Bytecode;
+	protected:
+		uint64_t m_BufferSize;
+		void* m_BufferPointer;
 	};
 
 
 	class ShaderCompiler
 	{
+	protected:
 		// Lazy initialized singleton
-		ShaderCompiler();
+		ShaderCompiler() = default;
 	public:
+		virtual ~ShaderCompiler() = default;
+
+		DELETE_COPY(ShaderCompiler);
+		DEFAULT_MOVE(ShaderCompiler);
+
+	public:
+
+		// Static access to compiler
 		static ShaderCompiler& Get();
 
+	public:
 		// Shader compiler interface
-		inline ShaderBytecode CompileFromFile(
+		inline bool CompileFromFile(
 			const ShaderDescription& shader,
-			ShaderType target) const
+			ShaderType target,
+			std::unique_ptr<ShaderBytecode>& outBytecode) const
 		{
-			return CompileFromFile(shader.FilePath, shader.EntryPoint, target);
+			return CompileFromFile(shader.FilePath, shader.EntryPoint, target, outBytecode);
 		}
-		ShaderBytecode CompileFromFile(
+		virtual bool CompileFromFile(
 			const wchar_t* file,
 			const wchar_t* entryPoint,
-			ShaderType target) const;
+			ShaderType target,
+			std::unique_ptr<ShaderBytecode>& outBytecode) const = 0;
 
-	private:
-		ComPtr<IDxcUtils> m_Utils;
-		ComPtr<IDxcCompiler3> m_Compiler;
-		ComPtr<IDxcIncludeHandler> m_IncludeHandler;
-
+	protected:
 		uint32_t m_ShaderModelMajor = 6;
 		uint32_t m_ShaderModelMinor = 5;
 	};

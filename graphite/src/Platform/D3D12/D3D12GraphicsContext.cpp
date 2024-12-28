@@ -4,7 +4,6 @@
 #include "D3D12Types.h"
 #include "Graphite/Core/Assert.h"
 #include "Graphite/RHI/CommandRecordingContext.h"
-#include "Graphite/RHI/Pipelines/PipelineFactory.h"
 #include "Graphite/RHI/Resources/ResourceFactory.h"
 
 #include "D3D12CommandQueue.h"
@@ -33,7 +32,6 @@ namespace Graphite::D3D12
 		CreateDevice();
 
 		ResourceFactory::CreateResourceFactory(*this);
-		PipelineFactory::Get().Initialize(m_Device.Get());
 
 		CreateCommandQueues();
 		CreateSwapChain(contextDesc.WindowHandle);
