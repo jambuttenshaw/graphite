@@ -27,7 +27,7 @@
     <ClInclude Include="src\Graphite\Core\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\pch.h">
+    <ClInclude Include="src\Graphite\graphite_pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphite\Core\Log.h">
@@ -107,7 +107,7 @@
     <ClCompile Include="src\Graphite\Core\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphite\pch.cpp">
+    <ClCompile Include="src\Graphite\graphite_pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphite\Core\Log.cpp">

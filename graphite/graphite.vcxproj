@@ -51,7 +51,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>graphite_pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include;vendor/D3D12MemoryAllocator/include;vendor/glm/</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -72,7 +72,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>graphite_pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>src/;vendor/;vendor/spdlog/include/;vendor/DirectX-Headers/include;vendor/D3D12MemoryAllocator/include;vendor/glm/</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -99,7 +99,7 @@
     <ClInclude Include="src\Graphite\Input\KeyCodes.h" />
     <ClInclude Include="src\Graphite\Layers\Layer.h" />
     <ClInclude Include="src\Graphite\Layers\LayerStack.h" />
-    <ClInclude Include="src\Graphite\pch.h" />
+    <ClInclude Include="src\Graphite\graphite_pch.h" />
     <ClInclude Include="src\Graphite\RHI\CommandQueue.h" />
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
     <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h" />
@@ -120,7 +120,7 @@
     <ClCompile Include="src\Graphite\Core\Application.cpp" />
     <ClCompile Include="src\Graphite\Core\Log.cpp" />
     <ClCompile Include="src\Graphite\Layers\LayerStack.cpp" />
-    <ClCompile Include="src\Graphite\pch.cpp">
+    <ClCompile Include="src\Graphite\graphite_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>

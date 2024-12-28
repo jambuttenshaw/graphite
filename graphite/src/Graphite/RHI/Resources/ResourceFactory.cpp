@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "graphite_pch.h"
 #include "ResourceFactory.h"
 
 #include "Graphite/RHI/RHIExceptions.h"

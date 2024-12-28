@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "graphite_pch.h"
 #include "ShaderCompiler.h"
 
 #include "Graphite/Core/Log.h"
