@@ -1,0 +1,23 @@
+#pragma once
+
+
+namespace Graphite
+{
+	// Common RHI types
+	// To translate from API-specific types to Graphite-specific types
+
+	enum GRAPHITE_FORMAT
+	{
+		GRAPHITE_FORMAT_R8G8B8A8_UNORM
+	};
+
+
+	enum GRAPHITE_DESCRIPTOR_HEAP_TYPES
+	{
+		GRAPHITE_DESCRIPTOR_HEAP_RTV,
+		GRAPHITE_DESCRIPTOR_HEAP_DSV,
+		GRAPHITE_DESCRIPTOR_HEAP_RESOURCE,
+		GRAPHITE_DESCRIPTOR_HEAP_SAMPLER
+	};
+
+}

@@ -4,17 +4,17 @@
 
 using Microsoft::WRL::ComPtr;
 
-namespace Graphite
+namespace Graphite::D3D12
 {
 
-	class CommandQueue
+	class D3D12CommandQueue
 	{
 	public:
-		CommandQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE type, const wchar_t* name = nullptr);
-		~CommandQueue();
+		D3D12CommandQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE type, const wchar_t* name = nullptr);
+		~D3D12CommandQueue();
 
-		DELETE_COPY(CommandQueue)
-		DEFAULT_MOVE(CommandQueue)
+		DELETE_COPY(D3D12CommandQueue)
+		DEFAULT_MOVE(D3D12CommandQueue)
 
 		// Execute work
 		UINT64 ExecuteCommandLists(UINT count, ID3D12CommandList** ppCommandLists);
@@ -22,8 +22,8 @@ namespace Graphite
 
 		// GPU wait
 		void InsertWait(UINT64 fenceValue) const;
-		void InsertWaitForQueueFence(const CommandQueue* otherQueue, UINT64 fenceValue) const;
-		void InsertWaitForQueue(const CommandQueue* otherQueue) const;
+		void InsertWaitForQueueFence(const D3D12CommandQueue* otherQueue, UINT64 fenceValue) const;
+		void InsertWaitForQueue(const D3D12CommandQueue* otherQueue) const;
 
 		// CPU wait
 		void WaitForFenceCPUBlocking(UINT64 fenceValue);

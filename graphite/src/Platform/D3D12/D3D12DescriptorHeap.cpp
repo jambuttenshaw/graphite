@@ -1,18 +1,17 @@
 #include "graphite_pch.h"
-#include "DescriptorHeap.h"
+#include "D3D12DescriptorHeap.h"
 
-#include "RHIExceptions.h"
 #include "Graphite/Core/Assert.h"
+#include "Graphite/RHI/RHIExceptions.h"
+#include "Graphite/RHI/GraphicsContext.h"
 
-#include "GraphicsContext.h"
 
-
-namespace Graphite
+namespace Graphite::D3D12
 {
 	// DescriptorAllocation
 
 
-	DescriptorAllocation::DescriptorAllocation(DescriptorHeap* heap, UINT index, UINT count, bool cpuOnly)
+	D3D12DescriptorAllocation::D3D12DescriptorAllocation(D3D12DescriptorHeap* heap, uint32_t index, uint32_t count, bool cpuOnly)
 		: m_Heap(heap)
 		, m_Index(index)
 		, m_Count(count)
@@ -21,7 +20,7 @@ namespace Graphite
 	{
 	}
 
-	DescriptorAllocation::~DescriptorAllocation()
+	D3D12DescriptorAllocation::~D3D12DescriptorAllocation()
 	{
 		if (IsValid())
 		{
@@ -30,7 +29,7 @@ namespace Graphite
 	}
 
 
-	DescriptorAllocation::DescriptorAllocation(DescriptorAllocation&& other) noexcept
+	D3D12DescriptorAllocation::D3D12DescriptorAllocation(D3D12DescriptorAllocation&& other) noexcept
 	{
 		m_Heap = std::move(other.m_Heap);
 		m_Index = std::move(other.m_Index);
@@ -43,7 +42,7 @@ namespace Graphite
 		other.Reset();
 	}
 
-	DescriptorAllocation& DescriptorAllocation::operator=(DescriptorAllocation&& other) noexcept
+	D3D12DescriptorAllocation& D3D12DescriptorAllocation::operator=(D3D12DescriptorAllocation&& other) noexcept
 	{
 		m_Heap = std::move(other.m_Heap);
 		m_Index = std::move(other.m_Index);
@@ -59,7 +58,7 @@ namespace Graphite
 	}
 
 
-	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorAllocation::GetCPUHandle(UINT index) const
+	D3D12_CPU_DESCRIPTOR_HANDLE D3D12DescriptorAllocation::GetCPUHandle(uint32_t index) const
 	{
 		GRAPHITE_ASSERT(m_IsValid, "Cannot get handle on an invalid allocation");
 		GRAPHITE_ASSERT(index < m_Count, "Invalid descriptor index");
@@ -68,7 +67,7 @@ namespace Graphite
 		return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_Heap->GetHeap()->GetCPUDescriptorHandleForHeapStart(), offset, m_Heap->GetDescriptorSize());
 	}
 
-	D3D12_GPU_DESCRIPTOR_HANDLE DescriptorAllocation::GetGPUHandle(UINT index) const
+	D3D12_GPU_DESCRIPTOR_HANDLE D3D12DescriptorAllocation::GetGPUHandle(uint32_t index) const
 	{
 		GRAPHITE_ASSERT(m_IsValid, "Cannot get handle on an invalid allocation");
 		GRAPHITE_ASSERT(!m_CPUOnly, "Cannot get GPU handle on a cpu-only descriptor");
@@ -78,12 +77,12 @@ namespace Graphite
 		return CD3DX12_GPU_DESCRIPTOR_HANDLE(m_Heap->GetHeap()->GetGPUDescriptorHandleForHeapStart(), offset, m_Heap->GetDescriptorSize());
 	}
 
-	ID3D12DescriptorHeap* DescriptorAllocation::GetHeap() const
+	ID3D12DescriptorHeap* D3D12DescriptorAllocation::GetHeap() const
 	{
 		return m_Heap->GetHeap();
 	}
 
-	void DescriptorAllocation::Reset()
+	void D3D12DescriptorAllocation::Reset()
 	{
 		m_Heap = nullptr;
 		m_Index = 0;
@@ -94,7 +93,7 @@ namespace Graphite
 		m_IsValid = false;
 	}
 
-	void DescriptorAllocation::Free()
+	void D3D12DescriptorAllocation::Free()
 	{
 		if (m_IsValid && m_Heap)
 		{
@@ -105,7 +104,7 @@ namespace Graphite
 
 	// DescriptorHeap
 
-	void DescriptorHeap::Init(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, UINT capacity, bool cpuOnly, const wchar_t* name)
+	D3D12DescriptorHeap::D3D12DescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity, bool cpuOnly, const wchar_t* name)
 	{
 		m_Type = type;
 		m_Capacity = capacity;
@@ -137,7 +136,7 @@ namespace Graphite
 		m_DeferredFrees.resize(GraphicsContext::GetBackBufferCount());
 	}
 
-	DescriptorHeap::~DescriptorHeap()
+	D3D12DescriptorHeap::~D3D12DescriptorHeap()
 	{
 		GRAPHITE_ASSERT(m_Count == 0, "Don't destroy allocators that still have memory allocated!!!");
 
@@ -147,7 +146,7 @@ namespace Graphite
 		// TODO: defer release of the heap (to make sure GPU is idle when this is released)
 	}
 
-	DescriptorAllocation DescriptorHeap::Allocate(UINT countToAlloc)
+	D3D12DescriptorAllocation D3D12DescriptorHeap::Allocate(uint32_t countToAlloc)
 	{
 		GRAPHITE_ASSERT(countToAlloc > 0, "Invalid quantity of descriptors");
 
@@ -168,11 +167,11 @@ namespace Graphite
 		}
 
 
-		const UINT allocIndex = freeBlockIt->first;
+		const uint32_t allocIndex = freeBlockIt->first;
 
 		// Update the free blocks to reflect the changes
-		UINT newFreeIndex = allocIndex + countToAlloc;
-		UINT newFreeSize = freeBlockIt->second - countToAlloc;
+		uint32_t newFreeIndex = allocIndex + countToAlloc;
+		uint32_t newFreeSize = freeBlockIt->second - countToAlloc;
 		m_FreeBlocks.erase(freeBlockIt);
 		// If there is still empty space insert it into the free blocks
 		if (newFreeSize > 0)
@@ -182,10 +181,10 @@ namespace Graphite
 
 		m_Count += countToAlloc;
 
-		return DescriptorAllocation{ this, allocIndex, countToAlloc, m_CPUOnly };
+		return D3D12DescriptorAllocation{ this, allocIndex, countToAlloc, m_CPUOnly };
 	}
 
-	void DescriptorHeap::Free(DescriptorAllocation& allocation)
+	void D3D12DescriptorHeap::Free(D3D12DescriptorAllocation& allocation)
 	{
 		if (!allocation.IsValid())
 			return;
@@ -197,7 +196,7 @@ namespace Graphite
 		allocation.Reset();
 	}
 
-	void DescriptorHeap::ProcessDeferredFree(UINT frameIndex)
+	void D3D12DescriptorHeap::ProcessDeferredFrees(uint32_t frameIndex)
 	{
 		// TODO: add validation
 

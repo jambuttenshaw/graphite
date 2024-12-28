@@ -6,19 +6,19 @@
 using Microsoft::WRL::ComPtr;
 
 
-namespace Graphite
+namespace Graphite::D3D12
 {
 
 	// A collection of resources and state pertinent to each back buffer
 	// An array of these will be owned by the back buffer
-	class FrameResources
+	class D3D12FrameResources
 	{
 	public:
-		FrameResources() = default;
-		~FrameResources() = default;
+		D3D12FrameResources() = default;
+		~D3D12FrameResources() = default;
 
-		DELETE_COPY(FrameResources)
-		DEFAULT_MOVE(FrameResources)
+		DELETE_COPY(D3D12FrameResources)
+		DEFAULT_MOVE(D3D12FrameResources)
 
 		void Init(ID3D12Device* device, uint32_t frameResourcesIndex, uint32_t allocatorPoolSize);
 

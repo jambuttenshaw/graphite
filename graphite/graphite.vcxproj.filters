@@ -60,16 +60,16 @@
     <ClInclude Include="src\Graphite\RHI\RHIExceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\RHI\CommandQueue.h">
+    <ClInclude Include="src\Platform\D3D12\D3D12CommandQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\RHI\FrameResources.h">
+    <ClInclude Include="src\Platform\D3D12\D3D12FrameResources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h">
+    <ClInclude Include="src\Platform\D3D12\D3D12DescriptorHeap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphite\RHI\Resources\ResourceFactory.h">
@@ -102,6 +102,21 @@
     <ClInclude Include="src\Graphite\Layers\LayerStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12GraphicsContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphite\RHI\RHITypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12Types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12CommandRecordingContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphite\Core\Application.cpp">
@@ -122,16 +137,16 @@
     <ClCompile Include="src\Graphite\RHI\RHIExceptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphite\RHI\CommandQueue.cpp">
+    <ClCompile Include="src\Platform\D3D12\D3D12CommandQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphite\RHI\FrameResources.cpp">
+    <ClCompile Include="src\Platform\D3D12\D3D12FrameResources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphite\RHI\CommandRecordingContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp">
+    <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphite\RHI\Resources\ResourceFactory.cpp">
@@ -159,6 +174,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphite\Layers\LayerStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12GraphicsContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12Types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12CommandRecordingContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

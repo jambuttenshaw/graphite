@@ -16,6 +16,8 @@
 #include "Graphite/RHI/Pipelines/PipelineFactory.h"
 
 
+#include "Platform/D3D12/D3D12GraphicsContext.h"
+
 namespace Graphite
 {
 
@@ -43,12 +45,12 @@ namespace Graphite
 
 			.BackBufferWidth = defaultWidth,
 			.BackBufferHeight = defaultHeight,
-			.BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM,
+			.BackBufferFormat = GRAPHITE_FORMAT_R8G8B8A8_UNORM,
 
 			// Allow for one recording context per CPU core
 			.MaxRecordingContextsPerFrame = std::thread::hardware_concurrency()
 		};
-		m_GraphicsContext = std::make_unique<GraphicsContext>(graphicsContextDesc);
+		m_GraphicsContext = GraphicsContext::Create(graphicsContextDesc);
 
 		// Create resources
 
@@ -124,7 +126,7 @@ namespace Graphite
 					recordingContext->SetScissorRects({ &scissorRect, 1 });
 
 					// Record commands
-					auto rtv = m_GraphicsContext->GetBackBufferRenderTargetView();
+					auto rtv = static_cast<D3D12::D3D12GraphicsContext*>(m_GraphicsContext.get())->GetBackBufferRenderTargetView();
 					float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
 					recordingContext->ClearRenderTargetView(rtv, clearColor);
 

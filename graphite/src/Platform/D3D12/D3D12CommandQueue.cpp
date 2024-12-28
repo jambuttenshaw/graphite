@@ -1,13 +1,13 @@
 #include "graphite_pch.h"
-#include "CommandQueue.h"
+#include "D3D12CommandQueue.h"
 
-#include "RHIExceptions.h"
+#include "Graphite/RHI/RHIExceptions.h"
 #include "Graphite/Core/Assert.h"
 
-namespace Graphite
+namespace Graphite::D3D12
 {
 
-	CommandQueue::CommandQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE type, const wchar_t* name)
+	D3D12CommandQueue::D3D12CommandQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE type, const wchar_t* name)
 		: m_QueueType(type)
 	{
 		// Create queue
@@ -53,18 +53,18 @@ namespace Graphite
 		}
 	}
 
-	CommandQueue::~CommandQueue()
+	D3D12CommandQueue::~D3D12CommandQueue()
 	{
 		CloseHandle(m_FenceEventHandle);
 	}
 
-	UINT64 CommandQueue::ExecuteCommandLists(UINT count, ID3D12CommandList** ppCommandLists)
+	UINT64 D3D12CommandQueue::ExecuteCommandLists(UINT count, ID3D12CommandList** ppCommandLists)
 	{
 		m_CommandQueue->ExecuteCommandLists(count, ppCommandLists);
 		return Signal();
 	}
 
-	UINT64 CommandQueue::Signal()
+	UINT64 D3D12CommandQueue::Signal()
 	{
 		std::lock_guard lock(m_FenceMutex);
 		m_CommandQueue->Signal(m_Fence.Get(), m_NextFenceValue);
@@ -72,25 +72,25 @@ namespace Graphite
 		return m_NextFenceValue++;
 	}
 
-	void CommandQueue::InsertWait(UINT64 fenceValue) const
+	void D3D12CommandQueue::InsertWait(UINT64 fenceValue) const
 	{
 		DX_THROW_IF_FAIL(m_CommandQueue->Wait(m_Fence.Get(), fenceValue));
 	}
 
-	void CommandQueue::InsertWaitForQueueFence(const CommandQueue* otherQueue, UINT64 fenceValue) const
+	void D3D12CommandQueue::InsertWaitForQueueFence(const D3D12CommandQueue* otherQueue, UINT64 fenceValue) const
 	{
 		GRAPHITE_ASSERT(otherQueue, "Null queue");
 		DX_THROW_IF_FAIL(m_CommandQueue->Wait(otherQueue->GetFence(), fenceValue));
 
 	}
 
-	void CommandQueue::InsertWaitForQueue(const CommandQueue* otherQueue) const
+	void D3D12CommandQueue::InsertWaitForQueue(const D3D12CommandQueue* otherQueue) const
 	{
 		GRAPHITE_ASSERT(otherQueue, "Null queue");
 		DX_THROW_IF_FAIL(m_CommandQueue->Wait(otherQueue->GetFence(), otherQueue->GetNextFenceValue() - 1));
 	}
 
-	void CommandQueue::WaitForFenceCPUBlocking(UINT64 fenceValue)
+	void D3D12CommandQueue::WaitForFenceCPUBlocking(UINT64 fenceValue)
 	{
 		while (!IsFenceComplete(fenceValue))
 		{
@@ -104,14 +104,14 @@ namespace Graphite
 		m_LastCompletedFenceValue = fenceValue;
 	}
 
-	void CommandQueue::WaitForIdleCPUBlocking()
+	void D3D12CommandQueue::WaitForIdleCPUBlocking()
 	{
 		// Add an additional signal so that when the signaled value is reached we know that all work prior to this call has been completed
 		WaitForFenceCPUBlocking(Signal());
 	}
 
 
-	bool CommandQueue::IsFenceComplete(UINT64 fenceValue)
+	bool D3D12CommandQueue::IsFenceComplete(UINT64 fenceValue)
 	{
 		if (fenceValue > m_LastCompletedFenceValue)
 		{
@@ -121,7 +121,7 @@ namespace Graphite
 		return fenceValue <= m_LastCompletedFenceValue;
 	}
 
-	UINT64 CommandQueue::PollCurrentFenceValue()
+	UINT64 D3D12CommandQueue::PollCurrentFenceValue()
 	{
 		const auto fenceValue = m_Fence->GetCompletedValue();
 		if (fenceValue > m_LastCompletedFenceValue)

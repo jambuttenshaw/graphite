@@ -1,14 +1,14 @@
 #include "graphite_pch.h"
-#include "FrameResources.h"
+#include "D3D12FrameResources.h"
 
-#include "RHIExceptions.h"
+#include "Graphite/RHI/RHIExceptions.h"
 #include "Graphite/Core/Assert.h"
 
 
-namespace Graphite
+namespace Graphite::D3D12
 {
 
-	void FrameResources::Init(ID3D12Device* device, uint32_t frameResourcesIndex, uint32_t allocatorPoolSize)
+	void D3D12FrameResources::Init(ID3D12Device* device, uint32_t frameResourcesIndex, uint32_t allocatorPoolSize)
 	{
 		// Create command allocators
 		m_AllocatorPool.resize(allocatorPoolSize);
@@ -28,13 +28,13 @@ namespace Graphite
 		}
 	}
 
-	ID3D12CommandAllocator* FrameResources::GetNextCommandAllocator()
+	ID3D12CommandAllocator* D3D12FrameResources::GetNextCommandAllocator()
 	{
 		GRAPHITE_ASSERT(m_ActiveAllocators < GetAllocatorPoolSize(), "Allocator pool exceeded!");
 		return m_AllocatorPool.at(m_ActiveAllocators++).Get();
 	}
 
-	void FrameResources::ResetAllAllocators()
+	void D3D12FrameResources::ResetAllAllocators()
 	{
 		for (auto& allocator : m_AllocatorPool)
 		{
@@ -44,12 +44,12 @@ namespace Graphite
 	}
 
 
-	void FrameResources::DeferRelease(const ComPtr<IUnknown>& resource)
+	void D3D12FrameResources::DeferRelease(const ComPtr<IUnknown>& resource)
 	{
 		m_DeferredReleases.push_back(resource);
 	}
 
-	void FrameResources::ProcessDeferrals()
+	void D3D12FrameResources::ProcessDeferrals()
 	{
 		// As long as the ComPtr's held in the collection aren't held anywhere else,
 		// then the resources pointed to will be automatically released
