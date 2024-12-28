@@ -3,9 +3,6 @@
 #include "GPUResource.h"
 
 #include "Graphite/Core/Core.h"
-#include "Graphite/Core/Assert.h"
-
-#include "Graphite/RHI/RHIExceptions.h"
 
 
 namespace Graphite
@@ -16,9 +13,9 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		UploadBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride);
+		UploadBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride);
 	public:
-		virtual ~UploadBuffer();
+		virtual ~UploadBuffer() = default;
 
 		DELETE_COPY(UploadBuffer);
 		DEFAULT_MOVE(UploadBuffer);
@@ -32,25 +29,23 @@ namespace Graphite
 		inline uint32_t GetInstanceCount() const { return m_InstanceCount; }
 		inline uint32_t GetInstanceStride() const { return m_InstanceStride; }
 
-		D3D12_GPU_VIRTUAL_ADDRESS GetAddressOfElement(uint32_t element, uint32_t instance) const;
+		virtual GraphiteGPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const = 0;
 
 		// Populate buffer
-		void CopyElement(uint32_t element, uint32_t instance, const void* data, uint64_t elementSize) const;
+		virtual void CopyElement(uint32_t element, uint32_t instance, const void* data, uint64_t dataSize) const = 0;
+		virtual void CopyElements(uint32_t startElement, uint32_t elementCount, uint32_t instance, const void* data, uint64_t dataSize) const = 0;
 
-	private:
+	protected:
 		// For writing use only
 		// Helper function to find offset
 		uint64_t GetElementOffset(uint32_t element, uint32_t instance) const;
 
-	private:
+	protected:
 		uint32_t m_ElementCount;
 		uint32_t m_ElementStride;
 
 		uint32_t m_InstanceCount;
 		uint32_t m_InstanceStride;
-
-		// Mapped pointer to write to buffer
-		uint8_t* m_MappedData;
 	};
 
 
@@ -58,8 +53,8 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		ConstantBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride)
-			: UploadBuffer(allocation, elementCount, instanceCount, elementStride)
+		ConstantBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride)
+			: UploadBuffer(elementCount, instanceCount, elementStride)
 		{}
 	public:
 		virtual ~ConstantBuffer() = default;
@@ -76,7 +71,7 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		ByteAddressBuffer(D3D12MA::Allocation* allocation, bool readOnly);
+		ByteAddressBuffer(bool readOnly);
 	public:
 		virtual ~ByteAddressBuffer() = default;
 
@@ -91,8 +86,8 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		StructuredBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, bool readOnly)
-			: ByteAddressBuffer(allocation, readOnly)
+		StructuredBuffer(uint32_t elementCount, bool readOnly)
+			: ByteAddressBuffer(readOnly)
 			, m_ElementCount(elementCount)
 		{}
 	public:
@@ -113,7 +108,7 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		ReadbackBuffer(D3D12MA::Allocation* allocation);
+		ReadbackBuffer();
 	public:
 		virtual ~ReadbackBuffer() = default;
 

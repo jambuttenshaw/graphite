@@ -17,7 +17,7 @@ namespace Graphite
 		// Back buffer description
 		uint32_t BackBufferWidth;
 		uint32_t BackBufferHeight;
-		GRAPHITE_FORMAT BackBufferFormat;
+		GraphiteFormat BackBufferFormat;
 
 		// For multithreaded command recording
 		uint32_t MaxRecordingContextsPerFrame;
@@ -76,7 +76,7 @@ namespace Graphite
 		uint32_t m_BackBufferWidth;
 		uint32_t m_BackBufferHeight;
 
-		GRAPHITE_FORMAT m_BackBufferFormat;
+		GraphiteFormat m_BackBufferFormat;
 
 		// State
 		uint32_t m_CurrentBackBuffer = 0;

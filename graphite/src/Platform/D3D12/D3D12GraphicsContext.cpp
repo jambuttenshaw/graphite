@@ -32,7 +32,7 @@ namespace Graphite::D3D12
 		CreateAdapter();
 		CreateDevice();
 
-		ResourceFactory::Get().CreateResourceAllocator(m_Adapter.Get(), m_Device.Get());
+		ResourceFactory::CreateResourceFactory(*this);
 		PipelineFactory::Get().Initialize(m_Device.Get());
 
 		CreateCommandQueues();
@@ -64,7 +64,7 @@ namespace Graphite::D3D12
 
 		ProcessAllDeferrals();
 
-		ResourceFactory::Get().DestroyResourceAllocator();
+		ResourceFactory::DestroyResourceFactory();
 	}
 
 

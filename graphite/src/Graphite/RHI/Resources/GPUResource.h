@@ -1,12 +1,7 @@
 #pragma once
 
 #include "Graphite/Core/Core.h"
-
-
-namespace D3D12MA
-{
-	class Allocation;
-}
+#include "Graphite/RHI/RHITypes.h"
 
 
 namespace Graphite
@@ -21,9 +16,6 @@ namespace Graphite
 		ByteAddressBuffer,
 		StructuredBuffer,
 		ReadbackBuffer,
-
-		VertexBuffer,
-		IndexBuffer,
 
 		// Textures
 		Texture1D,
@@ -43,34 +35,28 @@ namespace Graphite
 
 
 	// A base class representing any resource that can be used by the GPU
+	// Handles how the resource should be interpreted and used
 	class GPUResource
 	{
 	protected:
 		// GPU resources can only be constructed through the resource manager
 		friend class ResourceFactory;
-		GPUResource(D3D12MA::Allocation* allocation, ResourceAccessFlags accessFlags);
+		GPUResource(ResourceAccessFlags accessFlags);
 	public:
 		GPUResource() = delete;
-		virtual ~GPUResource();
+		virtual ~GPUResource() = default;
 
 		DELETE_COPY(GPUResource);
 		DEFAULT_MOVE(GPUResource);
 
 		// Getters
 		virtual GPUResourceType GetResourceType() const = 0;
+		virtual GraphiteGPUVirtualAddress GetResourceAddress() const = 0;
 
 		inline ResourceAccessFlags GetAccessFlags() const { return m_AccessFlags; }
 		inline bool CheckAccessFlags(ResourceAccessFlags flags) const { return m_AccessFlags & flags; }
 
-		inline D3D12_GPU_VIRTUAL_ADDRESS GetAddress() const { return m_Resource->GetGPUVirtualAddress(); }
-		inline ID3D12Resource* GetResource() const { return m_Resource; }
-
 	protected:
-		// The underlying allocation supporting this resource
-		D3D12MA::Allocation* m_Allocation = nullptr;
-		// The actual D3D12 resource
-		ID3D12Resource* m_Resource = nullptr;
-
 		// Common properties about this resource, including usage
 		ResourceAccessFlags m_AccessFlags = ResourceAccess_None;
 	};

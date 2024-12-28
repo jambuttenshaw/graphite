@@ -45,7 +45,7 @@ namespace Graphite
 
 			.BackBufferWidth = defaultWidth,
 			.BackBufferHeight = defaultHeight,
-			.BackBufferFormat = GRAPHITE_FORMAT_R8G8B8A8_UNORM,
+			.BackBufferFormat = GraphiteFormat_R8G8B8A8_UNORM,
 
 			// Allow for one recording context per CPU core
 			.MaxRecordingContextsPerFrame = std::thread::hardware_concurrency()
@@ -65,11 +65,11 @@ namespace Graphite
 		};
 
 		// Create vertex and index buffer
-		m_VertexBuffer = ResourceFactory::Get().CreateVertexBuffer(3, Vertex_Position::VertexInputLayout.GetVertexStride(), true);
-		m_IndexBuffer = ResourceFactory::Get().CreateIndexBuffer(3, sizeof(indices[0]), true);
+		m_VertexBuffer = ResourceFactory::Get().CreateUploadBuffer(3, 1, Vertex_Position::VertexInputLayout.GetVertexStride(), 0);
+		m_IndexBuffer = ResourceFactory::Get().CreateUploadBuffer(3, 1, sizeof(indices[0]), 0);
 
-		m_VertexBuffer->CopyVertexData(3, vertices);
-		m_IndexBuffer->CopyIndexData(3, indices);
+		m_VertexBuffer->CopyElements(0, 3, 0, vertices, sizeof(vertices));
+		m_IndexBuffer->CopyElements(0, 3, 0, indices, sizeof(indices));
 
 		// Create graphics pipeline
 		GraphicsPipelineDescription psoDesc
@@ -137,11 +137,23 @@ namespace Graphite
 
 					recordingContext->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-					recordingContext->SetIndexBuffer(m_IndexBuffer->GetIndexBufferView());
-					const auto& vb = m_VertexBuffer->GetVertexBufferView();
-					recordingContext->SetVertexBuffers(0, { &vb, 1 });
+					D3D12_INDEX_BUFFER_VIEW ibv
+					{
+						.BufferLocation = m_IndexBuffer->GetResourceAddress(),
+						.SizeInBytes = m_IndexBuffer->GetElementCount() * m_IndexBuffer->GetElementStride(),
+						.Format = DXGI_FORMAT_R16_UINT
+					};
+					D3D12_VERTEX_BUFFER_VIEW vbv
+					{
+						.BufferLocation = m_VertexBuffer->GetResourceAddress(),
+						.SizeInBytes = m_VertexBuffer->GetElementCount() * m_VertexBuffer->GetElementStride(),
+						.StrideInBytes = m_VertexBuffer->GetElementStride()
+					};
 
-					recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetIndexCount(), 1, 0, 0, 0);
+					recordingContext->SetIndexBuffer(ibv);
+					recordingContext->SetVertexBuffers(0, { &vbv, 1 });
+
+					recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
 
 					m_GraphicsContext->CloseRecordingContext(recordingContext);
 				}

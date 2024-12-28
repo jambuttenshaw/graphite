@@ -54,6 +54,9 @@ namespace Graphite::D3D12
 		GRAPHITE_API inline DXGI_FORMAT GetNativeBackBufferFormat() const { return m_NativeBackBufferFormat; }
 		GRAPHITE_API inline D3D12_CPU_DESCRIPTOR_HANDLE GetBackBufferRenderTargetView() const { return m_BackBufferRTVs.GetCPUHandle(m_CurrentBackBuffer); }
 
+		GRAPHITE_API inline IDXGIAdapter* GetAdapter() const { return m_Adapter.Get(); }
+		GRAPHITE_API inline ID3D12Device* GetDevice() const { return m_Device.Get(); }
+
 	private:
 		// Initialization
 		void CreateAdapter();

@@ -10,8 +10,7 @@ namespace Graphite
 	class Window;
 	class GraphicsContext;
 
-	class VertexBuffer;
-	class IndexBuffer;
+	class UploadBuffer;
 
 	class GraphicsPipeline;
 
@@ -47,10 +46,10 @@ namespace Graphite
 		LayerStack m_LayerStack;
 		std::unique_ptr<Window> m_Window;
 
-		std::unique_ptr<Graphite::VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<Graphite::IndexBuffer> m_IndexBuffer;
+		std::unique_ptr<UploadBuffer> m_VertexBuffer;
+		std::unique_ptr<UploadBuffer> m_IndexBuffer;
 
-		std::unique_ptr<Graphite::GraphicsPipeline> m_GraphicsPipeline;
+		std::unique_ptr<GraphicsPipeline> m_GraphicsPipeline;
 	};
 
 	extern std::unique_ptr<Application> CreateApplication();

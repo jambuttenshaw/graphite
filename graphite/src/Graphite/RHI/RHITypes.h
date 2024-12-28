@@ -6,18 +6,21 @@ namespace Graphite
 	// Common RHI types
 	// To translate from API-specific types to Graphite-specific types
 
-	enum GRAPHITE_FORMAT
+	using GraphiteGPUVirtualAddress = uint64_t;
+
+
+	enum GraphiteFormat
 	{
-		GRAPHITE_FORMAT_R8G8B8A8_UNORM
+		GraphiteFormat_R8G8B8A8_UNORM
 	};
 
 
-	enum GRAPHITE_DESCRIPTOR_HEAP_TYPES
+	enum GraphiteDescriptorHeapTypes
 	{
-		GRAPHITE_DESCRIPTOR_HEAP_RTV,
-		GRAPHITE_DESCRIPTOR_HEAP_DSV,
-		GRAPHITE_DESCRIPTOR_HEAP_RESOURCE,
-		GRAPHITE_DESCRIPTOR_HEAP_SAMPLER
+		GraphiteDescriptorHeap_RTV,
+		GraphiteDescriptorHeap_DSV,
+		GraphiteDescriptorHeap_RESOURCE,
+		GraphiteDescriptorHeap_SAMPLER
 	};
 
 }

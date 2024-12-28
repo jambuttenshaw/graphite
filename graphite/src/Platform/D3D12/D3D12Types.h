@@ -4,7 +4,7 @@
 
 namespace Graphite::D3D12
 {
-	extern DXGI_FORMAT GraphiteFormatToD3D12Format(GRAPHITE_FORMAT format);
+	extern DXGI_FORMAT GraphiteFormatToD3D12Format(GraphiteFormat format);
 
-	extern D3D12_DESCRIPTOR_HEAP_TYPE GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(GRAPHITE_DESCRIPTOR_HEAP_TYPES heapType);
+	extern D3D12_DESCRIPTOR_HEAP_TYPE GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(GraphiteDescriptorHeapTypes heapType);
 }

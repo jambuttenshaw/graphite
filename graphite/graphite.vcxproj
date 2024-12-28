@@ -120,6 +120,9 @@
     <ClInclude Include="src\Graphite\Window\Window.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GraphicsContext.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12Types.h" />
+    <ClInclude Include="src\Platform\D3D12\Resources\D3D12Buffer.h" />
+    <ClInclude Include="src\Platform\D3D12\Resources\D3D12Resource.h" />
+    <ClInclude Include="src\Platform\D3D12\Resources\D3D12ResourceFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphite\Core\Application.cpp" />
@@ -147,6 +150,9 @@
     <ClCompile Include="src\Graphite\Window\Window.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GraphicsContext.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12Types.cpp" />
+    <ClCompile Include="src\Platform\D3D12\Resources\D3D12Buffer.cpp" />
+    <ClCompile Include="src\Platform\D3D12\Resources\D3D12Resource.cpp" />
+    <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\shaders.hlsl">
