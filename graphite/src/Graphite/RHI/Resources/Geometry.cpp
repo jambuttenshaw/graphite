@@ -1,10 +1,6 @@
 #include "graphite_pch.h"
 #include "Geometry.h"
 
-#include "Graphite/Core/Assert.h"
-#include "Graphite/Core/Log.h"
-#include "Graphite/RHI/RHIExceptions.h"
-
 
 namespace Graphite
 {

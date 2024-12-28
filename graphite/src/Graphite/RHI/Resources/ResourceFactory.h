@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Buffer.h"
-#include "Geometry.h"
-#include "Graphite/RHI/RHIExceptions.h"
+
 
 namespace Graphite
 {

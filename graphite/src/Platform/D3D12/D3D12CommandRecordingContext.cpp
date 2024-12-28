@@ -3,7 +3,7 @@
 
 #include "D3D12DescriptorHeap.h"
 #include "Graphite/Core/Assert.h"
-#include "Graphite/RHI/RHIExceptions.h"
+#include "Platform/D3D12/D3D12Exceptions.h"
 #include "Pipelines/D3D12GraphicsPipeline.h"
 
 

@@ -2,10 +2,10 @@
 #include "D3D12GraphicsPipeline.h"
 
 #include "Graphite/Core/Assert.h"
-#include "Graphite/RHI/RHIExceptions.h"
 
 #include "Graphite/RHI/GraphicsContext.h"
 
+#include "Platform/D3D12/D3D12Exceptions.h"
 #include "Platform/D3D12/D3D12GraphicsContext.h"
 #include "D3D12ShaderCompiler.h"
 #include "Platform/D3D12/D3D12Types.h"

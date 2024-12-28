@@ -2,10 +2,6 @@
 
 #include "Graphite/Core/Core.h"
 
-#include "dxcapi.h"
-
-using Microsoft::WRL::ComPtr;
-
 
 namespace Graphite
 {

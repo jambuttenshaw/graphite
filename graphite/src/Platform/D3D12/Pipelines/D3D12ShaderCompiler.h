@@ -2,6 +2,10 @@
 
 #include "Graphite/RHI/Pipelines/ShaderCompiler.h"
 
+#include "dxcapi.h"
+
+using Microsoft::WRL::ComPtr;
+
 
 namespace Graphite::D3D12
 {

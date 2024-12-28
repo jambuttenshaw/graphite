@@ -1,7 +1,7 @@
 #include "graphite_pch.h"
 #include "D3D12ShaderCompiler.h"
 
-#include "Graphite/RHI/RHIExceptions.h"
+#include "Platform/D3D12/D3D12Exceptions.h"
 
 
 namespace Graphite::D3D12

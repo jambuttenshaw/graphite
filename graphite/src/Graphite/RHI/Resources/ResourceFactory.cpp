@@ -1,7 +1,6 @@
 #include "graphite_pch.h"
 #include "ResourceFactory.h"
 
-#include "Graphite/RHI/RHIExceptions.h"
 #include "Graphite/Core/Assert.h"
 
 #include "Platform/D3D12/Resources/D3D12ResourceFactory.h"

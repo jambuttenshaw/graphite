@@ -57,9 +57,6 @@
     <ClInclude Include="src\Graphite\RHI\GraphicsContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\RHI\RHIExceptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12CommandQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -129,6 +126,9 @@
     <ClInclude Include="src\Platform\D3D12\Pipelines\D3D12GraphicsPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12Exceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphite\graphite_pch.cpp">
@@ -141,9 +141,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphite\RHI\GraphicsContext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphite\RHI\RHIExceptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12CommandQueue.cpp">

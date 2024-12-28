@@ -105,6 +105,7 @@
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12CommandRecordingContext.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12DescriptorHeap.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12Exceptions.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12FrameResources.h" />
     <ClInclude Include="src\Graphite\RHI\Pipelines\GraphicsPipeline.h" />
     <ClInclude Include="src\Graphite\RHI\Pipelines\ShaderCompiler.h" />
@@ -113,7 +114,6 @@
     <ClInclude Include="src\Graphite\RHI\Resources\GPUResource.h" />
     <ClInclude Include="src\Graphite\RHI\Resources\InputLayout.h" />
     <ClInclude Include="src\Graphite\RHI\Resources\ResourceFactory.h" />
-    <ClInclude Include="src\Graphite\RHI\RHIExceptions.h" />
     <ClInclude Include="src\Graphite\RHI\GraphicsContext.h" />
     <ClInclude Include="src\Graphite\RHI\RHITypes.h" />
     <ClInclude Include="src\Graphite\Window\Window.h" />
@@ -145,7 +145,6 @@
     <ClCompile Include="src\Graphite\RHI\Resources\GPUResource.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\InputLayout.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\ResourceFactory.cpp" />
-    <ClCompile Include="src\Graphite\RHI\RHIExceptions.cpp" />
     <ClCompile Include="src\Graphite\RHI\GraphicsContext.cpp" />
     <ClCompile Include="src\Graphite\Window\Window.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GraphicsContext.cpp" />

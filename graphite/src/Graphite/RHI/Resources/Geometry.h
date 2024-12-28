@@ -1,12 +1,6 @@
 #pragma once
 
 #include "InputLayout.h"
-#include "GPUResource.h"
-
-namespace D3D12MA
-{
-	class Allocation;
-}
 
 
 namespace Graphite

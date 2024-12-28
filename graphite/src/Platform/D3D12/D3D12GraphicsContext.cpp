@@ -6,6 +6,7 @@
 #include "Graphite/RHI/CommandRecordingContext.h"
 #include "Graphite/RHI/Resources/ResourceFactory.h"
 
+#include "D3D12Exceptions.h"
 #include "D3D12CommandQueue.h"
 #include "D3D12CommandRecordingContext.h"	
 
