@@ -1,4 +1,4 @@
-#include "graphite_pch.h"
+#include "graphite_d3d12_pch.h"
 #include "D3D12CommandRecordingContext.h"
 
 #include "Graphite/Core/Assert.h"
@@ -27,9 +27,9 @@ namespace Graphite::D3D12
 #endif
 	}
 
-	void D3D12CommandRecordingContext::Reset(ID3D12CommandAllocator* allocator)
+	void D3D12CommandRecordingContext::Reset(void* allocator)
 	{
-		DX_THROW_IF_FAIL(m_CommandList->Reset(allocator, nullptr));
+		DX_THROW_IF_FAIL(m_CommandList->Reset(static_cast<ID3D12CommandAllocator*>(allocator), nullptr));
 		m_IsClosed = false;
 	}
 

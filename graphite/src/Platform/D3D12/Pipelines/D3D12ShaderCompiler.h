@@ -9,6 +9,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace Graphite::D3D12
 {
+	extern ShaderCompiler* CreateD3D12ShaderCompiler();
+
 	class D3D12ShaderBytecode : public Graphite::ShaderBytecode
 	{
 	public:
@@ -31,10 +33,8 @@ namespace Graphite::D3D12
 
 	class D3D12ShaderCompiler : public ShaderCompiler
 	{
-	protected:
-		friend class ShaderCompiler;
-		D3D12ShaderCompiler();
 	public:
+		D3D12ShaderCompiler();
 		virtual ~D3D12ShaderCompiler() = default;
 
 		DELETE_COPY(D3D12ShaderCompiler);

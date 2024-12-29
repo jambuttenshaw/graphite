@@ -46,7 +46,7 @@ namespace Graphite::D3D12
 
 	protected:
 		// Called by the graphics context
-		virtual void Reset(ID3D12CommandAllocator* allocator) override;
+		virtual void Reset(void* allocator) override;
 		virtual void Close() override;
 
 	private:

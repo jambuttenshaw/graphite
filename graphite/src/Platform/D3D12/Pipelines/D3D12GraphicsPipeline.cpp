@@ -1,4 +1,4 @@
-#include "graphite_pch.h"
+#include "graphite_d3d12_pch.h"
 #include "D3D12GraphicsPipeline.h"
 
 #include "Graphite/Core/Assert.h"
@@ -12,6 +12,11 @@
 
 namespace Graphite::D3D12
 {
+	GraphicsPipeline* CreateD3D12GraphicsPipeline(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& description)
+	{
+		return new D3D12GraphicsPipeline(graphicsContext, description);
+	}
+
 
 	D3D12GraphicsPipeline::D3D12GraphicsPipeline(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& description)
 	{

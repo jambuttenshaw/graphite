@@ -3,8 +3,6 @@
 #include "Graphite/Core/Core.h"
 #include "RHITypes.h"
 
-using Microsoft::WRL::ComPtr;
-
 
 namespace Graphite
 {
@@ -54,7 +52,8 @@ namespace Graphite
 	protected:
 
 		// Called by the graphics context
-		virtual void Reset(ID3D12CommandAllocator* allocator) = 0;
+		// allocator is a pointer to a native command allocator object
+		virtual void Reset(void* allocator) = 0;
 		virtual void Close() = 0;
 
 	protected:

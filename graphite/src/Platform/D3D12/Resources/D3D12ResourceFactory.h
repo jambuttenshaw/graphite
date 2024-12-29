@@ -16,6 +16,8 @@ namespace Graphite
 
 namespace Graphite::D3D12
 {
+	extern ResourceFactory* CreateD3D12ResourceFactory(const GraphicsContext&);
+
 	class D3D12ResourceFactory : public ResourceFactory
 	{
 	public:

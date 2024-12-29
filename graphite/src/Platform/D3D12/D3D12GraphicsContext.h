@@ -22,40 +22,43 @@ namespace Graphite::D3D12
 	class D3D12CommandQueue;
 	class D3D12CommandRecordingContext;
 
+
+	// Called by core Graphite to create a context
+	// This is to avoid leaking any D3D12 dependencies into the core library
+	GraphicsContext* CreateD3D12GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc);
+
 	class D3D12GraphicsContext : public GraphicsContext
 	{
-	protected:
-		friend GraphicsContext;
-		D3D12GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc);
 	public:
-		GRAPHITE_API virtual ~D3D12GraphicsContext();
+		D3D12GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc);
+		virtual ~D3D12GraphicsContext();
 
-		GRAPHITE_API_DELETE_COPY(D3D12GraphicsContext);
-		GRAPHITE_API_DEFAULT_MOVE(D3D12GraphicsContext);
+		DELETE_COPY(D3D12GraphicsContext);
+		DEFAULT_MOVE(D3D12GraphicsContext);
 
 		// Application API
-		GRAPHITE_API virtual void BeginFrame() override;
-		GRAPHITE_API virtual void EndFrame() override;
+		virtual void BeginFrame() override;
+		virtual void EndFrame() override;
 
 		// Multiple recording contexts can be active at a time
 		// This is to facilitate multithreaded command recording
-		GRAPHITE_API virtual CommandRecordingContext* AcquireRecordingContext() override;
-		GRAPHITE_API virtual void CloseRecordingContext(CommandRecordingContext* recordingContext) override;
+		virtual CommandRecordingContext* AcquireRecordingContext() override;
+		virtual void CloseRecordingContext(CommandRecordingContext* recordingContext) override;
 
-		GRAPHITE_API virtual void Present() override;
+		virtual void Present() override;
 
-		GRAPHITE_API virtual void ResizeBackBuffer(uint32_t width, uint32_t height) override;
+		virtual void ResizeBackBuffer(uint32_t width, uint32_t height) override;
 
-		GRAPHITE_API virtual void DeferResourceRelease(const ComPtr<IUnknown>& resource);
-		GRAPHITE_API virtual void WaitForGPUIdle() const override;
+		virtual void DeferResourceRelease(const ComPtr<IUnknown>& resource);
+		virtual void WaitForGPUIdle() const override;
 
 	public:
 
-		GRAPHITE_API inline DXGI_FORMAT GetNativeBackBufferFormat() const { return m_NativeBackBufferFormat; }
-		GRAPHITE_API inline CPUDescriptorHandle GetBackBufferRenderTargetView() const { return m_BackBufferRTVs.GetCPUHandle(m_CurrentBackBuffer); }
+		inline DXGI_FORMAT GetNativeBackBufferFormat() const { return m_NativeBackBufferFormat; }
+		inline CPUDescriptorHandle GetBackBufferRenderTargetView() const override { return m_BackBufferRTVs.GetCPUHandle(m_CurrentBackBuffer); }
 
-		GRAPHITE_API inline IDXGIAdapter* GetAdapter() const { return m_Adapter.Get(); }
-		GRAPHITE_API inline ID3D12Device* GetDevice() const { return m_Device.Get(); }
+		inline IDXGIAdapter* GetAdapter() const { return m_Adapter.Get(); }
+		inline ID3D12Device* GetDevice() const { return m_Device.Get(); }
 
 	private:
 		// Initialization

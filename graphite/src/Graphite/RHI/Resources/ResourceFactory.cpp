@@ -3,7 +3,11 @@
 
 #include "Graphite/Core/Assert.h"
 
-#include "Platform/D3D12/Resources/D3D12ResourceFactory.h"
+
+namespace Graphite::D3D12
+{
+	extern ResourceFactory* CreateD3D12ResourceFactory(const GraphicsContext&);
+}
 
 
 namespace Graphite
@@ -13,7 +17,9 @@ namespace Graphite
 
 	void ResourceFactory::CreateResourceFactory(const GraphicsContext& graphicsContext)
 	{
-		s_ResourceFactory = std::make_unique<D3D12::D3D12ResourceFactory>(graphicsContext);
+		GRAPHITE_ASSERT(!s_ResourceFactory, "Cannot create a second resource factory. Use ResourceFactory::Get() to retrieve the factory.");
+
+		s_ResourceFactory = std::unique_ptr<ResourceFactory>(D3D12::CreateD3D12ResourceFactory(graphicsContext));
 	}
 
 	void ResourceFactory::DestroyResourceFactory()

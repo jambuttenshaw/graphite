@@ -64,8 +64,10 @@ namespace Graphite
 		DEFAULT_MOVE(ShaderCompiler);
 
 	public:
-
 		// Static access to compiler
+		static void CreateShaderCompiler();
+		static void DestroyShaderCompiler();
+
 		static ShaderCompiler& Get();
 
 	public:

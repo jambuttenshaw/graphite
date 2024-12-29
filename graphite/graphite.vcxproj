@@ -120,6 +120,7 @@
     <ClInclude Include="src\Graphite\Window\Window.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GraphicsContext.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12Types.h" />
+    <ClInclude Include="src\Platform\D3D12\graphite_d3d12_pch.h" />
     <ClInclude Include="src\Platform\D3D12\Pipelines\D3D12GraphicsPipeline.h" />
     <ClInclude Include="src\Platform\D3D12\Pipelines\D3D12ShaderCompiler.h" />
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12Buffer.h" />
@@ -137,10 +138,30 @@
     </ClCompile>
     <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\ResourceViews.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12CommandQueue.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12CommandRecordingContext.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeap.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12FrameResources.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12CommandQueue.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12CommandRecordingContext.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeap.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12FrameResources.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="src\Graphite\RHI\Pipelines\GraphicsPipeline.cpp" />
     <ClCompile Include="src\Graphite\RHI\Pipelines\ShaderCompiler.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\Buffer.cpp" />
@@ -150,14 +171,62 @@
     <ClCompile Include="src\Graphite\RHI\Resources\ResourceFactory.cpp" />
     <ClCompile Include="src\Graphite\RHI\GraphicsContext.cpp" />
     <ClCompile Include="src\Graphite\Window\Window.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12GraphicsContext.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12Types.cpp" />
-    <ClCompile Include="src\Platform\D3D12\Pipelines\D3D12GraphicsPipeline.cpp" />
-    <ClCompile Include="src\Platform\D3D12\Pipelines\D3D12ShaderCompiler.cpp" />
-    <ClCompile Include="src\Platform\D3D12\Resources\D3D12Buffer.cpp" />
-    <ClCompile Include="src\Platform\D3D12\Resources\D3D12Resource.cpp" />
-    <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceFactory.cpp" />
-    <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceViews.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12GraphicsContext.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12Types.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\graphite_d3d12_pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\Pipelines\D3D12GraphicsPipeline.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\Pipelines\D3D12ShaderCompiler.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\Resources\D3D12Buffer.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\Resources\D3D12Resource.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceFactory.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceViews.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\shaders.hlsl">

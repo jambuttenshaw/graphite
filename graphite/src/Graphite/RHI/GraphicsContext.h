@@ -65,6 +65,8 @@ namespace Graphite
 		inline uint32_t GetBackBufferWidth() const { return m_BackBufferWidth; }
 		inline uint32_t GetBackBufferHeight() const { return m_BackBufferHeight; }
 
+		virtual CPUDescriptorHandle GetBackBufferRenderTargetView() const = 0;
+
 		// VSync
 		inline bool GetVSync() const { return m_VSync; }
 		inline void SetVSync(bool vsync) { m_VSync = vsync; }

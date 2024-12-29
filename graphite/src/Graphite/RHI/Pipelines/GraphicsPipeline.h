@@ -5,9 +5,6 @@
 #include "ShaderCompiler.h"
 
 
-using Microsoft::WRL::ComPtr;
-
-
 namespace Graphite
 {
 	class GraphicsContext;

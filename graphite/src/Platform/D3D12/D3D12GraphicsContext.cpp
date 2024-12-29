@@ -1,11 +1,12 @@
-#include "graphite_pch.h"
+#include "graphite_d3d12_pch.h"
 #include "D3D12GraphicsContext.h"
 
-#include "D3D12Types.h"
 #include "Graphite/Core/Assert.h"
 #include "Graphite/RHI/CommandRecordingContext.h"
 #include "Graphite/RHI/Resources/ResourceFactory.h"
+#include "Graphite/RHI/Pipelines/ShaderCompiler.h"
 
+#include "D3D12Types.h"
 #include "D3D12Exceptions.h"
 #include "D3D12CommandQueue.h"
 #include "D3D12CommandRecordingContext.h"	
@@ -13,6 +14,13 @@
 
 namespace Graphite::D3D12
 {
+
+	GraphicsContext* CreateD3D12GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc)
+	{
+		return new D3D12GraphicsContext(contextDesc);
+	}
+
+
 	D3D12GraphicsContext::D3D12GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc)
 		: GraphicsContext(contextDesc)
 		, m_NativeBackBufferFormat(GraphiteFormatToD3D12Format(contextDesc.BackBufferFormat))
@@ -33,6 +41,7 @@ namespace Graphite::D3D12
 		CreateDevice();
 
 		ResourceFactory::CreateResourceFactory(*this);
+		ShaderCompiler::CreateShaderCompiler();
 
 		CreateCommandQueues();
 		CreateSwapChain(contextDesc.WindowHandle);
@@ -64,6 +73,7 @@ namespace Graphite::D3D12
 		ProcessAllDeferrals();
 
 		ResourceFactory::DestroyResourceFactory();
+		ShaderCompiler::DestroyShaderCompiler();
 	}
 
 

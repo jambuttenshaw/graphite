@@ -135,6 +135,9 @@
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12ResourceViews.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\graphite_d3d12_pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphite\graphite_pch.cpp">
@@ -216,6 +219,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\graphite_d3d12_pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

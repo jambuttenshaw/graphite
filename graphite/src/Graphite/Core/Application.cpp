@@ -17,8 +17,6 @@
 #include "Graphite/RHI/Resources/ResourceViews.h"
 
 
-#include "Platform/D3D12/D3D12GraphicsContext.h"
-
 namespace Graphite
 {
 
@@ -128,8 +126,9 @@ namespace Graphite
 					recordingContext->SetScissorRects({ &scissorRect, 1 });
 
 					// Record commands
-					auto rtv = static_cast<D3D12::D3D12GraphicsContext*>(m_GraphicsContext.get())->GetBackBufferRenderTargetView();
 					glm::vec4 clearColor{ 1.0f, 0.0f, 0.0f, 1.0f };
+					CPUDescriptorHandle rtv = m_GraphicsContext->GetBackBufferRenderTargetView();
+
 					recordingContext->ClearRenderTargetView(rtv, clearColor);
 
 					recordingContext->SetRenderTargets(1, rtv, std::nullopt);
