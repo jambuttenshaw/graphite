@@ -135,6 +135,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\ResourceViews.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12CommandQueue.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12CommandRecordingContext.cpp" />

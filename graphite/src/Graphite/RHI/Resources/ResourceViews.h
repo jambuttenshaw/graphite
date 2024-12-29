@@ -33,4 +33,11 @@ namespace Graphite
 		static IndexBufferView Create(const GPUResource& resource);
 	};
 
+
+	// Other types of views own state - they must be managed more carefully
+	class RenderTargetView
+	{
+		
+	};
+
 }

@@ -191,7 +191,7 @@ namespace Graphite::D3D12
     }
 
 
-	D3D12_DESCRIPTOR_HEAP_TYPE GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(GraphiteDescriptorHeapTypes heapType)
+	D3D12_DESCRIPTOR_HEAP_TYPE GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(DescriptorHeapType heapType)
 	{
 		switch (heapType)
 		{
@@ -205,6 +205,27 @@ namespace Graphite::D3D12
 		GRAPHITE_LOG_ERROR("Unknown/unsupported Graphite format!");
 		return D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;
 	}
+
+    D3D12_CPU_DESCRIPTOR_HANDLE GraphiteCPUDescriptorToD3D12Descriptor(CPUDescriptorHandle descriptor)
+	{
+        return D3D12_CPU_DESCRIPTOR_HANDLE{ descriptor };
+	}
+
+    CPUDescriptorHandle D3D12CPUDescriptorToGraphiteDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE descriptor)
+	{
+        return descriptor.ptr;
+	}
+
+    D3D12_GPU_DESCRIPTOR_HANDLE GraphiteGPUDescriptorToD3D12Descriptor(GPUDescriptorHandle descriptor)
+	{
+        return D3D12_GPU_DESCRIPTOR_HANDLE{ descriptor };
+	}
+
+    GPUDescriptorHandle D3D12GPUDescriptorToGraphiteDescriptor(D3D12_GPU_DESCRIPTOR_HANDLE descriptor)
+	{
+        return descriptor.ptr;
+    }
+
 
 	D3D12_VIEWPORT GraphiteViewportToD3D12Viewport(const Viewport& viewport)
 	{

@@ -46,28 +46,39 @@ namespace Graphite::D3D12
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
 		ID3D12DescriptorHeap* heaps[] = {
-			dynamic_cast<D3D12DescriptorHeap*>(resourceHeap)->GetHeap(),
-			dynamic_cast<D3D12DescriptorHeap*>(samplerHeap)->GetHeap()
+			dynamic_cast<D3D12DescriptorHeap*>(resourceHeap)->GetNativeHeap(),
+			dynamic_cast<D3D12DescriptorHeap*>(samplerHeap)->GetNativeHeap()
 		};
 		m_CommandList->SetDescriptorHeaps(2, heaps);
 	}
 
-	void D3D12CommandRecordingContext::ClearRenderTargetView(D3D12_CPU_DESCRIPTOR_HANDLE renderTargetView, float* clearColor) const
+	void D3D12CommandRecordingContext::ClearRenderTargetView(CPUDescriptorHandle renderTargetView, const glm::vec4& clearColor) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->ClearRenderTargetView(renderTargetView, clearColor, 0, nullptr);
+		auto descriptor = GraphiteCPUDescriptorToD3D12Descriptor(renderTargetView);
+		m_CommandList->ClearRenderTargetView(descriptor, &clearColor.x, 0, nullptr);
 	}
 
-	void D3D12CommandRecordingContext::ClearDepthStencilView(D3D12_CPU_DESCRIPTOR_HANDLE dsv, float depth, uint8_t stencil) const
+	void D3D12CommandRecordingContext::ClearDepthStencilView(CPUDescriptorHandle dsv, float depth, uint8_t stencil) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, depth, stencil, 0, nullptr);
+		auto descriptor = GraphiteCPUDescriptorToD3D12Descriptor(dsv);
+		m_CommandList->ClearDepthStencilView(descriptor, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, depth, stencil, 0, nullptr);
 	}
 
-	void D3D12CommandRecordingContext::SetRenderTargets(std::span<const D3D12_CPU_DESCRIPTOR_HANDLE> rtvRange, std::optional<D3D12_CPU_DESCRIPTOR_HANDLE> dsv) const
+	void D3D12CommandRecordingContext::SetRenderTargets(uint32_t rtvCount, CPUDescriptorHandle rtvRange, std::optional<CPUDescriptorHandle> dsv) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->OMSetRenderTargets(static_cast<UINT>(rtvRange.size()), rtvRange.data(), true, dsv.has_value() ? &dsv.value() : nullptr);
+
+		auto rtvDescriptor = GraphiteCPUDescriptorToD3D12Descriptor(rtvRange);
+
+		D3D12_CPU_DESCRIPTOR_HANDLE dsvDescriptor;
+		if (dsv.has_value())
+		{
+			dsvDescriptor = GraphiteCPUDescriptorToD3D12Descriptor(dsv.value());
+		}
+
+		m_CommandList->OMSetRenderTargets(static_cast<UINT>(rtvCount), &rtvDescriptor, true, dsv.has_value() ? &dsvDescriptor : nullptr);
 	}
 
 	void D3D12CommandRecordingContext::SetGraphicsPipelineState(const GraphicsPipeline& pipelineState) const

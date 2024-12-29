@@ -177,6 +177,11 @@ namespace Graphite::D3D12
 		m_BackBufferHeight = height;
 
 		// Free previous swap chain render targets and descriptors
+		m_BackBufferRTVs.Free();
+		for (auto& buffer : m_BackBuffers)
+		{
+			buffer.ReleaseAndGetAddressOf();
+		}
 
 		// Wait until idle
 		WaitForGPUIdle();
@@ -192,6 +197,9 @@ namespace Graphite::D3D12
 		BOOL fullscreenState;
 		DX_THROW_IF_FAIL(m_SwapChain->GetFullscreenState(&fullscreenState, nullptr));
 		m_WindowedMode = !fullscreenState;
+
+		// Recreate resources for back buffers
+		CreateBackBufferRTVs();
 
 		m_FrameResources.at(m_CurrentBackBuffer).SetFence(m_DirectQueue->Signal());
 
@@ -359,11 +367,11 @@ namespace Graphite::D3D12
 
 	void D3D12GraphicsContext::CreateDescriptorHeaps()
 	{
-		m_ResourceHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1024, false, L"Resource Descriptor Heap");
-		m_SamplerHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 16, false, L"Sampler Descriptor Heap");
+		m_ResourceHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RESOURCE, 1024, false, L"Resource Descriptor Heap");
+		m_SamplerHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_SAMPLER, 16, false, L"Sampler Descriptor Heap");
 
-		m_DSVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 64, true, L"DSV Descriptor Heap");
-		m_RTVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 64, true, L"RTV Descriptor Heap");
+		m_DSVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_DSV, 64, true, L"DSV Descriptor Heap");
+		m_RTVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RTV, 64, true, L"RTV Descriptor Heap");
 	}
 
 	void D3D12GraphicsContext::CreateBackBufferRTVs()
@@ -375,7 +383,9 @@ namespace Graphite::D3D12
 		for (UINT n = 0; n < s_BackBufferCount; n++)
 		{
 			DX_THROW_IF_FAIL(m_SwapChain->GetBuffer(n, IID_PPV_ARGS(&m_BackBuffers.at(n))));
-			m_Device->CreateRenderTargetView(m_BackBuffers.at(n).Get(), nullptr, m_BackBufferRTVs.GetCPUHandle(n));
+			D3D12_CPU_DESCRIPTOR_HANDLE rtv = GraphiteCPUDescriptorToD3D12Descriptor(m_BackBufferRTVs.GetCPUHandle(n));
+			m_Device->CreateRenderTargetView(m_BackBuffers.at(n).Get(), nullptr, rtv);
+
 #ifdef GRAPHITE_DEBUG
 			std::wstring name(L"Back Buffer ");
 			name += std::to_wstring(n);

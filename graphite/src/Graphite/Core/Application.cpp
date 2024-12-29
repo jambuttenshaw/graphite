@@ -129,10 +129,10 @@ namespace Graphite
 
 					// Record commands
 					auto rtv = static_cast<D3D12::D3D12GraphicsContext*>(m_GraphicsContext.get())->GetBackBufferRenderTargetView();
-					float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+					glm::vec4 clearColor{ 1.0f, 0.0f, 0.0f, 1.0f };
 					recordingContext->ClearRenderTargetView(rtv, clearColor);
 
-					recordingContext->SetRenderTargets({ &rtv, 1 }, std::nullopt);
+					recordingContext->SetRenderTargets(1, rtv, std::nullopt);
 
 					recordingContext->SetGraphicsPipelineState(*m_GraphicsPipeline);
 

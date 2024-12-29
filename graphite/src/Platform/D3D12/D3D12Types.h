@@ -15,7 +15,13 @@ namespace Graphite::D3D12
 	extern DXGI_FORMAT GraphiteFormatToD3D12Format(GraphiteFormat format);
 	extern D3D_PRIMITIVE_TOPOLOGY GraphiteTopologyToD3D12Topology(GraphiteTopology topology);
 
-	extern D3D12_DESCRIPTOR_HEAP_TYPE GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(GraphiteDescriptorHeapTypes heapType);
+	extern D3D12_DESCRIPTOR_HEAP_TYPE GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(DescriptorHeapType heapType);
+
+	extern D3D12_CPU_DESCRIPTOR_HANDLE GraphiteCPUDescriptorToD3D12Descriptor(CPUDescriptorHandle descriptor);
+	extern CPUDescriptorHandle D3D12CPUDescriptorToGraphiteDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE descriptor);
+
+	extern D3D12_GPU_DESCRIPTOR_HANDLE GraphiteGPUDescriptorToD3D12Descriptor(GPUDescriptorHandle descriptor);
+	extern GPUDescriptorHandle D3D12GPUDescriptorToGraphiteDescriptor(D3D12_GPU_DESCRIPTOR_HANDLE descriptor);
 
 	extern D3D12_VIEWPORT GraphiteViewportToD3D12Viewport(const Viewport& viewport);
 

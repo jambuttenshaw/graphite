@@ -29,10 +29,10 @@ namespace Graphite
 		// Command recording API
 		virtual void SetDescriptorHeaps(DescriptorHeap* resourceHeap, DescriptorHeap* samplerHeap) const = 0;
 
-		virtual void ClearRenderTargetView(D3D12_CPU_DESCRIPTOR_HANDLE rtv, float* clearColor) const = 0;
-		virtual void ClearDepthStencilView(D3D12_CPU_DESCRIPTOR_HANDLE dsv, float depth, uint8_t stencil) const = 0;
+		virtual void ClearRenderTargetView(CPUDescriptorHandle rtv, const glm::vec4& clearColor) const = 0;
+		virtual void ClearDepthStencilView(CPUDescriptorHandle dsv, float depth, uint8_t stencil) const = 0;
 
-		virtual void SetRenderTargets(std::span<const D3D12_CPU_DESCRIPTOR_HANDLE> rtvRange, std::optional<D3D12_CPU_DESCRIPTOR_HANDLE> dsv) const = 0;
+		virtual void SetRenderTargets(uint32_t rtvCount, CPUDescriptorHandle rtvRange, std::optional<CPUDescriptorHandle> dsv) const = 0;
 
 		virtual void SetGraphicsPipelineState(const GraphicsPipeline& pipelineState) const = 0;
 

@@ -215,6 +215,9 @@
     <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceViews.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\shaders.hlsl" />

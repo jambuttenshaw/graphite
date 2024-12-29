@@ -8,8 +8,11 @@ namespace Graphite
 
 	using GPUVirtualAddress = uint64_t;
 
+    using CPUDescriptorHandle = uint64_t;
+    using GPUDescriptorHandle = uint64_t;
 
-	enum GraphiteFormat
+
+	enum GraphiteFormat : uint8_t
 	{
         GraphiteFormat_Unknown,
         GraphiteFormat_R32G32B32A32_TYPELESS,
@@ -129,7 +132,7 @@ namespace Graphite
         GraphiteFormat_B4G4R4A4_UNORM
 	};
 
-    enum GraphiteTopology
+    enum GraphiteTopology : uint8_t
     {
         GraphiteTopology_UNDEFINED,
         GraphiteTopology_POINTLIST,
@@ -176,7 +179,7 @@ namespace Graphite
         GraphiteTopology_32_CONTROL_POINT_PATCHLIST,
     };
 
-	enum GraphiteDescriptorHeapTypes
+	enum DescriptorHeapType : uint8_t
 	{
 		GraphiteDescriptorHeap_RTV,
 		GraphiteDescriptorHeap_DSV,
