@@ -120,6 +120,7 @@
     <ClInclude Include="src\Graphite\Window\Window.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GraphicsContext.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12Types.h" />
+    <ClInclude Include="src\Platform\D3D12\GraphiteD3D12.h" />
     <ClInclude Include="src\Platform\D3D12\graphite_d3d12_pch.h" />
     <ClInclude Include="src\Platform\D3D12\Pipelines\D3D12GraphicsPipeline.h" />
     <ClInclude Include="src\Platform\D3D12\Pipelines\D3D12ShaderCompiler.h" />

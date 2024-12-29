@@ -1,10 +1,7 @@
 #include "graphite_pch.h"
 #include "GraphicsPipeline.h"
 
-namespace Graphite::D3D12
-{
-	extern GraphicsPipeline* CreateD3D12GraphicsPipeline(const GraphicsContext&, const GraphicsPipelineDescription&);
-}
+#include "Platform/D3D12/GraphiteD3D12.h"
 
 
 namespace Graphite

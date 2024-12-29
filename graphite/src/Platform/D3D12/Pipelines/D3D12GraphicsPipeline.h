@@ -15,10 +15,6 @@ namespace Graphite
 
 namespace Graphite::D3D12
 {
-	// Factory function used by core Graphite
-	extern GraphicsPipeline* CreateD3D12GraphicsPipeline(const GraphicsContext&, const GraphicsPipelineDescription&);
-
-
 	class D3D12GraphicsPipeline : public GraphicsPipeline
 	{
 	public:

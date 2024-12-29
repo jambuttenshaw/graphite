@@ -23,10 +23,6 @@ namespace Graphite::D3D12
 	class D3D12CommandRecordingContext;
 
 
-	// Called by core Graphite to create a context
-	// This is to avoid leaking any D3D12 dependencies into the core library
-	GraphicsContext* CreateD3D12GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc);
-
 	class D3D12GraphicsContext : public GraphicsContext
 	{
 	public:

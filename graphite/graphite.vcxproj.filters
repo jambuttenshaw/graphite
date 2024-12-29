@@ -138,6 +138,9 @@
     <ClInclude Include="src\Platform\D3D12\graphite_d3d12_pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\GraphiteD3D12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphite\graphite_pch.cpp">

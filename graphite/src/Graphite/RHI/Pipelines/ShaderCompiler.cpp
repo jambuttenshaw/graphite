@@ -3,11 +3,7 @@
 
 #include "Graphite/Core/Assert.h"
 
-
-namespace Graphite::D3D12
-{
-	extern ShaderCompiler* CreateD3D12ShaderCompiler();
-}
+#include "Platform/D3D12/GraphiteD3D12.h"
 
 
 namespace Graphite
