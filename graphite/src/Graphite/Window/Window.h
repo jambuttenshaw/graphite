@@ -35,11 +35,12 @@ namespace Graphite
 		DELETE_COPY(Window);
 		DELETE_MOVE(Window);
 
-		inline uint32_t GetWidth() const { return m_WindowData.Width; }
-		inline uint32_t GetHeight() const { return m_WindowData.Height; }
+		// Exported API for client applications to use
+		GRAPHITE_API inline uint32_t GetWidth() const { return m_WindowData.Width; }
+		GRAPHITE_API inline uint32_t GetHeight() const { return m_WindowData.Height; }
 
-		Viewport GetDefaultViewport() const;
-		Rectangle GetDefaultRectangle() const;
+		GRAPHITE_API Viewport GetDefaultViewport() const;
+		GRAPHITE_API Rectangle GetDefaultRectangle() const;
 
 		inline HWND GetHandle() const { return m_HWND; }
 

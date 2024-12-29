@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Graphite/Core/Core.h"
+
 
 namespace Graphite
 {
@@ -19,16 +21,17 @@ namespace Graphite
 	{
 	public:
 		// Constructs an input layout from a list of elements
-		InputLayout(std::initializer_list<InputElement> inputElements);
+		GRAPHITE_API InputLayout(std::initializer_list<InputElement> inputElements);
 
-		inline size_t GetElementCount() const { return m_InputElements.size(); }
-		inline uint32_t GetVertexStride() const { return m_VertexStride; }
+		GRAPHITE_API inline size_t GetElementCount() const { return m_InputElements.size(); }
+		GRAPHITE_API inline uint32_t GetVertexStride() const { return m_VertexStride; }
 
-		std::vector<InputElement>::iterator begin() { return m_InputElements.begin(); }
-		std::vector<InputElement>::iterator end() { return m_InputElements.end(); }
+		// Iterators to use InputLayout as a container of input elements
+		GRAPHITE_API std::vector<InputElement>::iterator begin() { return m_InputElements.begin(); }
+		GRAPHITE_API std::vector<InputElement>::iterator end() { return m_InputElements.end(); }
 
-		std::vector<InputElement>::const_iterator begin() const { return m_InputElements.begin(); }
-		std::vector<InputElement>::const_iterator end() const { return m_InputElements.end(); }
+		GRAPHITE_API std::vector<InputElement>::const_iterator begin() const { return m_InputElements.begin(); }
+		GRAPHITE_API std::vector<InputElement>::const_iterator end() const { return m_InputElements.end(); }
 
 	private:
 		std::vector<InputElement> m_InputElements;

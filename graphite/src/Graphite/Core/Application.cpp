@@ -2,26 +2,28 @@
 #include "Application.h"
 
 #include "Log.h"
-#include "Graphite/Window/Window.h"
+#include "Assert.h"
 
+#include "Graphite/Window/Window.h"
 #include "Graphite/Events/WindowEvent.h"
 
 // Graphics
 #include "Graphite/RHI/GraphicsContext.h"
-#include "Graphite/RHI/CommandRecordingContext.h"
-
-#include "Graphite/RHI/Resources/Geometry.h"
-
-#include "Graphite/RHI/Resources/ResourceFactory.h"
-#include "Graphite/RHI/Pipelines/GraphicsPipeline.h"
-#include "Graphite/RHI/Resources/ResourceViews.h"
 
 
 namespace Graphite
 {
+	Application* g_Application = nullptr;
 
 	Application::Application()
 	{
+		// Logging must be initialised immediately
+		// so that assertions are available
+		Log::InitLogging();
+
+		GRAPHITE_ASSERT(!g_Application, "Cannot create a second application!");
+		g_Application = this;
+
 		constexpr uint32_t defaultWidth = 1600;
 		constexpr uint32_t defaultHeight = 900;
 
@@ -50,41 +52,6 @@ namespace Graphite
 			.MaxRecordingContextsPerFrame = std::thread::hardware_concurrency()
 		};
 		m_GraphicsContext = GraphicsContext::Create(graphicsContextDesc);
-
-		// Create resources
-
-		// Define geometry
-		Vertex_Position vertices[] = {
-			{ { -0.5f, -0.5f, 0.0f } },
-			{ { 0.0f, 0.5f, 0.0f } },
-			{ { 0.5f, -0.5f, 0.0f } },
-		};
-		uint16_t indices[] = {
-			0, 1, 2
-		};
-
-		// Create vertex and index buffer
-		m_VertexBuffer = ResourceFactory::Get().CreateUploadBuffer(3, 1, Vertex_Position::VertexInputLayout.GetVertexStride(), 0);
-		m_IndexBuffer = ResourceFactory::Get().CreateUploadBuffer(3, 1, sizeof(indices[0]), 0);
-
-		m_VertexBuffer->CopyElements(0, 3, 0, vertices, sizeof(vertices));
-		m_IndexBuffer->CopyElements(0, 3, 0, indices, sizeof(indices));
-
-		// Create graphics pipeline
-		GraphicsPipelineDescription psoDesc
-		{
-			.InputVertexLayout = &Vertex_Position::VertexInputLayout,
-			.VertexShader = {
-				.FilePath = L"../graphite/assets/shaders/shaders.hlsl",
-				.EntryPoint = L"VSMain"
-			},
-			.PixelShader = {
-				.FilePath = L"../graphite/assets/shaders/shaders.hlsl",
-				.EntryPoint = L"PSMain"
-			}
-		};
-
-		m_GraphicsPipeline = GraphicsPipeline::Create(*m_GraphicsContext, psoDesc);
 	}
 
 	Application::~Application()
@@ -94,6 +61,8 @@ namespace Graphite
 
 	int Application::Run()
 	{
+		OnInit();
+
 		while (m_Running)
 		{
 			// First buffer all messages from all systems capable of submitting events
@@ -109,52 +78,12 @@ namespace Graphite
 			{
 				layer->OnUpdate();
 			}
-
-			// Render frame
-			{
-				m_GraphicsContext->BeginFrame();
-
-				// Perform all rendering
-				{
-					CommandRecordingContext* recordingContext = m_GraphicsContext->AcquireRecordingContext();
-
-					// Set viewport
-					Viewport viewports = m_Window->GetDefaultViewport();
-					recordingContext->SetViewports({ &viewports, 1 });
-
-					Rectangle scissorRect = m_Window->GetDefaultRectangle();
-					recordingContext->SetScissorRects({ &scissorRect, 1 });
-
-					// Record commands
-					glm::vec4 clearColor{ 1.0f, 0.0f, 0.0f, 1.0f };
-					CPUDescriptorHandle rtv = m_GraphicsContext->GetBackBufferRenderTargetView();
-
-					recordingContext->ClearRenderTargetView(rtv, clearColor);
-
-					recordingContext->SetRenderTargets(1, rtv, std::nullopt);
-
-					recordingContext->SetGraphicsPipelineState(*m_GraphicsPipeline);
-
-					recordingContext->SetPrimitiveTopology(GraphiteTopology_TRIANGLELIST);
-
-					VertexBufferView vbv = VertexBufferView::Create(*m_VertexBuffer);
-					IndexBufferView ibv = IndexBufferView::Create(*m_IndexBuffer);
-
-					recordingContext->SetVertexBuffers(0, { &vbv, 1});
-					recordingContext->SetIndexBuffer(ibv);
-
-					recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
-
-					m_GraphicsContext->CloseRecordingContext(recordingContext);
-				}
-
-				m_GraphicsContext->EndFrame();
-				m_GraphicsContext->Present();
-			}
 		}
 
 		// Wait for all GPU work to finish before cleaning up
 		m_GraphicsContext->WaitForGPUIdle();
+
+		OnDestroy();
 
 		return 0;
 	}

@@ -29,9 +29,14 @@ namespace Graphite
 		GRAPHITE_API Layer* PushLayer(std::unique_ptr<Layer> layer);
 		GRAPHITE_API Layer* PushOverlay(std::unique_ptr<Layer> layer);
 
+		// Get application objects
+		GRAPHITE_API Window* GetWindow() const { return m_Window.get(); }
+		GRAPHITE_API GraphicsContext* GetGraphicsContext() const { return m_GraphicsContext.get(); }
+
 	protected:
 		// Interface for clients to implement
-		GRAPHITE_API virtual void OnInit() {}
+		GRAPHITE_API virtual void OnInit()		{}
+		GRAPHITE_API virtual void OnDestroy()	{}
 
 	private:
 
@@ -45,13 +50,9 @@ namespace Graphite
 
 		LayerStack m_LayerStack;
 		std::unique_ptr<Window> m_Window;
-
-		std::unique_ptr<UploadBuffer> m_VertexBuffer;
-		std::unique_ptr<UploadBuffer> m_IndexBuffer;
-
-		std::unique_ptr<GraphicsPipeline> m_GraphicsPipeline;
 	};
 
+	GRAPHITE_API extern Application* g_Application;
 	extern std::unique_ptr<Application> CreateApplication();
-
+	
 }

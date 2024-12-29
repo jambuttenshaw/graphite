@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Graphite/Core/Core.h"
 #include "InputLayout.h"
 
 
@@ -12,7 +13,7 @@ namespace Graphite
 		// Input layout for this vertex type
 		// TODO: build these from shader reflection
 		// TODO: Cache these so they can be shared by compatible vertex types
-		static const InputLayout VertexInputLayout;
+		GRAPHITE_API static const InputLayout VertexInputLayout;
 	};
 
 	// Standard vertex types
@@ -25,6 +26,6 @@ namespace Graphite
 		// Input layout for this vertex type
 		// TODO: build these from shader reflection
 		// TODO: Cache these so they can be shared by compatible vertex types
-		static const InputLayout VertexInputLayout;
+		GRAPHITE_API static const InputLayout VertexInputLayout;
 	};
 }

@@ -1,21 +1,7 @@
 #include "pch.h"
 
+#include "GameLayer.h"
 
-class GameLayer : public Graphite::Layer
-{
-public:
-
-	virtual void OnAttach() override
-	{
-		// Setup
-
-	}
-
-	virtual void OnUpdate() override
-	{
-		
-	}
-};
 
 class SampleApplication : public Graphite::Application
 {
@@ -26,6 +12,7 @@ public:
 		(void)PushLayer(std::make_unique<GameLayer>());
 	}
 };
+
 
 std::unique_ptr<Graphite::Application> Graphite::CreateApplication()
 {

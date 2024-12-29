@@ -23,7 +23,7 @@ namespace Graphite
 	{
 	public:
 		// Factory
-		static std::unique_ptr<GraphicsPipeline> Create(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& pipelineDesc);
+		GRAPHITE_API static std::unique_ptr<GraphicsPipeline> Create(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& pipelineDesc);
 
 	protected:
 		GraphicsPipeline() = default;

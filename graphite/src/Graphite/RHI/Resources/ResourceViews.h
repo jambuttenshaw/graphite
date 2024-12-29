@@ -16,9 +16,9 @@ namespace Graphite
 		uint64_t BufferSize;
 		uint64_t VertexStride;
 
-		static VertexBufferView Create(const UploadBuffer& resource);
-		static VertexBufferView Create(const StructuredBuffer& resource);
-		static VertexBufferView Create(const GPUResource& resource, const InputLayout& vertexLayout);
+		GRAPHITE_API static VertexBufferView Create(const UploadBuffer& resource);
+		GRAPHITE_API static VertexBufferView Create(const StructuredBuffer& resource);
+		GRAPHITE_API static VertexBufferView Create(const GPUResource& resource, const InputLayout& vertexLayout);
 	};
 
 
@@ -28,9 +28,9 @@ namespace Graphite
 		uint64_t BufferSize;
 		GraphiteFormat IndexFormat;
 
-		static IndexBufferView Create(const UploadBuffer& resource);
-		static IndexBufferView Create(const StructuredBuffer& resource);
-		static IndexBufferView Create(const GPUResource& resource);
+		GRAPHITE_API static IndexBufferView Create(const UploadBuffer& resource);
+		GRAPHITE_API static IndexBufferView Create(const StructuredBuffer& resource);
+		GRAPHITE_API static IndexBufferView Create(const GPUResource& resource);
 	};
 
 
