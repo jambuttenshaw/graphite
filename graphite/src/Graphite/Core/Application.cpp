@@ -8,6 +8,7 @@
 #include "Graphite/Events/WindowEvent.h"
 
 // Graphics
+#include "Graphite/ImGui/ImGuiLayer.h"
 #include "Graphite/RHI/GraphicsContext.h"
 
 
@@ -61,6 +62,7 @@ namespace Graphite
 
 	int Application::Run()
 	{
+		PushOverlay(std::make_unique<ImGuiLayer>());
 		OnInit();
 
 		while (m_Running)
@@ -78,11 +80,25 @@ namespace Graphite
 			{
 				layer->OnUpdate();
 			}
+
+
+			// Render frame
+			m_GraphicsContext->BeginFrame();
+
+			for (auto& layer : m_LayerStack)
+			{
+				layer->OnRender();
+			}
+
+			m_GraphicsContext->EndFrame();
+			m_GraphicsContext->Present();
 		}
 
 		// Wait for all GPU work to finish before cleaning up
 		m_GraphicsContext->WaitForGPUIdle();
 
+		// Destroy all layers before destroying client application
+		m_LayerStack.Clear();
 		OnDestroy();
 
 		return 0;

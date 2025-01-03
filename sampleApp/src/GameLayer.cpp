@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "GameLayer.h"
 
+#include "imgui.h"
+
 
 void GameLayer::OnAttach()
 {
@@ -15,8 +17,8 @@ void GameLayer::OnAttach()
 	};
 
 	// Create vertex and index buffer
-	m_VertexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer(3, 1, Graphite::Vertex_Position::VertexInputLayout.GetVertexStride(), 0);
-	m_IndexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer(3, 1, sizeof(indices[0]), 0);
+	m_VertexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<Graphite::Vertex_Position>(3, 1, 0);
+	m_IndexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<uint16_t>(3, 1, 0);
 
 	m_VertexBuffer->CopyElements(0, 3, 0, vertices, sizeof(vertices));
 	m_IndexBuffer->CopyElements(0, 3, 0, indices, sizeof(indices));
@@ -42,10 +44,15 @@ void GameLayer::OnAttach()
 
 void GameLayer::OnUpdate()
 {
+	ImGui::ShowDemoWindow();
+}
+
+
+void GameLayer::OnRender()
+{
+	return;
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	Graphite::Window* window = Graphite::g_Application->GetWindow();
-
-	graphicsContext->BeginFrame();
 
 	// Perform all rendering
 	{
@@ -80,7 +87,4 @@ void GameLayer::OnUpdate()
 
 		graphicsContext->CloseRecordingContext(recordingContext);
 	}
-
-	graphicsContext->EndFrame();
-	graphicsContext->Present();
 }

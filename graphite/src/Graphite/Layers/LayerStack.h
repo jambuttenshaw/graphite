@@ -13,7 +13,7 @@ namespace Graphite
 
 	public:
 		LayerStack();
-		~LayerStack() = default;
+		~LayerStack();
 
 		DELETE_COPY(LayerStack);
 		DEFAULT_MOVE(LayerStack);
@@ -26,6 +26,8 @@ namespace Graphite
 
 		LayerIterator begin() { return m_Layers.begin(); }
 		LayerIterator end() { return m_Layers.end(); }
+
+		void Clear();
 
 	private:
 		std::vector<std::unique_ptr<Layer>> m_Layers;

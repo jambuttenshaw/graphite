@@ -4,10 +4,11 @@
 #include "Graphite/Events/Event.h"
 #include "Graphite/Layers/LayerStack.h"
 
+#include "Graphite/Window/Window.h"
+
 
 namespace Graphite
 {
-	class Window;
 	class GraphicsContext;
 
 	class UploadBuffer;
@@ -35,7 +36,9 @@ namespace Graphite
 
 	protected:
 		// Interface for clients to implement
+
 		GRAPHITE_API virtual void OnInit()		{}
+		// NOTE: All layers will be destroyed before OnDestroy is called
 		GRAPHITE_API virtual void OnDestroy()	{}
 
 	private:

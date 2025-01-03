@@ -7,9 +7,10 @@
 namespace Graphite
 {
 	class CommandRecordingContext;
+	class DescriptorHeap;
 
 
-	struct GRAPHITE_API GraphiteGraphicsContextDesc
+	struct GraphiteGraphicsContextDesc
 	{
 		// The window that the graphics context is being created for
 		HWND WindowHandle;
@@ -24,7 +25,7 @@ namespace Graphite
 	};
 
 
-	class GRAPHITE_API GraphicsContext
+	class GraphicsContext
 	{
 	public:
 		// Factory
@@ -48,28 +49,32 @@ namespace Graphite
 
 		// Multiple recording contexts can be active at a time
 		// This is to facilitate multithreaded command recording
-		virtual CommandRecordingContext* AcquireRecordingContext() = 0;
-		virtual void CloseRecordingContext(CommandRecordingContext* recordingContext) = 0;
+		GRAPHITE_API virtual CommandRecordingContext* AcquireRecordingContext() = 0;
+		GRAPHITE_API virtual void CloseRecordingContext(CommandRecordingContext* recordingContext) = 0;
 
 		virtual void Present() = 0;
 
 		virtual void ResizeBackBuffer(uint32_t width, uint32_t height) = 0;
 
-		virtual void WaitForGPUIdle() const = 0;
+		GRAPHITE_API virtual void WaitForGPUIdle() const = 0;
 
 	public:
 		// Getters
-		inline static constexpr uint32_t GetBackBufferCount() { return s_BackBufferCount; }
-		inline uint32_t GetCurrentBackBuffer() const { return m_CurrentBackBuffer; }
+		GRAPHITE_API inline static constexpr uint32_t GetBackBufferCount() { return s_BackBufferCount; }
+		GRAPHITE_API inline uint32_t GetCurrentBackBuffer() const { return m_CurrentBackBuffer; }
 
-		inline uint32_t GetBackBufferWidth() const { return m_BackBufferWidth; }
-		inline uint32_t GetBackBufferHeight() const { return m_BackBufferHeight; }
+		GRAPHITE_API inline uint32_t GetBackBufferWidth() const { return m_BackBufferWidth; }
+		GRAPHITE_API inline uint32_t GetBackBufferHeight() const { return m_BackBufferHeight; }
 
-		virtual CPUDescriptorHandle GetBackBufferRenderTargetView() const = 0;
+		GRAPHITE_API virtual CPUDescriptorHandle GetBackBufferRenderTargetView() const = 0;
+
+		// Resource management
+		GRAPHITE_API virtual DescriptorHeap* GetResourceDescriptorHeap() const = 0;
+		GRAPHITE_API virtual DescriptorHeap* GetSamplerDescriptorHeap() const = 0;
 
 		// VSync
-		inline bool GetVSync() const { return m_VSync; }
-		inline void SetVSync(bool vsync) { m_VSync = vsync; }
+		GRAPHITE_API inline bool GetVSync() const { return m_VSync; }
+		GRAPHITE_API inline void SetVSync(bool vsync) { m_VSync = vsync; }
 
 	protected:
 		// Properties

@@ -59,5 +59,9 @@
 
 #include "Graphite/RHI/Pipelines/GraphicsPipeline.h"
 
+// ImGui
+#include "Graphite/ImGui/ImGuiInterface.h"
+
+
 /////// Entry Point ///////
 #include "Graphite/Core/EntryPoint.h"

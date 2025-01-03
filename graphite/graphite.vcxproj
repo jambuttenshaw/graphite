@@ -52,7 +52,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>graphite_pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>vendor/D3D12MemoryAllocator/include;vendor/DirectX-Headers/include;src/;vendor/;vendor/spdlog/include/;vendor/glm/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor/D3D12MemoryAllocator/include;vendor/DirectX-Headers/include;src/;vendor/;vendor/spdlog/include/;vendor/imgui/;vendor/glm/</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -73,7 +73,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>graphite_pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>vendor/D3D12MemoryAllocator/include;vendor/DirectX-Headers/include;src/;vendor/;vendor/spdlog/include/;vendor/glm/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor/D3D12MemoryAllocator/include;vendor/DirectX-Headers/include;src/;vendor/;vendor/spdlog/include/;vendor/imgui/;vendor/glm/</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -96,7 +96,9 @@
     <ClInclude Include="src\Graphite\Events\KeyboardEvent.h" />
     <ClInclude Include="src\Graphite\Events\MouseEvent.h" />
     <ClInclude Include="src\Graphite\Events\WindowEvent.h" />
+    <ClInclude Include="src\Graphite\ImGui\ImGuiBackend.h" />
     <ClInclude Include="src\Graphite\Input\KeyCodes.h" />
+    <ClInclude Include="src\Graphite\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Graphite\Layers\Layer.h" />
     <ClInclude Include="src\Graphite\Layers\LayerStack.h" />
     <ClInclude Include="src\Graphite\graphite_pch.h" />
@@ -122,6 +124,8 @@
     <ClInclude Include="src\Platform\D3D12\D3D12Types.h" />
     <ClInclude Include="src\Platform\D3D12\GraphiteD3D12.h" />
     <ClInclude Include="src\Platform\D3D12\graphite_d3d12_pch.h" />
+    <ClInclude Include="src\Platform\D3D12\ImGui\D3D12ImGuiBackend.h" />
+    <ClInclude Include="src\Graphite\ImGui\ImGuiInterface.h" />
     <ClInclude Include="src\Platform\D3D12\Pipelines\D3D12GraphicsPipeline.h" />
     <ClInclude Include="src\Platform\D3D12\Pipelines\D3D12ShaderCompiler.h" />
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12Buffer.h" />
@@ -132,6 +136,9 @@
   <ItemGroup>
     <ClCompile Include="src\Graphite\Core\Application.cpp" />
     <ClCompile Include="src\Graphite\Core\Log.cpp" />
+    <ClCompile Include="src\Graphite\ImGui\ImGuiBackend.cpp" />
+    <ClCompile Include="src\Graphite\ImGui\ImGuiInterface.cpp" />
+    <ClCompile Include="src\Graphite\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Graphite\Layers\LayerStack.cpp" />
     <ClCompile Include="src\Graphite\graphite_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -190,6 +197,12 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\ImGui\D3D12ImGuiBackend.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)_d3d12.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\Pipelines\D3D12GraphicsPipeline.cpp">

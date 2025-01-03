@@ -20,6 +20,8 @@ namespace Graphite
 		virtual void OnDetach() {}
 
 		virtual void OnUpdate() {}
+		virtual void OnRender() {}
+
 		virtual void OnEvent(Event&) {}
 	};
 

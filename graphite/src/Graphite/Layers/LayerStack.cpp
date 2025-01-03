@@ -9,6 +9,11 @@ namespace Graphite
 		m_LayerInsert = 0;
 	}
 
+	LayerStack::~LayerStack()
+	{
+		Clear();
+	}
+
 	Layer* LayerStack::PushLayer(std::unique_ptr<Layer> layer)
 	{
 		LayerIterator it = m_Layers.emplace(begin() + m_LayerInsert, std::move(layer));
@@ -58,5 +63,16 @@ namespace Graphite
 			return std::move(poppedLayer);
 		}
 		return nullptr;
+	}
+
+	void LayerStack::Clear()
+	{
+		// Detach all layers
+		for (auto& layer : m_Layers)
+		{
+			layer->OnDetach();
+		}
+		m_Layers.clear();
+		m_LayerInsert = 0;
 	}
 }

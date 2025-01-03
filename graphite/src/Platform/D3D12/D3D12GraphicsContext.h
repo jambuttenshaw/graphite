@@ -45,11 +45,14 @@ namespace Graphite::D3D12
 
 		virtual void ResizeBackBuffer(uint32_t width, uint32_t height) override;
 
-		virtual void DeferResourceRelease(const ComPtr<IUnknown>& resource);
+		void DeferResourceRelease(const ComPtr<IUnknown>& resource);
 		virtual void WaitForGPUIdle() const override;
 
 	public:
+		DescriptorHeap* GetResourceDescriptorHeap() const override { return m_ResourceHeap.get(); }
+		DescriptorHeap* GetSamplerDescriptorHeap() const override { return m_SamplerHeap.get(); }
 
+	public:
 		inline DXGI_FORMAT GetNativeBackBufferFormat() const { return m_NativeBackBufferFormat; }
 		inline CPUDescriptorHandle GetBackBufferRenderTargetView() const override { return m_BackBufferRTVs.GetCPUHandle(m_CurrentBackBuffer); }
 
