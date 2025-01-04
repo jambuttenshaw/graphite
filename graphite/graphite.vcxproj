@@ -92,6 +92,7 @@
     <ClInclude Include="src\Graphite\Core\Core.h" />
     <ClInclude Include="src\Graphite\Core\EntryPoint.h" />
     <ClInclude Include="src\Graphite\Core\Log.h" />
+    <ClInclude Include="src\Graphite\Core\Timer.h" />
     <ClInclude Include="src\Graphite\Events\Event.h" />
     <ClInclude Include="src\Graphite\Events\KeyboardEvent.h" />
     <ClInclude Include="src\Graphite\Events\MouseEvent.h" />
@@ -136,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="src\Graphite\Core\Application.cpp" />
     <ClCompile Include="src\Graphite\Core\Log.cpp" />
+    <ClCompile Include="src\Graphite\Core\Timer.cpp" />
     <ClCompile Include="src\Graphite\ImGui\ImGuiBackend.cpp" />
     <ClCompile Include="src\Graphite\ImGui\ImGuiInterface.cpp" />
     <ClCompile Include="src\Graphite\ImGui\ImGuiLayer.cpp" />

@@ -3,6 +3,7 @@
 #include "Graphite/Events/Event.h"
 
 // TODO: Move types used by Window into a more general header
+#include "Graphite/Input/KeyCodes.h"
 #include "Graphite/RHI/RHITypes.h"
 
 
@@ -52,6 +53,8 @@ namespace Graphite
 		static void BufferMessages();
 
 	private:
+		static void SubmitKeyEvent(WindowData& windowData, Key key, bool down, char ascii='\0');
+
 		// static event callback function - specific window specified through hWnd param
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 

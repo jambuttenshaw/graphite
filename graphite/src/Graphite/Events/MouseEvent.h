@@ -36,31 +36,31 @@ namespace Graphite
 	class GRAPHITE_API MouseButtonPressedEvent : public Event
 	{
 	public:
-		MouseButtonPressedEvent(KeyCode mouseButton)
+		MouseButtonPressedEvent(MouseButton mouseButton)
 			: m_MouseButton(mouseButton)
 		{}
 		virtual ~MouseButtonPressedEvent() = default;
 
 		DEFINE_EVENT_TYPE(MouseButtonPressed, EventCategoryInput | EventCategoryMouse | EventCategoryMouseButton);
 
-		inline KeyCode GetMouseButton() const { return m_MouseButton; }
+		inline MouseButton GetMouseButton() const { return m_MouseButton; }
 
 		virtual std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseButtonPressedEvent: " << m_MouseButton;
+			ss << "MouseButtonPressedEvent: " << static_cast<uint32_t>(m_MouseButton);
 			return ss.str();
 		}
 
 	private:
-		KeyCode m_MouseButton = 0;
+		MouseButton m_MouseButton = MouseButton_None;
 	};
 
 
 	class GRAPHITE_API MouseButtonReleasedEvent : public Event
 	{
 	public:
-		MouseButtonReleasedEvent(KeyCode mouseButton)
+		MouseButtonReleasedEvent(MouseButton mouseButton)
 			: m_MouseButton(mouseButton)
 		{
 		}
@@ -68,31 +68,31 @@ namespace Graphite
 
 		DEFINE_EVENT_TYPE(MouseButtonReleased, EventCategoryInput | EventCategoryMouse | EventCategoryMouseButton);
 
-		inline KeyCode GetMouseButton() const { return m_MouseButton; }
+		inline MouseButton GetMouseButton() const { return m_MouseButton; }
 
 		virtual std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseButtonReleasedEvent: " << m_MouseButton;
+			ss << "MouseButtonReleasedEvent: " << static_cast<uint32_t>(m_MouseButton);
 			return ss.str();
 		}
 
 	private:
-		KeyCode m_MouseButton = 0;
+		MouseButton m_MouseButton = MouseButton_None;
 	};
 
 
 	class GRAPHITE_API MouseScrolledEvent : public Event
 	{
 	public:
-		MouseScrolledEvent(int32_t scroll)
+		MouseScrolledEvent(float scroll)
 			: m_Scroll(scroll)
 		{}
 		virtual ~MouseScrolledEvent() = default;
 
 		DEFINE_EVENT_TYPE(MouseScrolled, EventCategoryInput | EventCategoryMouse);
 
-		inline uint32_t GetScroll() const { return m_Scroll; }
+		inline float GetScroll() const { return m_Scroll; }
 
 		virtual std::string ToString() const override
 		{
@@ -102,6 +102,6 @@ namespace Graphite
 		}
 
 	protected:
-		int32_t m_Scroll = 0;
+		float m_Scroll = 0.0f;
 	};
 }

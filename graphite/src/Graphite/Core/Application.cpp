@@ -62,6 +62,8 @@ namespace Graphite
 
 	int Application::Run()
 	{
+		m_Timer.Reset();
+
 		PushOverlay(std::make_unique<ImGuiLayer>());
 		OnInit();
 
@@ -76,6 +78,8 @@ namespace Graphite
 
 
 			// Update frame
+			(void)m_Timer.Tick();
+
 			for (auto& layer : m_LayerStack)
 			{
 				layer->OnUpdate();

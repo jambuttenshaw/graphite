@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Core.h"
+
+#include "Timer.h"
+
 #include "Graphite/Events/Event.h"
 #include "Graphite/Layers/LayerStack.h"
 
@@ -34,6 +37,9 @@ namespace Graphite
 		GRAPHITE_API Window* GetWindow() const { return m_Window.get(); }
 		GRAPHITE_API GraphicsContext* GetGraphicsContext() const { return m_GraphicsContext.get(); }
 
+		// General purpose getters
+		GRAPHITE_API float GetDeltaTime() const { return m_Timer.GetDeltaTime(); }
+
 	protected:
 		// Interface for clients to implement
 
@@ -46,13 +52,15 @@ namespace Graphite
 		void OnEvent(Event& event);
 
 	protected:
+		Timer m_Timer;
+
 		std::unique_ptr<GraphicsContext> m_GraphicsContext;
+		std::unique_ptr<Window> m_Window;
 
 	private:
 		bool m_Running = true;
 
 		LayerStack m_LayerStack;
-		std::unique_ptr<Window> m_Window;
 	};
 
 	GRAPHITE_API extern Application* g_Application;

@@ -3,6 +3,10 @@
 #include "Graphite/Layers/Layer.h"
 #include "ImGuiBackend.h"
 
+#include "Graphite/Events/KeyboardEvent.h"
+#include "Graphite/Events/MouseEvent.h"
+#include "Graphite/Events/WindowEvent.h"
+
 #include "Graphite/RHI/DescriptorHeap.h"
 
 
@@ -18,7 +22,7 @@ namespace Graphite
 		void OnEvent(Event&) override;
 
 	private:
-		void PrepareNewFrame();
+		void NewFrame();
 
 	private:
 		std::unique_ptr<ImGuiBackend> m_Backend;
