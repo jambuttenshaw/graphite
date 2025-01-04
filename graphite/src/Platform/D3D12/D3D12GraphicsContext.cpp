@@ -80,10 +80,11 @@ namespace Graphite::D3D12
 	void D3D12GraphicsContext::BeginFrame()
 	{
 		// Reset allocators so they can be distributed when requested
+		// TODO: Only reset allocators as they are requested to prevent resetting allocators unnecessarily
 		m_FrameResources.at(m_CurrentBackBuffer).ResetAllAllocators();
 
-		// Internal command list that sets up the frame
-		// This is required as the order in which applications work will execute cannot be known
+		// Internal pass to perform setup
+		BeginPass();
 		{
 			D3D12CommandRecordingContext* recordingContext = dynamic_cast<D3D12CommandRecordingContext*>(AcquireRecordingContext());
 
@@ -94,8 +95,7 @@ namespace Graphite::D3D12
 
 			CloseRecordingContext(recordingContext);
 		}
-
-		FlushPendingCommandLists();
+		EndPass();
 	}
 
 	void D3D12GraphicsContext::EndFrame()
@@ -103,12 +103,9 @@ namespace Graphite::D3D12
 		// Ensure all recording contexts have been returned to the graphics context
 		GRAPHITE_ASSERT(m_OpenRecordingContexts == 0, "Some recording contexts were not closed before EndFrame.");
 
-		// Execute all recording contexts that were populated this frame
-		// TODO: Allow earlier work submission? This could work with a render pass system - but would require rework of allocator pooling (pool per render pass)
-		FlushPendingCommandLists();
 
-
-		// Finally submit internal command list that ends the frame
+		// Finally perform an internal pass that ends the frame
+		BeginPass();
 		{
 			D3D12CommandRecordingContext* recordingContext = dynamic_cast<D3D12CommandRecordingContext*>(AcquireRecordingContext());
 
@@ -119,9 +116,23 @@ namespace Graphite::D3D12
 
 			CloseRecordingContext(recordingContext);
 		}
-		FlushPendingCommandLists();
+		EndPass();
 
 		m_RecordingContextsUsedThisFrame = 0;
+	}
+
+	void D3D12GraphicsContext::BeginPass()
+	{
+		// TODO: This will perform debug marking
+
+		// TODO: Allow for COMMAND CONTEXTS to be re-used throughout multiple passes
+		// TODO: COMMAND ALLOCATORS must remain strictly single use per frame, obviously
+	}
+
+	void D3D12GraphicsContext::EndPass()
+	{
+		GRAPHITE_ASSERT(m_OpenRecordingContexts == 0, "Some recording contexts were not closed before EndPass.");
+		FlushPendingCommandLists();
 	}
 
 	CommandRecordingContext* D3D12GraphicsContext::AcquireRecordingContext()

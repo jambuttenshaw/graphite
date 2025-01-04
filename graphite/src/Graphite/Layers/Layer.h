@@ -20,6 +20,9 @@ namespace Graphite
 		virtual void OnDetach() {}
 
 		virtual void OnUpdate() {}
+
+		// Any rendering performed in a layer should be performed in at least one pass
+		// I.e., a pair of BeginPass()/EndPass() should be called within the OnRender function
 		virtual void OnRender() {}
 
 		virtual void OnEvent(Event&) {}

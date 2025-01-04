@@ -32,9 +32,11 @@ namespace Graphite::D3D12
 		DELETE_COPY(D3D12GraphicsContext);
 		DEFAULT_MOVE(D3D12GraphicsContext);
 
-		// Application API
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
+
+		virtual void BeginPass() override;
+		virtual void EndPass() override;
 
 		// Multiple recording contexts can be active at a time
 		// This is to facilitate multithreaded command recording

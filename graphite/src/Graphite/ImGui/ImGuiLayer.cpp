@@ -289,17 +289,21 @@ namespace Graphite
 		// This will also end the frame
 		ImGui::Render();
 
-		// Submit ImGui draw data to be rendered
 		GraphicsContext* graphicsContext = g_Application->GetGraphicsContext();
-		auto recordingContext = graphicsContext->AcquireRecordingContext();
 
-		auto rtv = graphicsContext->GetBackBufferRenderTargetView();
-		recordingContext->SetRenderTargets(1, rtv, std::nullopt);
-		recordingContext->ClearRenderTargetView(rtv, { 0.0f, 0.0f, 0.0f, 1.0f });
+		graphicsContext->BeginPass();
+		{
+			// Submit ImGui draw data to be rendered
+			auto recordingContext = graphicsContext->AcquireRecordingContext();
 
-		m_Backend->Render(ImGui::GetDrawData(), recordingContext);
+			auto rtv = graphicsContext->GetBackBufferRenderTargetView();
+			recordingContext->SetRenderTargets(1, rtv, std::nullopt);
 
-		graphicsContext->CloseRecordingContext(recordingContext);
+			m_Backend->Render(ImGui::GetDrawData(), recordingContext);
+
+			graphicsContext->CloseRecordingContext(recordingContext);
+		}
+		graphicsContext->EndPass();
 
 		NewFrame();
 	}

@@ -50,11 +50,11 @@ void GameLayer::OnUpdate()
 
 void GameLayer::OnRender()
 {
-	return;
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	Graphite::Window* window = Graphite::g_Application->GetWindow();
 
 	// Perform all rendering
+	graphicsContext->BeginPass();
 	{
 		Graphite::CommandRecordingContext* recordingContext = graphicsContext->AcquireRecordingContext();
 
@@ -87,4 +87,5 @@ void GameLayer::OnRender()
 
 		graphicsContext->CloseRecordingContext(recordingContext);
 	}
+	graphicsContext->EndPass();
 }

@@ -43,9 +43,19 @@ namespace Graphite
 		DELETE_COPY(GraphicsContext);
 		DEFAULT_MOVE(GraphicsContext);
 
-		// Application API
+		// These are called internally to Graphite
 		virtual void BeginFrame() = 0;
 		virtual void EndFrame() = 0;
+
+		// Application API
+
+		// Passes are ways of grouping command submission
+		// Populated command lists will be submitted at the end of a pass
+		// All open recording contexts should be closed before ending a pass
+		// Work submitted within the same pass can be executed concurrently on the GPU as decided by the driver
+		// Therefore all command recording contexts within a pass must be independent
+		GRAPHITE_API virtual void BeginPass() = 0;
+		GRAPHITE_API virtual void EndPass() = 0;
 
 		// Multiple recording contexts can be active at a time
 		// This is to facilitate multithreaded command recording
