@@ -4,6 +4,12 @@
 #include "imgui.h"
 
 
+struct TriangleConstantBufferType
+{
+	glm::vec4 Color;
+};
+
+
 void GameLayer::OnAttach()
 {
 	// Setup
@@ -39,6 +45,13 @@ void GameLayer::OnAttach()
 
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	m_GraphicsPipeline = Graphite::GraphicsPipeline::Create(*graphicsContext, psoDesc);
+
+	m_ConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleConstantBufferType>(1, 1);
+	TriangleConstantBufferType cb
+	{
+		.Color = { 0.0f, 0.0f, 1.0f, 1.0f }
+	};
+	m_ConstantBuffer->CopyElement(0, 0, &cb, sizeof(cb));
 }
 
 

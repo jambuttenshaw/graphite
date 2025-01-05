@@ -159,6 +159,9 @@
     <ClInclude Include="src\Graphite\RHI\DescriptorAllocators.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Graphite\RHI\Pipelines\PipelineResourceLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphite\graphite_pch.cpp">
@@ -261,6 +264,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphite\RHI\DescriptorAllocators.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphite\RHI\Pipelines\PipelineResourceLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -34,8 +34,35 @@ namespace Graphite
 	};
 
 
-	// Other types of views own state - they must be managed more carefully
-	class RenderTargetView
+	struct ConstantBufferView
+	{
+		GPUResource* Resource;
+
+		GPUVirtualAddress BufferLocation;
+		uint32_t SizeInBytes;
+	};
+
+	struct ShaderResourceView
+	{
+		GPUResource* Resource;
+
+		GraphiteFormat Format;
+		// Resource-type-dependent properties
+	};
+
+	struct UnorderedAccessView
+	{
+		GPUResource* Resource;
+
+
+	};
+
+	struct RenderTargetView
+	{
+		
+	};
+
+	struct DepthStencilView
 	{
 		
 	};

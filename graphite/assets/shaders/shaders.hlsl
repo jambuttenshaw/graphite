@@ -1,6 +1,13 @@
 #ifndef SHADERS_HLSL
 #define SHADERS_HLSL
 
+struct TriangleConstantBufferType
+{
+    float4 Color;
+};
+ConstantBuffer<TriangleConstantBufferType> g_TriangleCB : register(b0);
+
+
 struct Vertex_Position
 {
     float4 position : POSITION;
@@ -23,7 +30,7 @@ VSToPS VSMain(Vertex_Position input)
 
 float4 PSMain(VSToPS input) : SV_TARGET
 {
-    return float4(1.0f, 1.0f, 0.0f, 1.0f);
+    return g_TriangleCB.Color;
 }
 
 #endif

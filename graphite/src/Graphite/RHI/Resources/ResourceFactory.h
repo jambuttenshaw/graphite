@@ -47,13 +47,13 @@ namespace Graphite
 		}
 
 		template <typename T>
-		std::unique_ptr<UploadBuffer> CreateConstantBuffer(uint32_t elementCount, uint32_t instanceCount) const
+		std::unique_ptr<ConstantBuffer> CreateConstantBuffer(uint32_t elementCount, uint32_t instanceCount) const
 		{
 			return CreateConstantBuffer(elementCount, instanceCount, sizeof(T));
 		}
 
 		template <typename T>
-		std::unique_ptr<UploadBuffer> CreateStructuredBuffer(uint32_t elementCount, bool readOnly) const
+		std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(uint32_t elementCount, bool readOnly) const
 		{
 			return CreateStructuredBuffer(elementCount, sizeof(T), readOnly);
 		}

@@ -14,4 +14,5 @@ protected:
 	std::unique_ptr<Graphite::UploadBuffer> m_IndexBuffer;
 
 	std::unique_ptr<Graphite::GraphicsPipeline> m_GraphicsPipeline;
+	std::unique_ptr<Graphite::ConstantBuffer> m_ConstantBuffer;
 };
