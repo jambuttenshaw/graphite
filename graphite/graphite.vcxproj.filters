@@ -108,7 +108,7 @@
     <ClInclude Include="src\Platform\D3D12\D3D12CommandRecordingContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h">
+    <ClInclude Include="src\Graphite\RHI\Descriptors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\Resources\D3D12Resource.h">
@@ -154,6 +154,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphite\Core\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphite\RHI\DescriptorAllocators.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -236,7 +239,7 @@
     <ClCompile Include="src\Platform\D3D12\Resources\D3D12ResourceViews.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp">
+    <ClCompile Include="src\Graphite\RHI\Descriptors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\graphite_d3d12_pch.cpp">
@@ -255,6 +258,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphite\Core\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphite\RHI\DescriptorAllocators.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

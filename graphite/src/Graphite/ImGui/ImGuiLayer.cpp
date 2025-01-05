@@ -266,7 +266,7 @@ namespace Graphite
 		// Setup rendering backend
 		GraphicsContext* graphicsContext = g_Application->GetGraphicsContext();
 
-		m_ImGuiResources = graphicsContext->GetResourceDescriptorHeap()->Allocate(1);
+		m_ImGuiResources = graphicsContext->AllocateStaticDescriptors(1);
 		GRAPHITE_ASSERT(m_ImGuiResources.IsValid(), "Failed to allocate ImGui resources.");
 
 		m_Backend = ImGuiBackend::Create(*graphicsContext, m_ImGuiResources);

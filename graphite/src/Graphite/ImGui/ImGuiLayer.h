@@ -7,7 +7,7 @@
 #include "Graphite/Events/MouseEvent.h"
 #include "Graphite/Events/WindowEvent.h"
 
-#include "Graphite/RHI/DescriptorHeap.h"
+#include "Graphite/RHI/Descriptors.h"
 
 
 namespace Graphite

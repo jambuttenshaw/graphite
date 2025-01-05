@@ -3,6 +3,7 @@
 #include "Graphite/Core/Core.h"
 
 #include "Graphite/RHI/GraphicsContext.h"
+#include "Graphite/RHI/DescriptorAllocators.h"
 
 #include "D3D12FrameResources.h"
 #include "D3D12DescriptorHeap.h"
@@ -51,8 +52,8 @@ namespace Graphite::D3D12
 		virtual void WaitForGPUIdle() const override;
 
 	public:
-		DescriptorHeap* GetResourceDescriptorHeap() const override { return m_ResourceHeap.get(); }
-		DescriptorHeap* GetSamplerDescriptorHeap() const override { return m_SamplerHeap.get(); }
+		virtual DescriptorAllocation AllocateStaticDescriptors(uint32_t count) override;
+		virtual DescriptorAllocation AllocateDynamicDescriptors(uint32_t count) override;
 
 	public:
 		inline DXGI_FORMAT GetNativeBackBufferFormat() const { return m_NativeBackBufferFormat; }
@@ -125,6 +126,13 @@ namespace Graphite::D3D12
 
 		std::unique_ptr<D3D12DescriptorHeap> m_DSVHeap;
 		std::unique_ptr<D3D12DescriptorHeap> m_RTVHeap;
+
+		// Descriptor allocators
+		// Resource heap allocators
+		StaticDescriptorAllocator m_StaticDescriptorAllocator;
+		std::array<DynamicDescriptorAllocator, s_BackBufferCount> m_DynamicDescriptorAllocators;
+
+		StaticDescriptorAllocator m_RTVAllocator;
 
 		// Back buffer resources and descriptors
 		std::array<ComPtr<ID3D12Resource>, s_BackBufferCount> m_BackBuffers;

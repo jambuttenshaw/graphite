@@ -1,16 +1,13 @@
 #pragma once
 
 #include "Graphite/Core/Core.h"
-#include "Graphite/RHI/DescriptorHeap.h"
+#include "Graphite/RHI/Descriptors.h"
 
 using Microsoft::WRL::ComPtr;
 
 
 namespace Graphite::D3D12
 {
-
-	class D3D12DescriptorHeap;
-
 
 	class D3D12DescriptorHeap : public DescriptorHeap
 	{
@@ -22,13 +19,8 @@ namespace Graphite::D3D12
 		DELETE_COPY(D3D12DescriptorHeap);
 		DEFAULT_MOVE(D3D12DescriptorHeap);
 
-		virtual DescriptorAllocation Allocate(uint32_t countToAlloc) override;
-		virtual void Free(DescriptorAllocation& allocation) override;
-
 		virtual CPUDescriptorHandle GetCPUHandleForHeapStart() const override;
 		virtual GPUDescriptorHandle GetGPUHandleForHeapStart() const override;
-
-		void ProcessDeferredFrees(uint32_t frameIndex);
 
 		// Getters
 		inline ID3D12DescriptorHeap* GetNativeHeap() const { return m_NativeHeap.Get(); }
@@ -38,12 +30,6 @@ namespace Graphite::D3D12
 		// In this design, a D3DDescriptor heap owns its entire heap
 		ComPtr<ID3D12DescriptorHeap> m_NativeHeap;		// The heap to allocate from
 		D3D12_DESCRIPTOR_HEAP_TYPE m_NativeHeapType;	// The type of descriptors heap contains
-
-		std::map<uint32_t, uint32_t> m_FreeBlocks; // Map of index to size of free blocks
-
-		using DeferredFreeCollection = std::vector<std::pair<uint32_t, uint32_t>>;
-		std::vector<DeferredFreeCollection> m_DeferredFrees; // One collection is required for each frame in flight
-		uint32_t m_CurrentDeferredFreeCollection = 0;
 	};
 
 }

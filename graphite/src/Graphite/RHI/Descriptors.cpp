@@ -1,19 +1,25 @@
 #include "graphite_pch.h"
-#include "DescriptorHeap.h"
+#include "Descriptors.h"
 
 #include "Graphite/Core/Assert.h"
+
+#include "GraphicsContext.h"
+#include "DescriptorAllocators.h"
 
 
 namespace Graphite
 {
 
-	DescriptorAllocation::DescriptorAllocation(DescriptorHeap* heap, uint32_t index, uint32_t count, bool cpuOnly)
+	DescriptorAllocation::DescriptorAllocation(DescriptorHeap* heap, DescriptorAllocatorInterface* allocator, uint32_t index, uint32_t count, bool cpuOnly)
 		: m_Heap(heap)
+		, m_Allocator(allocator)
 		, m_Index(index)
 		, m_Count(count)
 		, m_CPUOnly(cpuOnly)
 		, m_IsValid(true)
 	{
+		GRAPHITE_ASSERT(heap, "Heap must not be null.");
+		GRAPHITE_ASSERT(allocator, "Allocator must not be null.");
 	}
 
 	DescriptorAllocation::~DescriptorAllocation()
@@ -24,10 +30,11 @@ namespace Graphite
 		}
 	}
 
-
 	DescriptorAllocation::DescriptorAllocation(DescriptorAllocation&& other) noexcept
 	{
 		m_Heap = std::move(other.m_Heap);
+		m_Allocator = std::move(other.m_Allocator);
+
 		m_Index = std::move(other.m_Index);
 		m_Count = std::move(other.m_Count);
 
@@ -41,6 +48,8 @@ namespace Graphite
 	DescriptorAllocation& DescriptorAllocation::operator=(DescriptorAllocation&& other) noexcept
 	{
 		m_Heap = std::move(other.m_Heap);
+		m_Allocator = std::move(other.m_Allocator);
+
 		m_Index = std::move(other.m_Index);
 		m_Count = std::move(other.m_Count);
 
@@ -78,9 +87,17 @@ namespace Graphite
 		return m_Heap;
 	}
 
+	DescriptorAllocatorInterface* DescriptorAllocation::GetAllocator() const
+	{
+		return m_Allocator;
+	}
+
+
 	void DescriptorAllocation::ResetWithoutFree()
 	{
 		m_Heap = nullptr;
+		m_Allocator = nullptr;
+
 		m_Index = 0;
 		m_Count = 0;
 
@@ -91,9 +108,9 @@ namespace Graphite
 
 	void DescriptorAllocation::Free()
 	{
-		if (m_IsValid && m_Heap)
+		if (m_IsValid && m_Allocator)
 		{
-			m_Heap->Free(*this);
+			m_Allocator->Free(*this);
 		}
 	}
 
@@ -102,9 +119,7 @@ namespace Graphite
 		: m_HeapType(heapType)
 		, m_DescriptorSize(descriptorSize)
 		, m_Capacity(capacity)
-		, m_CountAllocated(0)
 		, m_CPUOnly(cpuOnly)
 	{
 	}
-
 }

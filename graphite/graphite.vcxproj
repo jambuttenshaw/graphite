@@ -103,7 +103,8 @@
     <ClInclude Include="src\Graphite\Layers\Layer.h" />
     <ClInclude Include="src\Graphite\Layers\LayerStack.h" />
     <ClInclude Include="src\Graphite\graphite_pch.h" />
-    <ClInclude Include="src\Graphite\RHI\DescriptorHeap.h" />
+    <ClInclude Include="src\Graphite\RHI\DescriptorAllocators.h" />
+    <ClInclude Include="src\Graphite\RHI\Descriptors.h" />
     <ClInclude Include="src\Graphite\RHI\Resources\ResourceViews.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12CommandQueue.h" />
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
@@ -146,7 +147,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Graphite\RHI\DescriptorHeap.cpp" />
+    <ClCompile Include="src\Graphite\RHI\DescriptorAllocators.cpp" />
+    <ClCompile Include="src\Graphite\RHI\Descriptors.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\ResourceViews.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12CommandQueue.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>

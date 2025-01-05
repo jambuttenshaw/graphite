@@ -10,6 +10,7 @@
 #include "D3D12Exceptions.h"
 #include "D3D12CommandQueue.h"
 #include "D3D12CommandRecordingContext.h"	
+#include "Graphite/RHI/DescriptorAllocators.h"
 
 
 namespace Graphite::D3D12
@@ -240,6 +241,15 @@ namespace Graphite::D3D12
 		m_CopyQueue->WaitForIdleCPUBlocking();
 	}
 
+	DescriptorAllocation D3D12GraphicsContext::AllocateStaticDescriptors(uint32_t count)
+	{
+		return m_StaticDescriptorAllocator.Allocate(count);
+	}
+
+	DescriptorAllocation D3D12GraphicsContext::AllocateDynamicDescriptors(uint32_t count)
+	{
+		return m_DynamicDescriptorAllocators.at(m_CurrentBackBuffer).Allocate(count);
+	}
 
 	/*
 	 * Graphics Context Initialization
@@ -393,11 +403,26 @@ namespace Graphite::D3D12
 
 		m_DSVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_DSV, 64, true, L"DSV Descriptor Heap");
 		m_RTVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RTV, 64, true, L"RTV Descriptor Heap");
+
+		// Create allocators for the resource heap
+		uint32_t descriptorsPerHeap = m_ResourceHeap->GetCapacity() / 4;
+		uint32_t allocatorHeapOffset = 0;
+
+		m_StaticDescriptorAllocator = StaticDescriptorAllocator(m_ResourceHeap.get(), allocatorHeapOffset, descriptorsPerHeap);
+		allocatorHeapOffset += descriptorsPerHeap;
+
+		for (uint32_t i = 0; i < s_BackBufferCount; i++)
+		{
+			m_DynamicDescriptorAllocators.at(i) = DynamicDescriptorAllocator(m_ResourceHeap.get(), allocatorHeapOffset, descriptorsPerHeap, i);
+			allocatorHeapOffset += descriptorsPerHeap;
+		}
+
+		m_RTVAllocator = StaticDescriptorAllocator(m_RTVHeap.get(), 0, m_RTVHeap->GetCapacity());
 	}
 
 	void D3D12GraphicsContext::CreateBackBufferRTVs()
 	{
-		m_BackBufferRTVs = m_RTVHeap->Allocate(s_BackBufferCount);
+		m_BackBufferRTVs = m_RTVAllocator.Allocate(s_BackBufferCount);
 		GRAPHITE_ASSERT(m_BackBufferRTVs.IsValid(), "RTV descriptor alloc failed");
 
 		// Create an RTV for each frame
@@ -460,11 +485,14 @@ namespace Graphite::D3D12
 	{
 		m_FrameResources[frameIndex].ProcessDeferrals();
 
-		m_ResourceHeap->ProcessDeferredFrees(frameIndex);
-		m_SamplerHeap->ProcessDeferredFrees(frameIndex);
+		// Propagate deferred free to all descriptor allocators
+		m_StaticDescriptorAllocator.ReleasePendingFrees(frameIndex);
+		for (auto& alloc : m_DynamicDescriptorAllocators)
+		{
+			alloc.ReleasePendingFrees(frameIndex);
+		}
 
-		m_DSVHeap->ProcessDeferredFrees(frameIndex);
-		m_RTVHeap->ProcessDeferredFrees(frameIndex);
+		m_RTVAllocator.ReleasePendingFrees(frameIndex);
 	}
 
 	void D3D12GraphicsContext::ProcessAllDeferrals()

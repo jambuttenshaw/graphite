@@ -3,6 +3,8 @@
 #include "Graphite/Core/Core.h"
 #include "RHITypes.h"
 
+#include "Descriptors.h"
+
 
 namespace Graphite
 {
@@ -79,8 +81,8 @@ namespace Graphite
 		GRAPHITE_API virtual CPUDescriptorHandle GetBackBufferRenderTargetView() const = 0;
 
 		// Resource management
-		GRAPHITE_API virtual DescriptorHeap* GetResourceDescriptorHeap() const = 0;
-		GRAPHITE_API virtual DescriptorHeap* GetSamplerDescriptorHeap() const = 0;
+		GRAPHITE_API virtual DescriptorAllocation AllocateStaticDescriptors(uint32_t count) = 0;
+		GRAPHITE_API virtual DescriptorAllocation AllocateDynamicDescriptors(uint32_t count) = 0;
 
 		// VSync
 		GRAPHITE_API inline bool GetVSync() const { return m_VSync; }

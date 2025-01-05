@@ -8,6 +8,7 @@
 namespace Graphite
 {
 	class DescriptorHeap;
+	class DescriptorAllocatorInterface;
 
 
 	class DescriptorAllocation
@@ -16,6 +17,7 @@ namespace Graphite
 		DescriptorAllocation() = default;
 		DescriptorAllocation(
 			DescriptorHeap* heap,
+			DescriptorAllocatorInterface* allocator,
 			uint32_t index,
 			uint32_t count,
 			bool cpuOnly
@@ -34,19 +36,24 @@ namespace Graphite
 		void Free();
 
 		inline bool IsValid() const { return m_IsValid; }
+		inline bool IsCPUOnly() const { return m_CPUOnly; }
 
 		DescriptorHeap* GetHeap() const;
+		DescriptorAllocatorInterface* GetAllocator() const;
+
 		inline uint32_t GetIndex() const { return m_Index; }
 		inline uint32_t GetCount() const { return m_Count; }
 
 	private:
-		DescriptorHeap* m_Heap = nullptr;	// The allocator that made this allocation
-		uint32_t m_Index = 0;				// The index this allocation begins at
-		uint32_t m_Count = 0;				// The number of descriptors in this allocation
+		DescriptorHeap* m_Heap = nullptr;						// The heap that this allocation belongs to
+		DescriptorAllocatorInterface* m_Allocator = nullptr;	// The allocator that made this allocation
 
-		bool m_CPUOnly = false;				// Is this heap CPU only
+		uint32_t m_Index = 0;									// The index this allocation begins at
+		uint32_t m_Count = 0;									// The number of descriptors in this allocation
 
-		bool m_IsValid = false;				// Does this allocation actually point to a real allocated descriptor
+		bool m_CPUOnly = false;									// Is this heap CPU only
+
+		bool m_IsValid = false;									// Does this allocation actually point to a real allocated descriptor
 	};
 
 
@@ -60,9 +67,6 @@ namespace Graphite
 		DELETE_COPY(DescriptorHeap);
 		DEFAULT_MOVE(DescriptorHeap);
 
-		virtual DescriptorAllocation Allocate(uint32_t countToAlloc) = 0;
-		virtual void Free(DescriptorAllocation& allocation) = 0;
-
 		virtual CPUDescriptorHandle GetCPUHandleForHeapStart() const = 0;
 		virtual GPUDescriptorHandle GetGPUHandleForHeapStart() const = 0;
 
@@ -71,16 +75,15 @@ namespace Graphite
 		inline uint32_t GetDescriptorSize() const { return m_DescriptorSize; }
 
 		inline uint32_t GetCapacity() const { return m_Capacity; }
-		inline uint32_t GetCountAllocated() const { return m_CountAllocated; }
+
+		inline bool IsCPUOnly() const { return m_CPUOnly; }
 
 	protected:
 		DescriptorHeapType m_HeapType;
 		uint32_t m_DescriptorSize;
 
 		uint32_t m_Capacity;
-		uint32_t m_CountAllocated;
 
 		bool m_CPUOnly;
 	};
-
 }
