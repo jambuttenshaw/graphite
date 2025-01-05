@@ -22,27 +22,27 @@ namespace Graphite
 			uint32_t count,
 			bool cpuOnly
 		);
-		~DescriptorAllocation();
+		GRAPHITE_API ~DescriptorAllocation();
 
-		DELETE_COPY(DescriptorAllocation);
+		GRAPHITE_API_DELETE_COPY(DescriptorAllocation);
 		// Moving from a descriptor requires invalidating the moved-from descriptor
-		DescriptorAllocation(DescriptorAllocation&& other) noexcept;			
-		DescriptorAllocation& operator=(DescriptorAllocation&& other) noexcept;
+		GRAPHITE_API DescriptorAllocation(DescriptorAllocation&& other) noexcept;
+		GRAPHITE_API DescriptorAllocation& operator=(DescriptorAllocation&& other) noexcept;
 
-		CPUDescriptorHandle GetCPUHandle(uint32_t index = 0) const;
-		GPUDescriptorHandle GetGPUHandle(uint32_t index = 0) const;
+		GRAPHITE_API CPUDescriptorHandle GetCPUHandle(uint32_t index = 0) const;
+		GRAPHITE_API GPUDescriptorHandle GetGPUHandle(uint32_t index = 0) const;
 
-		void ResetWithoutFree();
-		void Free();
+		GRAPHITE_API void ResetWithoutFree();
+		GRAPHITE_API void Free();
 
-		inline bool IsValid() const { return m_IsValid; }
-		inline bool IsCPUOnly() const { return m_CPUOnly; }
+		GRAPHITE_API inline bool IsValid() const { return m_IsValid; }
+		GRAPHITE_API inline bool IsCPUOnly() const { return m_CPUOnly; }
 
-		DescriptorHeap* GetHeap() const;
-		DescriptorAllocatorInterface* GetAllocator() const;
+		GRAPHITE_API DescriptorHeap* GetHeap() const;
+		GRAPHITE_API DescriptorAllocatorInterface* GetAllocator() const;
 
-		inline uint32_t GetIndex() const { return m_Index; }
-		inline uint32_t GetCount() const { return m_Count; }
+		GRAPHITE_API inline uint32_t GetIndex() const { return m_Index; }
+		GRAPHITE_API inline uint32_t GetCount() const { return m_Count; }
 
 	private:
 		DescriptorHeap* m_Heap = nullptr;						// The heap that this allocation belongs to

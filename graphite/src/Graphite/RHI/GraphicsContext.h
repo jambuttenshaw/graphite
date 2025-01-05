@@ -26,6 +26,8 @@ namespace Graphite
 		uint32_t MaxRecordingContextsPerFrame;
 	};
 
+	extern class GraphicsContext* g_GraphicsContext;
+
 
 	class GraphicsContext
 	{
@@ -83,6 +85,8 @@ namespace Graphite
 		// Resource management
 		GRAPHITE_API virtual DescriptorAllocation AllocateStaticDescriptors(uint32_t count) = 0;
 		GRAPHITE_API virtual DescriptorAllocation AllocateDynamicDescriptors(uint32_t count) = 0;
+
+		GRAPHITE_API virtual void CreateConstantBufferView(GPUVirtualAddress bufferAddress, uint32_t bufferSize, CPUDescriptorHandle destDescriptor) = 0;
 
 		// VSync
 		GRAPHITE_API inline bool GetVSync() const { return m_VSync; }

@@ -2,7 +2,6 @@
 #include "DescriptorAllocators.h"
 
 #include "Graphite/Core/Assert.h"
-#include "Graphite/Core/Application.h"
 #include "GraphicsContext.h"
 
 
@@ -84,8 +83,7 @@ namespace Graphite
 		// Make sure this heap contains this allocation
 		GRAPHITE_ASSERT(allocation.GetAllocator() == this, "Trying to free an allocation from the wrong allocator");
 
-		// TODO: Is there a neater way to get the graphics context?
-		m_DeferredFrees.at(g_Application->GetGraphicsContext()->GetCurrentBackBuffer()).push_back(std::make_pair(allocation.GetIndex(), allocation.GetCount()));
+		m_DeferredFrees.at(g_GraphicsContext->GetCurrentBackBuffer()).push_back(std::make_pair(allocation.GetIndex(), allocation.GetCount()));
 		allocation.ResetWithoutFree();
 	}
 

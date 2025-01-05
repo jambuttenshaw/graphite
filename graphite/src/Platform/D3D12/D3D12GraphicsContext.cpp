@@ -251,6 +251,16 @@ namespace Graphite::D3D12
 		return m_DynamicDescriptorAllocators.at(m_CurrentBackBuffer).Allocate(count);
 	}
 
+	void D3D12GraphicsContext::CreateConstantBufferView(GPUVirtualAddress bufferAddress, uint32_t bufferSize, CPUDescriptorHandle destDescriptor)
+	{
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbv{
+			.BufferLocation = bufferAddress,
+			.SizeInBytes = bufferSize
+		};
+		m_Device->CreateConstantBufferView(&cbv, GraphiteCPUDescriptorToD3D12Descriptor(destDescriptor));
+	}
+
+
 	/*
 	 * Graphics Context Initialization
 	 */

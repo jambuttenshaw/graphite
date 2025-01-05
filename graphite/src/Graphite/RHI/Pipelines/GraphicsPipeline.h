@@ -2,6 +2,7 @@
 
 #include "Graphite/Core/Core.h"
 
+#include "PipelineResourceLayout.h"
 #include "ShaderCompiler.h"
 
 
@@ -16,6 +17,8 @@ namespace Graphite
 
 		ShaderDescription VertexShader;
 		ShaderDescription PixelShader;
+
+		const PipelineResourceLayout* ResourceLayout;
 	};
 
 
@@ -32,6 +35,12 @@ namespace Graphite
 
 		DELETE_COPY(GraphicsPipeline);
 		DEFAULT_MOVE(GraphicsPipeline);
+
+		inline const ResourceViewList* GetStaticResources() const { return m_StaticResources; }
+		inline void SetStaticResources(ResourceViewList* resources) { m_StaticResources = resources; }
+
+	protected:
+		ResourceViewList* m_StaticResources = nullptr;
 	};
 
 }

@@ -30,6 +30,16 @@ void GameLayer::OnAttach()
 	m_IndexBuffer->CopyElements(0, 3, 0, indices, sizeof(indices));
 
 	// Create graphics pipeline
+
+	// Describe pipeline inputs
+	Graphite::ResourceTable staticResources;
+	staticResources.NumConstantBuffers = 1;
+
+	m_PipelineStaticResources = Graphite::ResourceViewList(staticResources);
+
+	Graphite::PipelineResourceLayout resourceLayout;
+	resourceLayout.AddResourceTable(Graphite::ShaderResourceType::Static, std::move(staticResources));
+
 	Graphite::GraphicsPipelineDescription psoDesc
 	{
 		.InputVertexLayout = &Graphite::Vertex_Position::VertexInputLayout,
@@ -40,7 +50,8 @@ void GameLayer::OnAttach()
 		.PixelShader = {
 			.FilePath = L"../graphite/assets/shaders/shaders.hlsl",
 			.EntryPoint = L"PSMain"
-		}
+		},
+		.ResourceLayout = &resourceLayout
 	};
 
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
@@ -52,6 +63,10 @@ void GameLayer::OnAttach()
 		.Color = { 0.0f, 0.0f, 1.0f, 1.0f }
 	};
 	m_ConstantBuffer->CopyElement(0, 0, &cb, sizeof(cb));
+
+	// Bind static resources
+	m_PipelineStaticResources.SetConstantBufferView(0, *m_ConstantBuffer);
+	m_GraphicsPipeline->SetStaticResources(&m_PipelineStaticResources);
 }
 
 

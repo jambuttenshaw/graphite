@@ -55,6 +55,8 @@ namespace Graphite::D3D12
 		virtual DescriptorAllocation AllocateStaticDescriptors(uint32_t count) override;
 		virtual DescriptorAllocation AllocateDynamicDescriptors(uint32_t count) override;
 
+		virtual void CreateConstantBufferView(GPUVirtualAddress bufferAddress, uint32_t bufferSize, CPUDescriptorHandle destDescriptor) override;
+
 	public:
 		inline DXGI_FORMAT GetNativeBackBufferFormat() const { return m_NativeBackBufferFormat; }
 		inline CPUDescriptorHandle GetBackBufferRenderTargetView() const override { return m_BackBufferRTVs.GetCPUHandle(m_CurrentBackBuffer); }

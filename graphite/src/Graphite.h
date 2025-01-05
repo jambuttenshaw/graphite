@@ -58,6 +58,7 @@
 #include "Graphite/RHI/Resources/Geometry.h"
 
 #include "Graphite/RHI/Pipelines/GraphicsPipeline.h"
+#include "Graphite/RHI/Pipelines/PipelineResourceLayout.h"
 
 // ImGui
 #include "Graphite/ImGui/ImGuiInterface.h"

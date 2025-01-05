@@ -87,6 +87,11 @@ namespace Graphite::D3D12
 		const D3D12GraphicsPipeline& nativePipeline = dynamic_cast<const D3D12GraphicsPipeline&>(pipelineState);
 		m_CommandList->SetPipelineState(nativePipeline.GetPipelineState());
 		m_CommandList->SetGraphicsRootSignature(nativePipeline.GetRootSignature());
+
+		if (auto staticResources = pipelineState.GetStaticResources())
+		{
+			m_CommandList->SetGraphicsRootDescriptorTable(0, GraphiteGPUDescriptorToD3D12Descriptor(staticResources->GetHandle()));
+		}
 	}
 
 	void D3D12CommandRecordingContext::SetPrimitiveTopology(GraphiteTopology topology) const

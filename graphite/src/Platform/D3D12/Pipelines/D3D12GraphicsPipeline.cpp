@@ -26,10 +26,51 @@ namespace Graphite::D3D12
 
 		// Create root signature
 		{
+			std::vector<CD3DX12_ROOT_PARAMETER> rootParams;
+			std::vector<CD3DX12_DESCRIPTOR_RANGE> descriptorRanges;
+
+			if (description.ResourceLayout)
+			{
+				for (const auto& table : description.ResourceLayout->GetResourceTables())
+				{
+					// Create descriptor ranges for each type of descriptor in the table
+					size_t rangeStartIndex = descriptorRanges.size();
+					uint32_t rangeCount = 0;
+
+					if (table.NumConstantBuffers > 0)
+					{
+						CD3DX12_DESCRIPTOR_RANGE range;
+						range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, table.NumConstantBuffers, 0, 0);
+						descriptorRanges.push_back(range);
+						rangeCount++;
+					}
+
+					if (table.NumShaderResourceViews > 0)
+					{
+						CD3DX12_DESCRIPTOR_RANGE range;
+						range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, table.NumShaderResourceViews, 0, 0);
+						descriptorRanges.push_back(range);
+						rangeCount++;
+					}
+
+					if (table.NumUnorderedAccessViews > 0)
+					{
+						CD3DX12_DESCRIPTOR_RANGE range;
+						range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, table.NumUnorderedAccessViews, 0, 0);
+						descriptorRanges.push_back(range);
+						rangeCount++;
+					}
+
+					CD3DX12_ROOT_PARAMETER rootParam;
+					rootParam.InitAsDescriptorTable(rangeCount, &descriptorRanges.at(rangeStartIndex));
+					rootParams.push_back(rootParam);
+				}
+			}
+
 			D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			rootSignatureDesc.Init(0, nullptr, 0, nullptr, flags);
+			rootSignatureDesc.Init(static_cast<UINT>(rootParams.size()), rootParams.data(), 0, nullptr, flags);
 
 			ComPtr<ID3DBlob> rootSigBlob, errorBlob;
 			HRESULT result = D3D12SerializeRootSignature(
