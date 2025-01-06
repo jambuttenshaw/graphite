@@ -36,15 +36,22 @@ void GameLayer::OnAttach()
 	{
 		Graphite::PipelineResourceDescription::ConstantBuffer(
 			"TriangleOffsetConstantBuffer",
-			Graphite::PipelineResourceBinding::Static,
+			Graphite::PipelineResourceBindingFrequency::Static,
 			/* Resource Slot = */ 0,
+			/* Register Space = */ 0,
+			static_cast<Graphite::PipelineResourceShaderVisibility>(Graphite::ShaderVisibility_Vertex | Graphite::ShaderVisibility_Pixel)
+			),
+		Graphite::PipelineResourceDescription::ConstantBuffer(
+			"TriangleOffsetConstantBuffer2",
+			Graphite::PipelineResourceBindingFrequency::Dynamic,
+			/* Resource Slot = */ 1,
 			/* Register Space = */ 0,
 			Graphite::ShaderVisibility_Vertex
 			),
 		Graphite::PipelineResourceDescription::ConstantBuffer(
 			"TriangleColorConstantBuffer",
-			Graphite::PipelineResourceBinding::Static,
-			/* Resource Slot = */ 0,
+			Graphite::PipelineResourceBindingFrequency::Static,
+			/* Resource Slot = */ 1,
 			/* Register Space = */ 0,
 			Graphite::ShaderVisibility_Pixel
 			)

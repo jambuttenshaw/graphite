@@ -220,7 +220,7 @@ namespace Graphite
     };
 
     // Describes how (and the frequency) a resource should be bound to the pipeline
-    enum class PipelineResourceBinding : uint8_t
+    enum class PipelineResourceBindingFrequency : uint8_t
     {
         Invalid = 0,
         Static,			// Doesn't change throughout a pass

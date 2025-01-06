@@ -162,7 +162,7 @@
     <ClInclude Include="src\Graphite\RHI\Pipelines\PipelineResourceLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphite\RHI\Pipelines\ResourceBinding.h">
+    <ClInclude Include="src\Graphite\RHI\Pipelines\PipelineResourceBinding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -272,7 +272,7 @@
     <ClCompile Include="src\Graphite\RHI\Pipelines\PipelineResourceLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphite\RHI\Pipelines\ResourceBinding.cpp">
+    <ClCompile Include="src\Graphite\RHI\Pipelines\PipelineResourceBinding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

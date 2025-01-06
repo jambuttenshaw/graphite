@@ -3,6 +3,7 @@
 #include "Graphite/Core/Core.h"
 
 #include "PipelineResourceLayout.h"
+#include "PipelineResourceBinding.h"
 #include "ShaderCompiler.h"
 
 
@@ -29,24 +30,26 @@ namespace Graphite
 		GRAPHITE_API static std::unique_ptr<GraphicsPipeline> Create(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& pipelineDesc);
 
 	protected:
-		GraphicsPipeline() = default;
+		GraphicsPipeline();
 	public:
-		virtual ~GraphicsPipeline() = default;
+		GRAPHITE_API virtual ~GraphicsPipeline() = default;
 
-		DELETE_COPY(GraphicsPipeline);
-		DEFAULT_MOVE(GraphicsPipeline);
+		GRAPHITE_API_DELETE_COPY(GraphicsPipeline);
+		GRAPHITE_API_DEFAULT_MOVE(GraphicsPipeline);
 
-		//inline const ResourceViewList* GetBoundStaticResources() const { return m_BoundStaticResources; }
-		//inline void BindStaticResources(ResourceViewList* resources) { m_BoundStaticResources = resources; }
+		GRAPHITE_API const PipelineResourceSet& GetPipelineResourceSet(PipelineResourceBindingFrequency bindingFrequency) const;
 
 	protected:
-		// Description of resources used by this pipeline
-		//std::vector<ResourceTable> m_StaticResources;
+		// Non-const used in pipeline creation
+		PipelineResourceSet& GetPipelineResourceSet(PipelineResourceBindingFrequency bindingFrequency);
 
-		// The static resources to be bound to the pipeline
-		// Mutable and dynamic resources are handled through resource binders rather than the pipeline themselves,
-		// to minimize the amount of swapping that will occur
-		//ResourceViewList* m_BoundStaticResources = nullptr;
+		// Descriptions of the resources used by this pipeline
+		// These do not refer to actual resources and their data
+		// Instead, they describe how a resource should be bound to a pipeline
+		// This data includes which descriptors in a table should be written to
+		PipelineResourceSet m_StaticResources;
+		PipelineResourceSet m_MutableResources;
+		PipelineResourceSet m_DynamicResources;
 	};
 
 }

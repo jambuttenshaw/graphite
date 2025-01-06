@@ -67,7 +67,14 @@ namespace Graphite::D3D12
 
 		// Create root signature
 		{
-			std::vector<CD3DX12_ROOT_PARAMETER> rootParams;
+			// Store data to create root params later, to avoid memory being invalidated when descriptorRanges resizes
+			struct RootParamData
+			{
+				uint32_t RangeCount;
+				uint32_t RangeIndex;
+				D3D12_SHADER_VISIBILITY Visibility;
+			};
+			std::vector<RootParamData> rootParamData;
 			std::vector<CD3DX12_DESCRIPTOR_RANGE> descriptorRanges;
 
 			if (description.ResourceLayout)
@@ -80,89 +87,151 @@ namespace Graphite::D3D12
 				std::iota(indices.begin(), indices.end(), 0);
 
 				std::ranges::sort(indices, std::greater<>{}, 
-					[&resources](size_t i) -> const PipelineResourceBinding& { return resources.at(i).Binding; });
+					[&resources](size_t i) -> const PipelineResourceBindingFrequency& { return resources.at(i).BindingFrequency; });
 				auto sortedResources = std::ranges::views::transform(indices, 
 					[&resources](size_t i) -> const PipelineResourceDescription& { return resources.at(i); });
 
 				// Keep track of the number of descriptor ranges belonging to each shader visibility
 				// A separate root parameter will be created for each visibility, as different flags are required
 				// The prefix sum of the counts will give indices into the descriptorRanges vector
-				std::map<PipelineResourceShaderVisibility, size_t> descriptorRangeCounts;
-				size_t rangeOffset = 0;
+				struct DescriptorRangeData
+				{
+					size_t Count = 0;
+
+					// Need to keep track of which resources have their descriptor indices in this root param
+					// so that the correct offset into the descriptor table can be set
+
+					// This vector 
+					std::vector<
+						std::pair</* PipelineResource idx */size_t, /* Bind point idx */size_t>
+					> ResourceDescriptorBindings;
+				};
+				std::map<PipelineResourceShaderVisibility, DescriptorRangeData> descriptorRangeData;
+				std::vector<PipelineResource*> pipelineResourceRefs;
+				size_t totalRangeOffset = 0;
 
 				// Every time the binding method changes the descriptor ranges will be built into root params
-				PipelineResourceBinding currentBinding = sortedResources[0].Binding;
+				PipelineResourceBindingFrequency currentBindingFrequency = sortedResources[0].BindingFrequency;
 
 				auto CreateDescriptorTableParams = [&]()
 				{
-					for (auto [visibility, count] : descriptorRangeCounts)
+					PipelineResourceSet& resourceSet = GetPipelineResourceSet(currentBindingFrequency);
+					resourceSet.SetBaseRootArgumentIndex(static_cast<uint32_t>(rootParamData.size()));
+
+					size_t rangeOffset = 0;
+
+					for (const auto& data : descriptorRangeData)
 					{
 						// Create a new root param for each visibility
-						CD3DX12_ROOT_PARAMETER rootParam;
-						rootParam.InitAsDescriptorTable(
-							static_cast<UINT>(count),
-							&descriptorRanges[rangeOffset],
-							GraphiteShaderVisibilityToD3D12ShaderVisibility(visibility));
-						rootParams.push_back(rootParam);
+						rootParamData.push_back(RootParamData{
+							static_cast<uint32_t>(data.second.Count),
+							static_cast<uint32_t>(totalRangeOffset + rangeOffset),
+							GraphiteShaderVisibilityToD3D12ShaderVisibility(data.first)
+						});
+						
 
-						rangeOffset += count;
+						// Apply range offset to all resource binding points
+						for (const auto& binding : data.second.ResourceDescriptorBindings)
+						{
+							pipelineResourceRefs.at(binding.first)->BindPoints.at(binding.second) += totalRangeOffset + rangeOffset;
+						}
+
+						resourceSet.AddRootArgumentOffset(static_cast<uint32_t>(rangeOffset));
+						rangeOffset += data.second.Count;
 					}
+
+					totalRangeOffset += rangeOffset;
 
 					// Counts will reset for next binding type
 					// to create separate tables for all parameters with different frequencies
-					descriptorRangeCounts.clear();
+					descriptorRangeData.clear();
 				};
 
-				for (const PipelineResourceDescription& resource : sortedResources)
+				for (const PipelineResourceDescription& resourceDescription : sortedResources)
 				{
-					if (resource.Binding != currentBinding)
+					// Resource binding is monotonically decreasing as we iterate over the range
+					if (resourceDescription.BindingFrequency != currentBindingFrequency)
 					{
 						CreateDescriptorTableParams();
 					}
-					currentBinding = resource.Binding;
+					currentBindingFrequency = resourceDescription.BindingFrequency;
 
-					if (resource.ShaderVisibility == ShaderVisibility_None)
+					if (resourceDescription.ShaderVisibility == ShaderVisibility_None)
 					{
 						GRAPHITE_LOG_WARN("Did you intend to add a resource with ShaderVisibility_None?");
 						continue;
 					}
 
 					// All set bits represent a shader stage this resource is used in
-					std::bitset<sizeof(PipelineResourceShaderVisibility) * 8> shaderVisibilityBits(resource.ShaderVisibility);
+					std::bitset<sizeof(PipelineResourceShaderVisibility) * 8> shaderVisibilityBits(resourceDescription.ShaderVisibility);
 
-					// Add a new resource to the pipeline
-
+					// Create a new description of the resource for the pipeline to hold on to,
+					// so that it knows how to set and bind it
+					PipelineResource pipelineResource{
+						resourceDescription.Type,
+						resourceDescription.BindingFrequency,
+						std::vector<size_t>(shaderVisibilityBits.count()) // There will be one index for each shader stage the resource is used
+					};
 
 					// Add a descriptor for each resource
+					size_t resourceBindPoint = 0;
 					for (size_t i = 0; i < shaderVisibilityBits.size(); i++)
 					{
 						if (!shaderVisibilityBits[i]) continue;
 						PipelineResourceShaderVisibility vis = static_cast<PipelineResourceShaderVisibility>(1 << i);
 
-						// TODO: If insertion via operator[] default-inits the value type then this can be turned into one line?
-						if (descriptorRangeCounts.contains(vis))
+						size_t currentCount = 0;
+						
+						if (descriptorRangeData.contains(vis))
 						{
-							descriptorRangeCounts.at(vis)++;
+							DescriptorRangeData& data = descriptorRangeData.at(vis);
+							currentCount = data.Count++;
+							data.ResourceDescriptorBindings.push_back({ pipelineResourceRefs.size(), resourceBindPoint });
 						}
 						else
 						{
-							// This shader visibility has not been encountered before - start a new count
-							descriptorRangeCounts.insert({ vis, 1 });
+							descriptorRangeData.insert(std::make_pair(vis, 
+								DescriptorRangeData{
+									1,
+									{ { pipelineResourceRefs.size(), resourceBindPoint } }
+								}));
 						}
+
+						// The range offset of the root param must be added to this
+						pipelineResource.BindPoints[resourceBindPoint] = currentCount;
+						// Next iteration will use a different bind point
+						resourceBindPoint++;
 
 						// Create a new descriptor range for this
 						CD3DX12_DESCRIPTOR_RANGE descriptorRange;
 						descriptorRange.Init(
-							GraphiteResourceTypeToD3D12DescriptorRangeType(resource.Type),
+							GraphiteResourceTypeToD3D12DescriptorRangeType(resourceDescription.Type),
 							1,
-							resource.BindingSlot,
-							resource.RegisterSpace
+							resourceDescription.BindingSlot,
+							resourceDescription.RegisterSpace
 						);
 						descriptorRanges.push_back(descriptorRange);
 					}
+
+					// Add the new resource to the pipeline
+					// TODO: switch based on binding frequency
+					PipelineResourceSet& resourceSet = GetPipelineResourceSet(currentBindingFrequency);
+					resourceSet.AddResource(resourceDescription.ResourceName, std::move(pipelineResource));
+					pipelineResourceRefs.push_back(&resourceSet.GetResource(resourceDescription.ResourceName));
 				}
 
 				CreateDescriptorTableParams();
+			}
+
+			std::vector<CD3DX12_ROOT_PARAMETER> rootParams;
+			for (const auto& param : rootParamData)
+			{
+				CD3DX12_ROOT_PARAMETER rootParam;
+				rootParam.InitAsDescriptorTable(
+					param.RangeCount,
+					&descriptorRanges[param.RangeIndex],
+					param.Visibility);
+				rootParams.push_back(rootParam);
 			}
 
 			D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
