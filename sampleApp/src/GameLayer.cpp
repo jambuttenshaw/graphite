@@ -31,14 +31,24 @@ void GameLayer::OnAttach()
 
 	// Create graphics pipeline
 
-	// Describe pipeline inputs
-	Graphite::ResourceTable staticResources;
-	staticResources.NumConstantBuffers = 1;
-
-	m_PipelineStaticResources = Graphite::ResourceViewList(staticResources);
-
-	Graphite::PipelineResourceLayout resourceLayout;
-	resourceLayout.AddResourceTable(Graphite::ShaderResourceType::Static, std::move(staticResources));
+	// Describe the resource layout of the pipeline - it contains a single constant buffer for the pixel shader
+	Graphite::PipelineResourceLayout resourceLayout
+	{
+		Graphite::PipelineResourceDescription::ConstantBuffer(
+			"TriangleOffsetConstantBuffer",
+			Graphite::PipelineResourceBinding::Static,
+			/* Resource Slot = */ 0,
+			/* Register Space = */ 0,
+			Graphite::ShaderVisibility_Vertex
+			),
+		Graphite::PipelineResourceDescription::ConstantBuffer(
+			"TriangleColorConstantBuffer",
+			Graphite::PipelineResourceBinding::Static,
+			/* Resource Slot = */ 0,
+			/* Register Space = */ 0,
+			Graphite::ShaderVisibility_Pixel
+			)
+	};
 
 	Graphite::GraphicsPipelineDescription psoDesc
 	{
@@ -65,8 +75,8 @@ void GameLayer::OnAttach()
 	m_ConstantBuffer->CopyElement(0, 0, &cb, sizeof(cb));
 
 	// Bind static resources
-	m_PipelineStaticResources.SetConstantBufferView(0, *m_ConstantBuffer);
-	m_GraphicsPipeline->SetStaticResources(&m_PipelineStaticResources);
+	//m_PipelineStaticResources.SetConstantBufferView(0, *m_ConstantBuffer);
+	//m_GraphicsPipeline->BindStaticResources(&m_PipelineStaticResources);
 }
 
 

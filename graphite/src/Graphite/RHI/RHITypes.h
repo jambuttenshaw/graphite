@@ -210,4 +210,36 @@ namespace Graphite
 		int32_t Height;
 	};
 
+
+    enum class PipelineResourceType : uint8_t
+    {
+        Invalid = 0,
+        ConstantBufferView,
+        ShaderResourceView,
+        UnorderedAccessView
+    };
+
+    // Describes how (and the frequency) a resource should be bound to the pipeline
+    enum class PipelineResourceBinding : uint8_t
+    {
+        Invalid = 0,
+        Static,			// Doesn't change throughout a pass
+        Mutable,		// Changes infrequently throughout a pass
+        Dynamic			// Changes constantly throughout a pass
+    };
+
+    // A bitfield that describes which shaders a resource should be bound to
+    enum PipelineResourceShaderVisibility : uint8_t
+    {
+        ShaderVisibility_None = 0x00,
+        ShaderVisibility_Vertex = 0x01,
+        ShaderVisibility_Hull = 0x02,
+        ShaderVisibility_Domain = 0x04,
+        ShaderVisibility_Geometry = 0x08,
+        ShaderVisibility_Pixel = 0x10,
+        ShaderVisibility_Amplification = 0x20,
+        ShaderVisibility_Mesh = 0x40,
+        ShaderVisibility_All = 0x7F
+    };
+
 }

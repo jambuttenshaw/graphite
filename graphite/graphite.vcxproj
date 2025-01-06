@@ -106,6 +106,7 @@
     <ClInclude Include="src\Graphite\RHI\DescriptorAllocators.h" />
     <ClInclude Include="src\Graphite\RHI\Descriptors.h" />
     <ClInclude Include="src\Graphite\RHI\Pipelines\PipelineResourceLayout.h" />
+    <ClInclude Include="src\Graphite\RHI\Pipelines\ResourceBinding.h" />
     <ClInclude Include="src\Graphite\RHI\Resources\ResourceViews.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12CommandQueue.h" />
     <ClInclude Include="src\Graphite\RHI\CommandRecordingContext.h" />
@@ -151,6 +152,7 @@
     <ClCompile Include="src\Graphite\RHI\DescriptorAllocators.cpp" />
     <ClCompile Include="src\Graphite\RHI\Descriptors.cpp" />
     <ClCompile Include="src\Graphite\RHI\Pipelines\PipelineResourceLayout.cpp" />
+    <ClCompile Include="src\Graphite\RHI\Pipelines\ResourceBinding.cpp" />
     <ClCompile Include="src\Graphite\RHI\Resources\ResourceViews.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12CommandQueue.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">graphite_d3d12_pch.h</PrecompiledHeaderFile>

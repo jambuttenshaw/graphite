@@ -36,11 +36,17 @@ namespace Graphite
 		DELETE_COPY(GraphicsPipeline);
 		DEFAULT_MOVE(GraphicsPipeline);
 
-		inline const ResourceViewList* GetStaticResources() const { return m_StaticResources; }
-		inline void SetStaticResources(ResourceViewList* resources) { m_StaticResources = resources; }
+		//inline const ResourceViewList* GetBoundStaticResources() const { return m_BoundStaticResources; }
+		//inline void BindStaticResources(ResourceViewList* resources) { m_BoundStaticResources = resources; }
 
 	protected:
-		ResourceViewList* m_StaticResources = nullptr;
+		// Description of resources used by this pipeline
+		//std::vector<ResourceTable> m_StaticResources;
+
+		// The static resources to be bound to the pipeline
+		// Mutable and dynamic resources are handled through resource binders rather than the pipeline themselves,
+		// to minimize the amount of swapping that will occur
+		//ResourceViewList* m_BoundStaticResources = nullptr;
 	};
 
 }

@@ -17,6 +17,47 @@ namespace Graphite::D3D12
 		return new D3D12GraphicsPipeline(graphicsContext, description);
 	}
 
+	/*
+	void BuildDescriptorTables(const std::vector<ResourceTable>& tables, 
+		std::vector<CD3DX12_DESCRIPTOR_RANGE>& inOutDescriptorRanges, 
+		std::vector<CD3DX12_ROOT_PARAMETER>& outRootParams)
+	{
+		for (const auto& table : tables)
+		{
+			// Create descriptor ranges for each type of descriptor in the table
+			size_t rangeStartIndex = inOutDescriptorRanges.size();
+			uint32_t rangeCount = 0;
+
+			if (table.NumConstantBuffers > 0)
+			{
+				CD3DX12_DESCRIPTOR_RANGE range;
+				range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, table.NumConstantBuffers, 0, 0);
+				inOutDescriptorRanges.push_back(range);
+				rangeCount++;
+			}
+
+			if (table.NumShaderResourceViews > 0)
+			{
+				CD3DX12_DESCRIPTOR_RANGE range;
+				range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, table.NumShaderResourceViews, 0, 0);
+				inOutDescriptorRanges.push_back(range);
+				rangeCount++;
+			}
+
+			if (table.NumUnorderedAccessViews > 0)
+			{
+				CD3DX12_DESCRIPTOR_RANGE range;
+				range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, table.NumUnorderedAccessViews, 0, 0);
+				inOutDescriptorRanges.push_back(range);
+				rangeCount++;
+			}
+
+			CD3DX12_ROOT_PARAMETER rootParam;
+			rootParam.InitAsDescriptorTable(rangeCount, &inOutDescriptorRanges.at(rangeStartIndex));
+			outRootParams.push_back(rootParam);
+		}
+	}
+	*/
 
 	D3D12GraphicsPipeline::D3D12GraphicsPipeline(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& description)
 	{
@@ -31,40 +72,97 @@ namespace Graphite::D3D12
 
 			if (description.ResourceLayout)
 			{
-				for (const auto& table : description.ResourceLayout->GetResourceTables())
+				// Build params for descriptor tables
+				const auto& resources = description.ResourceLayout->PipelineResources;
+				// We want root signature params ordered from the highest frequency to the lowest frequency
+				// so we sort the indices of the resources based on their binding type to access the resources in order
+				std::vector<size_t> indices(resources.size());
+				std::iota(indices.begin(), indices.end(), 0);
+
+				std::ranges::sort(indices, std::greater<>{}, 
+					[&resources](size_t i) -> const PipelineResourceBinding& { return resources.at(i).Binding; });
+				auto sortedResources = std::ranges::views::transform(indices, 
+					[&resources](size_t i) -> const PipelineResourceDescription& { return resources.at(i); });
+
+				// Keep track of the number of descriptor ranges belonging to each shader visibility
+				// A separate root parameter will be created for each visibility, as different flags are required
+				// The prefix sum of the counts will give indices into the descriptorRanges vector
+				std::map<PipelineResourceShaderVisibility, size_t> descriptorRangeCounts;
+				size_t rangeOffset = 0;
+
+				// Every time the binding method changes the descriptor ranges will be built into root params
+				PipelineResourceBinding currentBinding = sortedResources[0].Binding;
+
+				auto CreateDescriptorTableParams = [&]()
 				{
-					// Create descriptor ranges for each type of descriptor in the table
-					size_t rangeStartIndex = descriptorRanges.size();
-					uint32_t rangeCount = 0;
-
-					if (table.NumConstantBuffers > 0)
+					for (auto [visibility, count] : descriptorRangeCounts)
 					{
-						CD3DX12_DESCRIPTOR_RANGE range;
-						range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, table.NumConstantBuffers, 0, 0);
-						descriptorRanges.push_back(range);
-						rangeCount++;
+						// Create a new root param for each visibility
+						CD3DX12_ROOT_PARAMETER rootParam;
+						rootParam.InitAsDescriptorTable(
+							static_cast<UINT>(count),
+							&descriptorRanges[rangeOffset],
+							GraphiteShaderVisibilityToD3D12ShaderVisibility(visibility));
+						rootParams.push_back(rootParam);
+
+						rangeOffset += count;
 					}
 
-					if (table.NumShaderResourceViews > 0)
+					// Counts will reset for next binding type
+					// to create separate tables for all parameters with different frequencies
+					descriptorRangeCounts.clear();
+				};
+
+				for (const PipelineResourceDescription& resource : sortedResources)
+				{
+					if (resource.Binding != currentBinding)
 					{
-						CD3DX12_DESCRIPTOR_RANGE range;
-						range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, table.NumShaderResourceViews, 0, 0);
-						descriptorRanges.push_back(range);
-						rangeCount++;
+						CreateDescriptorTableParams();
+					}
+					currentBinding = resource.Binding;
+
+					if (resource.ShaderVisibility == ShaderVisibility_None)
+					{
+						GRAPHITE_LOG_WARN("Did you intend to add a resource with ShaderVisibility_None?");
+						continue;
 					}
 
-					if (table.NumUnorderedAccessViews > 0)
-					{
-						CD3DX12_DESCRIPTOR_RANGE range;
-						range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, table.NumUnorderedAccessViews, 0, 0);
-						descriptorRanges.push_back(range);
-						rangeCount++;
-					}
+					// All set bits represent a shader stage this resource is used in
+					std::bitset<sizeof(PipelineResourceShaderVisibility) * 8> shaderVisibilityBits(resource.ShaderVisibility);
 
-					CD3DX12_ROOT_PARAMETER rootParam;
-					rootParam.InitAsDescriptorTable(rangeCount, &descriptorRanges.at(rangeStartIndex));
-					rootParams.push_back(rootParam);
+					// Add a new resource to the pipeline
+
+
+					// Add a descriptor for each resource
+					for (size_t i = 0; i < shaderVisibilityBits.size(); i++)
+					{
+						if (!shaderVisibilityBits[i]) continue;
+						PipelineResourceShaderVisibility vis = static_cast<PipelineResourceShaderVisibility>(1 << i);
+
+						// TODO: If insertion via operator[] default-inits the value type then this can be turned into one line?
+						if (descriptorRangeCounts.contains(vis))
+						{
+							descriptorRangeCounts.at(vis)++;
+						}
+						else
+						{
+							// This shader visibility has not been encountered before - start a new count
+							descriptorRangeCounts.insert({ vis, 1 });
+						}
+
+						// Create a new descriptor range for this
+						CD3DX12_DESCRIPTOR_RANGE descriptorRange;
+						descriptorRange.Init(
+							GraphiteResourceTypeToD3D12DescriptorRangeType(resource.Type),
+							1,
+							resource.BindingSlot,
+							resource.RegisterSpace
+						);
+						descriptorRanges.push_back(descriptorRange);
+					}
 				}
+
+				CreateDescriptorTableParams();
 			}
 
 			D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;

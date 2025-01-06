@@ -6,7 +6,10 @@
 #include <algorithm>
 #include <thread>
 #include <utility>
+#include <numeric>
+#include <ranges>
 #include <iostream>
+#include <bitset>
 
 #include <string>
 #include <sstream>
