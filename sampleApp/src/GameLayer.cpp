@@ -105,6 +105,9 @@ void GameLayer::OnRender()
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	Graphite::Window* window = Graphite::g_Application->GetWindow();
 
+	m_StaticResourceList.CommitResources();
+	m_DynamicResourceList.CommitResources();
+
 	// Perform all rendering
 	graphicsContext->BeginPass();
 	{

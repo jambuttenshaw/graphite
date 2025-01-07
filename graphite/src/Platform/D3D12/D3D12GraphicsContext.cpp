@@ -251,6 +251,12 @@ namespace Graphite::D3D12
 		return m_DynamicDescriptorAllocators.at(m_CurrentBackBuffer).Allocate(count);
 	}
 
+	DescriptorAllocation D3D12GraphicsContext::AllocateStagingDescriptors(uint32_t count)
+	{
+		return m_StagingDescriptorAllocator.Allocate(count);
+	}
+
+
 	void D3D12GraphicsContext::CreateConstantBufferView(GPUVirtualAddress bufferAddress, uint32_t bufferSize, CPUDescriptorHandle destDescriptor)
 	{
 		D3D12_CONSTANT_BUFFER_VIEW_DESC cbv{
@@ -258,6 +264,16 @@ namespace Graphite::D3D12
 			.SizeInBytes = bufferSize
 		};
 		m_Device->CreateConstantBufferView(&cbv, GraphiteCPUDescriptorToD3D12Descriptor(destDescriptor));
+	}
+
+	void D3D12GraphicsContext::CopyDescriptors(CPUDescriptorHandle source, CPUDescriptorHandle destination, uint32_t descriptorCount, DescriptorHeapType type)
+	{
+		m_Device->CopyDescriptorsSimple(
+			descriptorCount,
+			GraphiteCPUDescriptorToD3D12Descriptor(destination),
+			GraphiteCPUDescriptorToD3D12Descriptor(source),
+			GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(type)
+			);
 	}
 
 
@@ -411,6 +427,8 @@ namespace Graphite::D3D12
 		m_ResourceHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RESOURCE, 1024, false, L"Resource Descriptor Heap");
 		m_SamplerHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_SAMPLER, 16, false, L"Sampler Descriptor Heap");
 
+		m_StagingHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RESOURCE, 1024, true, L"Staging Descriptor Heap");
+
 		m_DSVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_DSV, 64, true, L"DSV Descriptor Heap");
 		m_RTVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RTV, 64, true, L"RTV Descriptor Heap");
 
@@ -427,6 +445,7 @@ namespace Graphite::D3D12
 			allocatorHeapOffset += descriptorsPerHeap;
 		}
 
+		m_StagingDescriptorAllocator = StaticDescriptorAllocator(m_StagingHeap.get(), 0, m_StagingHeap->GetCapacity());
 		m_RTVAllocator = StaticDescriptorAllocator(m_RTVHeap.get(), 0, m_RTVHeap->GetCapacity());
 	}
 
@@ -502,6 +521,7 @@ namespace Graphite::D3D12
 			alloc.ReleasePendingFrees(frameIndex);
 		}
 
+		m_StagingDescriptorAllocator.ReleasePendingFrees(frameIndex);
 		m_RTVAllocator.ReleasePendingFrees(frameIndex);
 	}
 

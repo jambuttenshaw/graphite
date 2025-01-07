@@ -83,10 +83,15 @@ namespace Graphite
 		GRAPHITE_API virtual CPUDescriptorHandle GetBackBufferRenderTargetView() const = 0;
 
 		// Resource management
+
 		GRAPHITE_API virtual DescriptorAllocation AllocateStaticDescriptors(uint32_t count) = 0;
 		GRAPHITE_API virtual DescriptorAllocation AllocateDynamicDescriptors(uint32_t count) = 0;
+		// Staging descriptors are CPU only and therefore GPU synchronization doesn't have to be considered
+		GRAPHITE_API virtual DescriptorAllocation AllocateStagingDescriptors(uint32_t count) = 0;
 
 		GRAPHITE_API virtual void CreateConstantBufferView(GPUVirtualAddress bufferAddress, uint32_t bufferSize, CPUDescriptorHandle destDescriptor) = 0;
+
+		GRAPHITE_API virtual void CopyDescriptors(CPUDescriptorHandle source, CPUDescriptorHandle destination, uint32_t descriptorCount, DescriptorHeapType type) = 0;
 
 		// VSync
 		GRAPHITE_API inline bool GetVSync() const { return m_VSync; }

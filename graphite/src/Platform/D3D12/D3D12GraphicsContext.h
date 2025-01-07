@@ -54,8 +54,11 @@ namespace Graphite::D3D12
 	public:
 		virtual DescriptorAllocation AllocateStaticDescriptors(uint32_t count) override;
 		virtual DescriptorAllocation AllocateDynamicDescriptors(uint32_t count) override;
+		virtual DescriptorAllocation AllocateStagingDescriptors(uint32_t count) override;
 
 		virtual void CreateConstantBufferView(GPUVirtualAddress bufferAddress, uint32_t bufferSize, CPUDescriptorHandle destDescriptor) override;
+
+		virtual void CopyDescriptors(CPUDescriptorHandle source, CPUDescriptorHandle destination, uint32_t descriptorCount, DescriptorHeapType type) override;
 
 	public:
 		inline DXGI_FORMAT GetNativeBackBufferFormat() const { return m_NativeBackBufferFormat; }
@@ -126,6 +129,9 @@ namespace Graphite::D3D12
 		std::unique_ptr<D3D12DescriptorHeap> m_ResourceHeap;
 		std::unique_ptr<D3D12DescriptorHeap> m_SamplerHeap;
 
+		// CPU-Only heaps
+		std::unique_ptr<D3D12DescriptorHeap> m_StagingHeap;
+
 		std::unique_ptr<D3D12DescriptorHeap> m_DSVHeap;
 		std::unique_ptr<D3D12DescriptorHeap> m_RTVHeap;
 
@@ -133,6 +139,8 @@ namespace Graphite::D3D12
 		// Resource heap allocators
 		StaticDescriptorAllocator m_StaticDescriptorAllocator;
 		std::array<DynamicDescriptorAllocator, s_BackBufferCount> m_DynamicDescriptorAllocators;
+
+		StaticDescriptorAllocator m_StagingDescriptorAllocator;
 
 		StaticDescriptorAllocator m_RTVAllocator;
 

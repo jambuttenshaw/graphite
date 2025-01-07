@@ -79,7 +79,11 @@ namespace Graphite
 		GRAPHITE_API_DELETE_COPY(ResourceViewList);
 		GRAPHITE_API_DEFAULT_MOVE(ResourceViewList);
 
+		// Update resources within the list
 		GRAPHITE_API void SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer);
+
+		// Call every frame prior to setting on a command context
+		GRAPHITE_API void CommitResources();
 
 		// Get a handle to the start of the resource view list
 		GRAPHITE_API GPUDescriptorHandle GetHandle(uint32_t offsetInDescriptors) const;
@@ -88,11 +92,16 @@ namespace Graphite
 	private:
 		const PipelineResourceSet* m_ResourceSet = nullptr;
 
-		// One allocation for each frame in flight
-		// This is to allow the lifetime of a resource view list to be more than one frame
-		// This handles both changing resources in the list dynamically
-		// and for buffered resources (such as constant buffers being updated by the CPU)
-		std::vector<DescriptorAllocation> m_DescriptorAllocations;
+		uint32_t m_DescriptorCount;
+		// Staging descriptors are populated on the CPU timeline
+		// And then copied to GPU descriptor heaps at the beginning of each frame
+		DescriptorAllocation m_StagingDescriptors;
+		// This allocation will have a section for each frame in flight
+		// This allows resources to be changed dynamically
+		DescriptorAllocation m_ResourcesDescriptors;
+
+		// Set when new resources are set in the view list
+		uint32_t m_FramesDirty = 0;
 	};
 
 }

@@ -54,44 +54,65 @@ namespace Graphite
 	ResourceViewList::ResourceViewList(const PipelineResourceSet& resourceSet)
 		: m_ResourceSet(&resourceSet)
 	{
-		m_DescriptorAllocations.resize(GraphicsContext::GetBackBufferCount());
-		for (auto& alloc : m_DescriptorAllocations)
+		m_DescriptorCount = resourceSet.GetDescriptorCount();
+		if (m_DescriptorCount == 0)
 		{
-			alloc = g_GraphicsContext->AllocateStaticDescriptors(resourceSet.GetDescriptorCount());
+			// TODO: With inline descriptors, this will no longer be something to warn about
+			GRAPHITE_LOG_WARN("Why are you creating a resource view list for a resource set that contains no resources?");
+			return;
 		}
+
+		m_StagingDescriptors = g_GraphicsContext->AllocateStagingDescriptors(m_DescriptorCount);
+		m_ResourcesDescriptors = g_GraphicsContext->AllocateStaticDescriptors(m_DescriptorCount * GraphicsContext::GetBackBufferCount());
 	}
 
 	ResourceViewList::~ResourceViewList()
 	{
-		for (auto& alloc : m_DescriptorAllocations)
+		if (m_StagingDescriptors.IsValid())
 		{
-			if (alloc.IsValid())
-			{
-				alloc.Free();
-			}
+			m_StagingDescriptors.Free();
 		}
-		m_DescriptorAllocations.clear();
+		if (m_ResourcesDescriptors.IsValid())
+		{
+			m_ResourcesDescriptors.Free();
+		}
 	}
 
 	void ResourceViewList::SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer)
 	{
+		// Place resources into staging descriptors that will be copied into the live heap at the correct time
 		const PipelineResource& resource = m_ResourceSet->GetResource(resourceName);
-		for (auto& alloc : m_DescriptorAllocations)
+		for (const auto& bindPoint : resource.BindPoints)
 		{
-			for (const auto& bindPoint : resource.BindPoints)
-			{
-				g_GraphicsContext->CreateConstantBufferView(
-					constantBuffer.GetAddressOfElement(0, 0),
-					constantBuffer.GetElementStride(),
-					alloc.GetCPUHandle(static_cast<uint32_t>(bindPoint))
-				);
-			}
+			g_GraphicsContext->CreateConstantBufferView(
+				constantBuffer.GetAddressOfElement(0, 0),
+				constantBuffer.GetElementStride(),
+				m_StagingDescriptors.GetCPUHandle(static_cast<uint32_t>(bindPoint))
+			);
+		}
+
+		m_FramesDirty = GraphicsContext::GetBackBufferCount();
+	}
+
+	void ResourceViewList::CommitResources()
+	{
+		if (m_FramesDirty > 0)
+		{
+			m_FramesDirty--;
+
+			g_GraphicsContext->CopyDescriptors(
+				m_StagingDescriptors.GetCPUHandle(),
+				m_ResourcesDescriptors.GetCPUHandle(g_GraphicsContext->GetCurrentBackBuffer() * m_DescriptorCount),
+				m_DescriptorCount,
+				GraphiteDescriptorHeap_RESOURCE
+			);
 		}
 	}
 
+
 	GPUDescriptorHandle ResourceViewList::GetHandle(uint32_t offsetInDescriptors) const
 	{
-		return m_DescriptorAllocations.at(g_GraphicsContext->GetCurrentBackBuffer()).GetGPUHandle(offsetInDescriptors);
+		return m_ResourcesDescriptors.GetGPUHandle((g_GraphicsContext->GetCurrentBackBuffer() * m_DescriptorCount) + offsetInDescriptors);
 	}
 
 
@@ -99,7 +120,9 @@ namespace Graphite
 
 	ResourceViewList ResourceViewList::Create(const GraphicsPipeline& pipeline, PipelineResourceBindingFrequency bindingFrequency)
 	{
-		return ResourceViewList(pipeline.GetPipelineResourceSet(bindingFrequency));
+		// This factory needs to exist because GraphicsPipeline::GetPipelineResourceSet needs to be called on a CONST graphics pipeline
+		// this factory function has the nice side effect of casting the pipeline to const
+		return { pipeline.GetPipelineResourceSet(bindingFrequency) };
 	}
 
 
