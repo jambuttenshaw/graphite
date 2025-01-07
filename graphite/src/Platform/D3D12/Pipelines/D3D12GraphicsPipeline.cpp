@@ -17,47 +17,6 @@ namespace Graphite::D3D12
 		return new D3D12GraphicsPipeline(graphicsContext, description);
 	}
 
-	/*
-	void BuildDescriptorTables(const std::vector<ResourceTable>& tables, 
-		std::vector<CD3DX12_DESCRIPTOR_RANGE>& inOutDescriptorRanges, 
-		std::vector<CD3DX12_ROOT_PARAMETER>& outRootParams)
-	{
-		for (const auto& table : tables)
-		{
-			// Create descriptor ranges for each type of descriptor in the table
-			size_t rangeStartIndex = inOutDescriptorRanges.size();
-			uint32_t rangeCount = 0;
-
-			if (table.NumConstantBuffers > 0)
-			{
-				CD3DX12_DESCRIPTOR_RANGE range;
-				range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, table.NumConstantBuffers, 0, 0);
-				inOutDescriptorRanges.push_back(range);
-				rangeCount++;
-			}
-
-			if (table.NumShaderResourceViews > 0)
-			{
-				CD3DX12_DESCRIPTOR_RANGE range;
-				range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, table.NumShaderResourceViews, 0, 0);
-				inOutDescriptorRanges.push_back(range);
-				rangeCount++;
-			}
-
-			if (table.NumUnorderedAccessViews > 0)
-			{
-				CD3DX12_DESCRIPTOR_RANGE range;
-				range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, table.NumUnorderedAccessViews, 0, 0);
-				inOutDescriptorRanges.push_back(range);
-				rangeCount++;
-			}
-
-			CD3DX12_ROOT_PARAMETER rootParam;
-			rootParam.InitAsDescriptorTable(rangeCount, &inOutDescriptorRanges.at(rangeStartIndex));
-			outRootParams.push_back(rootParam);
-		}
-	}
-	*/
 
 	D3D12GraphicsPipeline::D3D12GraphicsPipeline(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& description)
 	{
@@ -133,7 +92,18 @@ namespace Graphite::D3D12
 						// Apply range offset to all resource binding points
 						for (const auto& binding : data.second.ResourceDescriptorBindings)
 						{
-							pipelineResourceRefs.at(binding.first)->BindPoints.at(binding.second) += rangeOffset;
+							auto resourceRef = pipelineResourceRefs.at(binding.first);
+							resourceRef->BindPoints.at(binding.second) += rangeOffset;
+
+							// Create a new descriptor range for this
+							CD3DX12_DESCRIPTOR_RANGE descriptorRange;
+							descriptorRange.Init(
+								GraphiteResourceTypeToD3D12DescriptorRangeType(resourceRef->Type),
+								1,
+								resourceRef->BindingSlot,
+								resourceRef->RegisterSpace
+							);
+							descriptorRanges.push_back(descriptorRange);
 						}
 
 						resourceSet.AddRootArgumentOffset(static_cast<uint32_t>(rangeOffset));
@@ -163,34 +133,50 @@ namespace Graphite::D3D12
 					}
 
 					// All set bits represent a shader stage this resource is used in
-					std::bitset<sizeof(PipelineResourceShaderVisibility) * 8> shaderVisibilityBits(resourceDescription.ShaderVisibility);
+					std::vector<PipelineResourceShaderVisibility> shaderStages;
+					if (resourceDescription.ShaderVisibility == ShaderVisibility_All)
+					{
+						shaderStages.push_back(ShaderVisibility_All);
+					}
+					else
+					{
+						std::bitset<sizeof(PipelineResourceShaderVisibility) * 8> visBitset(resourceDescription.ShaderVisibility);
+
+						shaderStages.resize(visBitset.count());
+						for (size_t i = 0; i < shaderStages.size(); i++)
+						{
+							uint32_t vis = visBitset.to_ulong();
+							int idx = std::countr_zero(vis);
+							shaderStages[i] = static_cast<PipelineResourceShaderVisibility>(1 << idx);
+							visBitset.set(idx, false);
+						}
+					}
 
 					// Create a new description of the resource for the pipeline to hold on to,
 					// so that it knows how to set and bind it
 					PipelineResource pipelineResource{
 						resourceDescription.Type,
 						resourceDescription.BindingFrequency,
-						std::vector<size_t>(shaderVisibilityBits.count()) // There will be one index for each shader stage the resource is used
+						resourceDescription.BindingSlot,
+						resourceDescription.RegisterSpace,
+						std::vector<size_t>(shaderStages.size()) // There will be one bind point for each shader stage the resource is used
 					};
 
 					// Add a descriptor for each resource
-					size_t resourceBindPoint = 0;
-					for (size_t i = 0; i < shaderVisibilityBits.size(); i++)
+					size_t resourceBindPoint = 0; // There will be a bind point for each stage the resource is used
+					for (auto& stage : shaderStages)
 					{
-						if (!shaderVisibilityBits[i]) continue;
-						PipelineResourceShaderVisibility vis = static_cast<PipelineResourceShaderVisibility>(1 << i);
-
-						size_t currentCount = 0;
+						size_t currentRangeInArgCount = 0;
 						
-						if (descriptorRangeData.contains(vis))
+						if (descriptorRangeData.contains(stage))
 						{
-							DescriptorRangeData& data = descriptorRangeData.at(vis);
-							currentCount = data.Count++;
+							DescriptorRangeData& data = descriptorRangeData.at(stage);
+							currentRangeInArgCount = data.Count++;
 							data.ResourceDescriptorBindings.push_back({ pipelineResourceRefs.size(), resourceBindPoint });
 						}
 						else
 						{
-							descriptorRangeData.insert(std::make_pair(vis, 
+							descriptorRangeData.insert(std::make_pair(stage,
 								DescriptorRangeData{
 									1,
 									{ { pipelineResourceRefs.size(), resourceBindPoint } }
@@ -198,24 +184,15 @@ namespace Graphite::D3D12
 						}
 
 						// The range offset of the root param must be added to this
-						pipelineResource.BindPoints[resourceBindPoint] = currentCount;
+						pipelineResource.BindPoints[resourceBindPoint] = currentRangeInArgCount;
 						// Next iteration will use a different bind point
 						resourceBindPoint++;
-
-						// Create a new descriptor range for this
-						CD3DX12_DESCRIPTOR_RANGE descriptorRange;
-						descriptorRange.Init(
-							GraphiteResourceTypeToD3D12DescriptorRangeType(resourceDescription.Type),
-							1,
-							resourceDescription.BindingSlot,
-							resourceDescription.RegisterSpace
-						);
-						descriptorRanges.push_back(descriptorRange);
 					}
 
 					// Add the new resource to the pipeline
-					// TODO: switch based on binding frequency
 					PipelineResourceSet& resourceSet = GetPipelineResourceSet(currentBindingFrequency);
+					// Keep temporary track of resources to adjust their bind points once we know the final offsets in the descriptor table
+					// This can only be done when all resources of the same binding frequency have been processed
 					resourceSet.AddResource(resourceDescription.ResourceName, std::move(pipelineResource));
 					pipelineResourceRefs.push_back(&resourceSet.GetResource(resourceDescription.ResourceName));
 				}

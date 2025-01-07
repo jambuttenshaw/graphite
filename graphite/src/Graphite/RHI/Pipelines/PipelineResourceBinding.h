@@ -13,6 +13,8 @@ namespace Graphite
 	{
 		PipelineResourceType Type;
 		PipelineResourceBindingFrequency BindingFrequency;
+		uint32_t BindingSlot;
+		uint32_t RegisterSpace;
 		std::vector<size_t> BindPoints;	// A resource shared between shader stages may have more than one descriptor within the resource view list
 	};
 

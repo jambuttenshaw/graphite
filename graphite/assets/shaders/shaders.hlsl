@@ -10,9 +10,9 @@ struct TriangleOffsetConstantBufferType
     float2 Offset;
 };
 
-ConstantBuffer<TriangleOffsetConstantBufferType> g_TriangleOffsetCB2 : register(b1); // Used in VS
 ConstantBuffer<TriangleOffsetConstantBufferType> g_TriangleOffsetCB : register(b0); // Used in VS + PS
-ConstantBuffer<TriangleColorConstantBufferType> g_TriangleColorCB : register(b1);   // Used in PS
+ConstantBuffer<TriangleOffsetConstantBufferType> g_TriangleOffsetCB2 : register(b1); // Used in VS
+ConstantBuffer<TriangleColorConstantBufferType> g_TriangleColorCB : register(b2);   // Used in PS
 
 
 struct Vertex_Position
