@@ -4,16 +4,6 @@
 #include "imgui.h"
 
 
-struct TriangleOffsetConstantBufferType
-{
-	glm::vec2 Offset;
-};
-struct TriangleColorConstantBufferType
-{
-	glm::vec4 Color;
-};
-
-
 void GameLayer::OnAttach()
 {
 	// Setup
@@ -71,19 +61,8 @@ void GameLayer::OnAttach()
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	m_GraphicsPipeline = Graphite::GraphicsPipeline::Create(*graphicsContext, psoDesc);
 
-	m_OffsetConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleOffsetConstantBufferType>(1, 1);
-	TriangleOffsetConstantBufferType cb1
-	{
-		.Offset = { 0.5f, -0.5f }
-	};
-	m_OffsetConstantBuffer->CopyElement(0, 0, &cb1, sizeof(cb1));
-
-	m_ColorConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleColorConstantBufferType>(1, 1);
-	TriangleColorConstantBufferType cb2
-	{
-		.Color = { 0.0f, 0.0f, 1.0f, 1.0f }
-	};
-	m_ColorConstantBuffer->CopyElement(0, 0, &cb2, sizeof(cb2));
+	m_OffsetConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleOffsetConstantBufferType>(1, 3);
+	m_ColorConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleColorConstantBufferType>(1, 3);
 
 	// Bind static resources
 	m_DynamicResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
@@ -96,7 +75,12 @@ void GameLayer::OnAttach()
 
 void GameLayer::OnUpdate()
 {
-	ImGui::ShowDemoWindow();
+	ImGui::Begin("Debug");
+
+	ImGui::DragFloat2("Offset", &m_OffsetCBData.Offset.x, 0.01f);
+	ImGui::ColorEdit3("Color", &m_ColorCBData.Color.r);
+
+	ImGui::End();
 }
 
 
@@ -104,6 +88,9 @@ void GameLayer::OnRender()
 {
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	Graphite::Window* window = Graphite::g_Application->GetWindow();
+
+	m_OffsetConstantBuffer->CopyElement(0, graphicsContext->GetCurrentBackBuffer(), &m_OffsetCBData, sizeof(m_OffsetCBData));
+	m_ColorConstantBuffer->CopyElement(0, graphicsContext->GetCurrentBackBuffer(), &m_ColorCBData, sizeof(m_ColorCBData));
 
 	m_StaticResourceList.CommitResources();
 	m_DynamicResourceList.CommitResources();

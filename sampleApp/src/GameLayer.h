@@ -1,6 +1,16 @@
 #pragma once
 
 
+struct TriangleOffsetConstantBufferType
+{
+	glm::vec2 Offset;
+};
+struct TriangleColorConstantBufferType
+{
+	glm::vec4 Color;
+};
+
+
 class GameLayer : public Graphite::Layer
 {
 public:
@@ -20,4 +30,7 @@ protected:
 
 	std::unique_ptr<Graphite::ConstantBuffer> m_OffsetConstantBuffer;
 	std::unique_ptr<Graphite::ConstantBuffer> m_ColorConstantBuffer;
+
+	TriangleOffsetConstantBufferType m_OffsetCBData = { { 0.0f, 0.0f } };
+	TriangleColorConstantBufferType m_ColorCBData = { { 0.0f, 0.0f, 1.0f, 1.0f } };
 };

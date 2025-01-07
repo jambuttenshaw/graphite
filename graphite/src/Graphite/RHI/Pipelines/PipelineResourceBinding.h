@@ -92,9 +92,12 @@ namespace Graphite
 	private:
 		const PipelineResourceSet* m_ResourceSet = nullptr;
 
-		uint32_t m_DescriptorCount;
+		uint32_t m_DescriptorCount = 0;
 		// Staging descriptors are populated on the CPU timeline
 		// And then copied to GPU descriptor heaps at the beginning of each frame
+		// The staging descriptors are ALSO buffered - but this is because buffered resources (such as constant buffers)
+		// might want to use a different descriptor for each frame in flight
+		// so we need (Frames in flight * descriptor count) number of descriptors stored in the resource list
 		DescriptorAllocation m_StagingDescriptors;
 		// This allocation will have a section for each frame in flight
 		// This allows resources to be changed dynamically
