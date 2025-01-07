@@ -39,6 +39,10 @@ namespace Graphite
 
 		GRAPHITE_API const PipelineResourceSet& GetPipelineResourceSet(PipelineResourceBindingFrequency bindingFrequency) const;
 
+		// Bind static resources
+		GRAPHITE_API inline void SetStaticResources(const ResourceViewList* resourceViewList) { m_StaticResourceViewList = resourceViewList; }
+		GRAPHITE_API inline const ResourceViewList* GetStaticResources() const { return m_StaticResourceViewList; }
+
 	protected:
 		// Non-const used in pipeline creation
 		PipelineResourceSet& GetPipelineResourceSet(PipelineResourceBindingFrequency bindingFrequency);
@@ -50,6 +54,8 @@ namespace Graphite
 		PipelineResourceSet m_StaticResources;
 		PipelineResourceSet m_MutableResources;
 		PipelineResourceSet m_DynamicResources;
+
+		const ResourceViewList* m_StaticResourceViewList = nullptr;
 	};
 
 }

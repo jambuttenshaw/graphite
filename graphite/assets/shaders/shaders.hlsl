@@ -10,9 +10,9 @@ struct TriangleOffsetConstantBufferType
     float2 Offset;
 };
 
-ConstantBuffer<TriangleOffsetConstantBufferType> g_TriangleOffsetCB : register(b0); // Used in VS + PS
-ConstantBuffer<TriangleOffsetConstantBufferType> g_TriangleOffsetCB2 : register(b1); // Used in VS
-ConstantBuffer<TriangleColorConstantBufferType> g_TriangleColorCB : register(b2);   // Used in PS
+//ConstantBuffer<TriangleOffsetConstantBufferType> g_TriangleOffsetCB : register(b0); // Used in VS + PS
+//ConstantBuffer<TriangleOffsetConstantBufferType> g_TriangleOffsetCB2 : register(b1); // Used in VS
+ConstantBuffer<TriangleColorConstantBufferType> g_TriangleColorCB : register(b0);   // Used in PS
 
 
 struct Vertex_Position
@@ -30,14 +30,15 @@ struct VSToPS
 VSToPS VSMain(Vertex_Position input)
 {
     VSToPS output;
-    output.position = input.position + float4(g_TriangleOffsetCB.Offset, 0, 1) + float4(g_TriangleOffsetCB2.Offset, 0, 1);
+    //output.position = input.position + float4(g_TriangleOffsetCB.Offset, 0, 1) + float4(g_TriangleOffsetCB2.Offset, 0, 1);
+    output.position = input.position;
 
     return output;
 }
 
 float4 PSMain(VSToPS input) : SV_TARGET
 {
-    return g_TriangleColorCB.Color + float4(g_TriangleOffsetCB.Offset, 0, 1);
+    return g_TriangleColorCB.Color;
 }
 
 #endif

@@ -35,23 +35,9 @@ void GameLayer::OnAttach()
 	Graphite::PipelineResourceLayout resourceLayout
 	{
 		Graphite::PipelineResourceDescription::ConstantBuffer(
-			"TriangleOffsetConstantBuffer",
-			Graphite::PipelineResourceBindingFrequency::Static,
-			/* Resource Slot = */ 0,
-			/* Register Space = */ 0,
-			Graphite::ShaderVisibility_All
-			),
-		Graphite::PipelineResourceDescription::ConstantBuffer(
-			"TriangleOffsetConstantBuffer2",
-			Graphite::PipelineResourceBindingFrequency::Dynamic,
-			/* Resource Slot = */ 1,
-			/* Register Space = */ 0,
-			Graphite::ShaderVisibility_Vertex
-			),
-		Graphite::PipelineResourceDescription::ConstantBuffer(
 			"TriangleColorConstantBuffer",
 			Graphite::PipelineResourceBindingFrequency::Static,
-			/* Resource Slot = */ 2,
+			/* Resource Slot = */ 0,
 			/* Register Space = */ 0,
 			Graphite::ShaderVisibility_Pixel
 			)
@@ -82,8 +68,10 @@ void GameLayer::OnAttach()
 	m_ConstantBuffer->CopyElement(0, 0, &cb, sizeof(cb));
 
 	// Bind static resources
-	//m_PipelineStaticResources.SetConstantBufferView(0, *m_ConstantBuffer);
-	//m_GraphicsPipeline->BindStaticResources(&m_PipelineStaticResources);
+	m_PipelineStaticResources = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Static);
+	m_PipelineStaticResources.SetConstantBufferView("TriangleColorConstantBuffer", *m_ConstantBuffer);
+
+	m_GraphicsPipeline->SetStaticResources(&m_PipelineStaticResources);
 }
 
 

@@ -40,6 +40,9 @@ namespace Graphite
 
 		inline uint32_t GetDescriptorCount() const { return m_DescriptorCount; }
 
+		inline uint32_t GetBaseRootArgumentIndex() const { return m_BaseRootArgumentIndex; }
+		inline std::span<const uint32_t> GetRootArgumentOffsets() const { return m_RootArgumentOffsets; }
+
 	private:
 		PipelineResourceBindingFrequency m_BindingFrequency;
 
@@ -59,21 +62,27 @@ namespace Graphite
 	class ResourceViewList
 	{
 	public:
-		// Constructs an invalid resource view list
-		GRAPHITE_API ResourceViewList() = default;
+
+		GRAPHITE_API static ResourceViewList Create(const class GraphicsPipeline& pipeline, PipelineResourceBindingFrequency bindingFrequency);
+
+	protected:
 		// Constructs a resource view list for a specific pipeline resource set
 		// A resource view list can only be applied to one pipeline
+		// Use through factories above
 		GRAPHITE_API ResourceViewList(const PipelineResourceSet& resourceSet);
+	public:
+		// Constructs an invalid resource view list
+		GRAPHITE_API ResourceViewList() = default;
 
-		~ResourceViewList();
+		GRAPHITE_API ~ResourceViewList();
 
 		GRAPHITE_API_DELETE_COPY(ResourceViewList);
-		GRAPHITE_API_DELETE_MOVE(ResourceViewList);
+		GRAPHITE_API_DEFAULT_MOVE(ResourceViewList);
 
 		GRAPHITE_API void SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer);
 
 		// Get a handle to the start of the resource view list
-		GRAPHITE_API GPUDescriptorHandle GetHandle() const;
+		GRAPHITE_API GPUDescriptorHandle GetHandle(uint32_t offsetInDescriptors) const;
 
 	private:
 		const PipelineResourceSet* m_ResourceSet = nullptr;

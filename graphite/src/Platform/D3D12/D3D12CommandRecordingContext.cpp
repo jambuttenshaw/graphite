@@ -87,12 +87,18 @@ namespace Graphite::D3D12
 		const D3D12GraphicsPipeline& nativePipeline = dynamic_cast<const D3D12GraphicsPipeline&>(pipelineState);
 		m_CommandList->SetPipelineState(nativePipeline.GetPipelineState());
 		m_CommandList->SetGraphicsRootSignature(nativePipeline.GetRootSignature());
-		/*
+
 		if (auto staticResources = pipelineState.GetStaticResources())
 		{
-			m_CommandList->SetGraphicsRootDescriptorTable(0, GraphiteGPUDescriptorToD3D12Descriptor(staticResources->GetHandle()));
+			const auto& resourceSet = pipelineState.GetPipelineResourceSet(PipelineResourceBindingFrequency::Static);
+			uint32_t argIndex = resourceSet.GetBaseRootArgumentIndex();
+			uint32_t i = 0;
+			for (const auto offset : resourceSet.GetRootArgumentOffsets())
+			{
+				m_CommandList->SetGraphicsRootDescriptorTable(argIndex + i, GraphiteGPUDescriptorToD3D12Descriptor(staticResources->GetHandle(offset)));
+				i++;
+			}
 		}
-		*/
 	}
 
 	void D3D12CommandRecordingContext::SetPrimitiveTopology(GraphiteTopology topology) const

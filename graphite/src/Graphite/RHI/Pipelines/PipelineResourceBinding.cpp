@@ -5,6 +5,7 @@
 
 #include "Graphite/RHI/GraphicsContext.h"
 #include "Graphite/RHI/Resources/Buffer.h"
+#include "Graphite/RHI/Pipelines/GraphicsPipeline.h"
 
 
 namespace Graphite
@@ -48,22 +49,58 @@ namespace Graphite
 	}
 
 
+	// --- RESOURCE VIEW LIST ---
+
 	ResourceViewList::ResourceViewList(const PipelineResourceSet& resourceSet)
 		: m_ResourceSet(&resourceSet)
 	{
-		
+		m_DescriptorAllocations.resize(GraphicsContext::GetBackBufferCount());
+		for (auto& alloc : m_DescriptorAllocations)
+		{
+			alloc = g_GraphicsContext->AllocateStaticDescriptors(resourceSet.GetDescriptorCount());
+		}
 	}
 
 	ResourceViewList::~ResourceViewList()
 	{
-		
+		for (auto& alloc : m_DescriptorAllocations)
+		{
+			if (alloc.IsValid())
+			{
+				alloc.Free();
+			}
+		}
+		m_DescriptorAllocations.clear();
 	}
 
 	void ResourceViewList::SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer)
 	{
-		
+		const PipelineResource& resource = m_ResourceSet->GetResource(resourceName);
+		for (auto& alloc : m_DescriptorAllocations)
+		{
+			for (const auto& bindPoint : resource.BindPoints)
+			{
+				g_GraphicsContext->CreateConstantBufferView(
+					constantBuffer.GetAddressOfElement(0, 0),
+					constantBuffer.GetElementStride(),
+					alloc.GetCPUHandle(static_cast<uint32_t>(bindPoint))
+				);
+			}
+		}
 	}
 
-	
+	GPUDescriptorHandle ResourceViewList::GetHandle(uint32_t offsetInDescriptors) const
+	{
+		return m_DescriptorAllocations.at(g_GraphicsContext->GetCurrentBackBuffer()).GetGPUHandle(offsetInDescriptors);
+	}
+
+
+	// Factories
+
+	ResourceViewList ResourceViewList::Create(const GraphicsPipeline& pipeline, PipelineResourceBindingFrequency bindingFrequency)
+	{
+		return ResourceViewList(pipeline.GetPipelineResourceSet(bindingFrequency));
+	}
+
 
 }
