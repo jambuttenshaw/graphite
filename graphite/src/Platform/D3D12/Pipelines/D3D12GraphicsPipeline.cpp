@@ -133,7 +133,7 @@ namespace Graphite::D3D12
 						// Apply range offset to all resource binding points
 						for (const auto& binding : data.second.ResourceDescriptorBindings)
 						{
-							pipelineResourceRefs.at(binding.first)->BindPoints.at(binding.second) += totalRangeOffset + rangeOffset;
+							pipelineResourceRefs.at(binding.first)->BindPoints.at(binding.second) += rangeOffset;
 						}
 
 						resourceSet.AddRootArgumentOffset(static_cast<uint32_t>(rangeOffset));
