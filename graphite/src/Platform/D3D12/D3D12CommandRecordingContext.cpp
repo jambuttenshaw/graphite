@@ -93,11 +93,38 @@ namespace Graphite::D3D12
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
 		const auto& resourceSet = resourceViewList.GetPipelineResourceSet();
+
 		uint32_t argIndex = resourceSet.GetBaseRootArgumentIndex();
 		uint32_t i = 0;
-		for (const auto offset : resourceSet.GetRootArgumentOffsets())
+
+		for (const auto& arg : resourceSet.GetRootArguments())
 		{
-			m_CommandList->SetGraphicsRootDescriptorTable(argIndex + i, GraphiteGPUDescriptorToD3D12Descriptor(resourceViewList.GetHandle(offset)));
+			if (arg.BindingMethod == PipelineResourceBindingMethod::Default)
+			{
+				m_CommandList->SetGraphicsRootDescriptorTable(
+					argIndex + i,
+					GraphiteGPUDescriptorToD3D12Descriptor(resourceViewList.GetDescriptorTableHandle(arg.DefaultBinding.DescriptorOffset))
+				);
+			}
+			else
+			{
+				uint32_t idx = argIndex + i;
+				D3D12_GPU_VIRTUAL_ADDRESS va = GraphiteGPUAddressToD3D12GPUAddress(resourceViewList.GetInlineResourceHandle(arg.InlineBinding.ResourceOffset));
+				switch (arg.InlineBinding.Type)
+				{
+				case PipelineResourceType::ConstantBufferView:
+					m_CommandList->SetGraphicsRootConstantBufferView(idx, va);
+					break;
+				case PipelineResourceType::ShaderResourceView:
+					m_CommandList->SetGraphicsRootShaderResourceView(idx, va);
+					break;
+				case PipelineResourceType::UnorderedAccessView:
+					m_CommandList->SetGraphicsRootUnorderedAccessView(idx, va);
+					break;
+				default:
+					GRAPHITE_LOG_FATAL("Unknown resource type encountered!");
+				}
+			}
 			i++;
 		}
 	}

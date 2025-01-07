@@ -19,22 +19,36 @@ namespace Graphite
 
 	void PipelineResourceSet::AddResource(const std::string& name, PipelineResource&& resource)
 	{
-		GRAPHITE_ASSERT(resource.BindingFrequency == m_BindingFrequency,
+		GRAPHITE_ASSERT(resource.Description.BindingFrequency == m_BindingFrequency,
 			"The binding frequency of this resource does not match the binding frequency of this resource list!");
-		m_DescriptorCount += static_cast<uint32_t>(resource.BindPoints.size());
+
+		if (resource.Description.BindingMethod == PipelineResourceBindingMethod::Default)
+		{
+			m_DescriptorCount += static_cast<uint32_t>(resource.BindPoints.size());
+		}
+		else
+		{
+			m_InlineResourceCount++;
+		}
+
 		m_Resources.insert(std::make_pair(name, std::move(resource)));
 	}
 
-	void PipelineResourceSet::AddRootArgumentOffset(uint32_t offset)
+	void PipelineResourceSet::AddDefaultRootArgument(uint32_t offset)
 	{
-#ifdef GRAPHITE_DEBUG
-		if (!m_RootArgumentOffsets.empty())
-		{
-			GRAPHITE_ASSERT(offset > m_RootArgumentOffsets.back(), "Root argument offsets should be added in order!");
-		}
-#endif
-		m_RootArgumentOffsets.push_back(offset);
+		m_RootArguments.emplace_back();
+		m_RootArguments.back().BindingMethod = PipelineResourceBindingMethod::Default;
+		m_RootArguments.back().DefaultBinding.DescriptorOffset = offset;
 	}
+
+	void PipelineResourceSet::AddInlineRootArgument(PipelineResourceType type, uint32_t offset)
+	{
+		m_RootArguments.emplace_back();
+		m_RootArguments.back().BindingMethod = PipelineResourceBindingMethod::Inline;
+		m_RootArguments.back().InlineBinding.Type = type;
+		m_RootArguments.back().InlineBinding.ResourceOffset = offset;
+	}
+
 
 	PipelineResource& PipelineResourceSet::GetResource(const std::string& name)
 	{
@@ -55,15 +69,17 @@ namespace Graphite
 		: m_ResourceSet(&resourceSet)
 	{
 		m_DescriptorCount = resourceSet.GetDescriptorCount();
-		if (m_DescriptorCount == 0)
+
+		if (m_DescriptorCount > 0)
 		{
-			// TODO: With inline descriptors, this will no longer be something to warn about
-			GRAPHITE_LOG_WARN("Why are you creating a resource view list for a resource set that contains no resources?");
-			return;
+			m_StagingDescriptors = g_GraphicsContext->AllocateStagingDescriptors(m_DescriptorCount * GraphicsContext::GetBackBufferCount());
+			m_ResourcesDescriptors = g_GraphicsContext->AllocateStaticDescriptors(m_DescriptorCount * GraphicsContext::GetBackBufferCount());
 		}
 
-		m_StagingDescriptors = g_GraphicsContext->AllocateStagingDescriptors(m_DescriptorCount * GraphicsContext::GetBackBufferCount());
-		m_ResourcesDescriptors = g_GraphicsContext->AllocateStaticDescriptors(m_DescriptorCount * GraphicsContext::GetBackBufferCount());
+		m_InlineDescriptorCount = resourceSet.GetInlineResourceCount();
+
+		// Buffered resources may have a different GPU address for each frame in flight, so allow for 3 addresses to be stored for each inline resource
+		m_InlineDescriptors.resize(m_InlineDescriptorCount * GraphicsContext::GetBackBufferCount());
 	}
 
 	ResourceViewList::~ResourceViewList()
@@ -91,21 +107,33 @@ namespace Graphite
 
 		// Place resources into staging descriptors that will be copied into the live heap at the correct time
 		const PipelineResource& resource = m_ResourceSet->GetResource(resourceName);
-		for (uint32_t i = 0; i < GraphicsContext::GetBackBufferCount(); i++)
+		if (resource.Description.BindingMethod == PipelineResourceBindingMethod::Default)
 		{
-			for (const auto& bindPoint : resource.BindPoints)
+			for (uint32_t i = 0; i < GraphicsContext::GetBackBufferCount(); i++)
 			{
-				g_GraphicsContext->CreateConstantBufferView(
-					constantBuffer.GetAddressOfElement(0, std::max(i, instanceCount - 1)),
-					constantBuffer.GetElementStride(),
-					m_StagingDescriptors.GetCPUHandle(
-						(i * m_DescriptorCount) + static_cast<uint32_t>(bindPoint)
-					)
-				);
+				for (const auto& bindPoint : resource.BindPoints)
+				{
+					g_GraphicsContext->CreateConstantBufferView(
+						constantBuffer.GetAddressOfElement(0, std::max(i, instanceCount - 1)),
+						constantBuffer.GetElementStride(),
+						m_StagingDescriptors.GetCPUHandle(
+							(i * m_DescriptorCount) + static_cast<uint32_t>(bindPoint)
+						)
+					);
+				}
+			}
+
+			m_FramesDirty = GraphicsContext::GetBackBufferCount();
+		}
+		else
+		{
+			uint32_t offset = static_cast<uint32_t>(resource.InlineResourceIndex);
+			for (uint32_t i = 0; i < GraphicsContext::GetBackBufferCount(); i++)
+			{
+				uint32_t index = (i * m_InlineDescriptorCount) + offset;
+				m_InlineDescriptors.at(index) = constantBuffer.GetAddressOfElement(0, std::max(i, instanceCount - 1));
 			}
 		}
-
-		m_FramesDirty = GraphicsContext::GetBackBufferCount();
 	}
 
 	void ResourceViewList::CommitResources()
@@ -125,9 +153,14 @@ namespace Graphite
 	}
 
 
-	GPUDescriptorHandle ResourceViewList::GetHandle(uint32_t offsetInDescriptors) const
+	GPUDescriptorHandle ResourceViewList::GetDescriptorTableHandle(uint32_t offsetInDescriptors) const
 	{
 		return m_ResourcesDescriptors.GetGPUHandle((g_GraphicsContext->GetCurrentBackBuffer() * m_DescriptorCount) + offsetInDescriptors);
+	}
+
+	GPUVirtualAddress ResourceViewList::GetInlineResourceHandle(uint32_t inlineResourceOffset) const
+	{
+		return m_InlineDescriptors.at((g_GraphicsContext->GetCurrentBackBuffer() * m_InlineDescriptorCount) + inlineResourceOffset);
 	}
 
 

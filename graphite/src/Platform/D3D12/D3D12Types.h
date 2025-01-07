@@ -12,6 +12,8 @@ namespace Graphite
 
 namespace Graphite::D3D12
 {
+	extern D3D12_GPU_VIRTUAL_ADDRESS GraphiteGPUAddressToD3D12GPUAddress(GPUVirtualAddress address);
+
 	extern DXGI_FORMAT GraphiteFormatToD3D12Format(GraphiteFormat format);
 	extern D3D_PRIMITIVE_TOPOLOGY GraphiteTopologyToD3D12Topology(GraphiteTopology topology);
 

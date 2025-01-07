@@ -31,6 +31,7 @@ void GameLayer::OnAttach()
 		Graphite::PipelineResourceDescription::ConstantBuffer(
 			"TriangleOffsetConstantBuffer",
 			Graphite::PipelineResourceBindingFrequency::Dynamic,
+			Graphite::PipelineResourceBindingMethod::Inline,
 			/* Resource Slot = */ 0,
 			/* Register Space = */ 0,
 			Graphite::ShaderVisibility_Vertex
@@ -38,6 +39,7 @@ void GameLayer::OnAttach()
 		Graphite::PipelineResourceDescription::ConstantBuffer(
 			"TriangleColorConstantBuffer",
 			Graphite::PipelineResourceBindingFrequency::Static,
+			Graphite::PipelineResourceBindingMethod::Default,
 			/* Resource Slot = */ 0,
 			/* Register Space = */ 0,
 			Graphite::ShaderVisibility_Pixel
@@ -108,7 +110,7 @@ void GameLayer::OnRender()
 		recordingContext->SetScissorRects({ &scissorRect, 1 });
 
 		// Record commands
-		glm::vec4 clearColor{ 1.0f, 0.0f, 0.0f, 1.0f };
+		glm::vec4 clearColor{ 0.17f, 0.2f, 0.23f, 1.0f };
 		Graphite::CPUDescriptorHandle rtv = graphicsContext->GetBackBufferRenderTargetView();
 
 		recordingContext->ClearRenderTargetView(rtv, clearColor);

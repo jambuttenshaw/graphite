@@ -9,6 +9,12 @@
 
 namespace Graphite::D3D12
 {
+    D3D12_GPU_VIRTUAL_ADDRESS GraphiteGPUAddressToD3D12GPUAddress(GPUVirtualAddress address)
+    {
+	    return static_cast<D3D12_GPU_VIRTUAL_ADDRESS>(address);
+    }
+
+
     DXGI_FORMAT GraphiteFormatToD3D12Format(GraphiteFormat format)
     {
         switch (format)

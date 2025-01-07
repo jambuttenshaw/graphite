@@ -8,6 +8,7 @@ namespace Graphite
 	PipelineResourceDescription PipelineResourceDescription::ConstantBuffer(
 		std::string ResourceName,
 		PipelineResourceBindingFrequency bindingFrequency,
+		PipelineResourceBindingMethod bindingMethod,
 		uint32_t bindingSlot,
 		uint32_t registerSpace,
 		PipelineResourceShaderVisibility shaderVisibility)
@@ -16,6 +17,7 @@ namespace Graphite
 			.ResourceName = std::move(ResourceName),
 			.Type = PipelineResourceType::ConstantBufferView,
 			.BindingFrequency = bindingFrequency,
+			.BindingMethod =  bindingMethod,
 			.BindingSlot = bindingSlot,
 			.RegisterSpace = registerSpace,
 			.ShaderVisibility = shaderVisibility

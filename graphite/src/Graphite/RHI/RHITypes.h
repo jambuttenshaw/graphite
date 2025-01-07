@@ -228,6 +228,16 @@ namespace Graphite
         Dynamic			// Changes constantly throughout a pass
     };
 
+    // Describes how resources should be bound to a pipeline
+    enum class PipelineResourceBindingMethod : uint8_t
+    {
+	    Invalid = 0,
+        Default,    // Descriptor tables are the default method of binding resources
+
+        Inline      // Inlined bindings will store their address directly in the root signature, resulting in one less indirection to access
+					// Only works for buffers and consumes a greater amount of the root signature than default (descriptor tables)
+    };
+
     // A bitfield that describes which shaders a resource should be bound to
     enum PipelineResourceShaderVisibility : uint8_t
     {
