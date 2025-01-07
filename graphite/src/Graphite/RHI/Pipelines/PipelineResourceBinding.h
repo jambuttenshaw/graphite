@@ -15,9 +15,6 @@ namespace Graphite
 
 		// For default binding:
 		std::vector<size_t> BindPoints;	// A resource shared between shader stages may have more than one descriptor within the resource view list
-
-		// For inline binding:
-		size_t InlineResourceIndex;
 	};
 
 	class PipelineResourceSet
@@ -103,7 +100,9 @@ namespace Graphite
 		// Update resources within the list
 		GRAPHITE_API void SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer, uint32_t element);
 
-		// Call every frame prior to setting on a command context
+		// This will update all GPU data for this resource view list
+		// It is important to call this every frame to make sure that resources using DEFAULT BINDING are updated correctly
+		// For inline resources, this function does nothing
 		GRAPHITE_API void CommitResources();
 
 		// Get a handle to the start of the resource view list

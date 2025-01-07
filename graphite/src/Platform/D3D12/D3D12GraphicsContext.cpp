@@ -424,10 +424,10 @@ namespace Graphite::D3D12
 
 	void D3D12GraphicsContext::CreateDescriptorHeaps()
 	{
-		m_ResourceHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RESOURCE, 1024, false, L"Resource Descriptor Heap");
-		m_SamplerHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_SAMPLER, 16, false, L"Sampler Descriptor Heap");
+		m_ResourceHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_Resource, 1024, false, L"Resource Descriptor Heap");
+		m_SamplerHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_Sampler, 16, false, L"Sampler Descriptor Heap");
 
-		m_StagingHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RESOURCE, 1024, true, L"Staging Descriptor Heap");
+		m_StagingHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_Resource, 1024, true, L"Staging Descriptor Heap");
 
 		m_DSVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_DSV, 64, true, L"DSV Descriptor Heap");
 		m_RTVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RTV, 64, true, L"RTV Descriptor Heap");

@@ -121,6 +121,7 @@ namespace Graphite::D3D12
 				case PipelineResourceType::UnorderedAccessView:
 					m_CommandList->SetGraphicsRootUnorderedAccessView(idx, va);
 					break;
+				case PipelineResourceType::Invalid:
 				default:
 					GRAPHITE_LOG_FATAL("Unknown resource type encountered!");
 				}

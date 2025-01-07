@@ -25,7 +25,7 @@ void GameLayer::OnAttach()
 
 	// Create graphics pipeline
 
-	// Describe the resource layout of the pipeline - it contains a single constant buffer for the pixel shader
+	// Describe the resource layout of the pipeline
 	Graphite::PipelineResourceLayout resourceLayout
 	{
 		Graphite::PipelineResourceDescription::ConstantBuffer(
@@ -66,12 +66,7 @@ void GameLayer::OnAttach()
 	m_OffsetConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleOffsetConstantBufferType>(2, 3);
 	m_ColorConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleColorConstantBufferType>(1, 3);
 
-	// Bind static resources
-	m_DynamicResourceList1 = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
-	m_DynamicResourceList1.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer, 0);
-
-	m_DynamicResourceList2 = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
-	m_DynamicResourceList2.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer, 1);
+	m_DynamicResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
 
 	m_StaticResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Static);
 	m_StaticResourceList.SetConstantBufferView("TriangleColorConstantBuffer", *m_ColorConstantBuffer, 0);
@@ -95,13 +90,13 @@ void GameLayer::OnRender()
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	Graphite::Window* window = Graphite::g_Application->GetWindow();
 
+	// Update the data in the constant buffers
 	m_OffsetConstantBuffer->CopyElement(0, graphicsContext->GetCurrentBackBuffer(), &m_OffsetCBData[0], sizeof(m_OffsetCBData[0]));
 	m_OffsetConstantBuffer->CopyElement(1, graphicsContext->GetCurrentBackBuffer(), &m_OffsetCBData[1], sizeof(m_OffsetCBData[1]));
 	m_ColorConstantBuffer->CopyElement(0, graphicsContext->GetCurrentBackBuffer(), &m_ColorCBData, sizeof(m_ColorCBData));
 
+	// Ensure resource list is up to date
 	m_StaticResourceList.CommitResources();
-	m_DynamicResourceList1.CommitResources();
-	m_DynamicResourceList2.CommitResources();
 
 	// Perform all rendering
 	graphicsContext->BeginPass();
@@ -134,12 +129,17 @@ void GameLayer::OnRender()
 		recordingContext->SetVertexBuffers(0, { &vbv, 1 });
 		recordingContext->SetIndexBuffer(ibv);
 
+		// Using dynamic resource lists like this is only possible with inline pipeline resources
 		{
-			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList1);
+			m_DynamicResourceList.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer, 0);
+			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList);
+
 			recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
 		}
 		{
-			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList2);
+			m_DynamicResourceList.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer, 1);
+			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList);
+
 			recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
 		}
 

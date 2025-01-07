@@ -127,11 +127,13 @@ namespace Graphite
 		}
 		else
 		{
-			uint32_t offset = static_cast<uint32_t>(resource.InlineResourceIndex);
 			for (uint32_t i = 0; i < GraphicsContext::GetBackBufferCount(); i++)
 			{
-				uint32_t index = (i * m_InlineDescriptorCount) + offset;
-				m_InlineDescriptors.at(index) = constantBuffer.GetAddressOfElement(element, std::max(i, instanceCount - 1));
+				for (const auto& bindPoint : resource.BindPoints)
+				{
+					uint32_t index = (i * m_InlineDescriptorCount) + static_cast<uint32_t>(bindPoint);
+					m_InlineDescriptors.at(index) = constantBuffer.GetAddressOfElement(element, std::max(i, instanceCount - 1));
+				}
 			}
 		}
 	}
@@ -147,7 +149,7 @@ namespace Graphite
 				m_StagingDescriptors.GetCPUHandle(offset),
 				m_ResourcesDescriptors.GetCPUHandle(offset),
 				m_DescriptorCount,
-				GraphiteDescriptorHeap_RESOURCE
+				GraphiteDescriptorHeap_Resource
 			);
 		}
 	}

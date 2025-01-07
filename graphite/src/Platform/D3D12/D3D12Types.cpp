@@ -203,8 +203,8 @@ namespace Graphite::D3D12
         {
         case GraphiteDescriptorHeap_RTV:		return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         case GraphiteDescriptorHeap_DSV:		return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-        case GraphiteDescriptorHeap_RESOURCE:	return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        case GraphiteDescriptorHeap_SAMPLER:	return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+        case GraphiteDescriptorHeap_Resource:	return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        case GraphiteDescriptorHeap_Sampler:	return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
         default: break;
         }
 

@@ -21,14 +21,14 @@ namespace Graphite::D3D12
 	D3D12GraphicsPipeline::D3D12GraphicsPipeline(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& description)
 	{
 		// Get native device
-		const D3D12GraphicsContext& nativeContext = dynamic_cast<const D3D12GraphicsContext&>(graphicsContext);
-		ID3D12Device* device = nativeContext.GetDevice();
+		ID3D12Device* device = dynamic_cast<const D3D12GraphicsContext&>(graphicsContext).GetDevice();
 
 		// Create root signature
 		{
 			std::vector<CD3DX12_ROOT_PARAMETER> rootParams;
 			std::vector<CD3DX12_DESCRIPTOR_RANGE> descriptorRanges;
 
+			// Build root signature params from resource layout
 			if (description.ResourceLayout)
 			{
 				// Build params for descriptor tables
@@ -72,18 +72,23 @@ namespace Graphite::D3D12
 				// The prefix sum of the counts will give indices into the descriptorRanges vector
 				struct DescriptorRangeData
 				{
-					size_t Count = 0;
+					size_t DescriptorRangeCount = 0;
 
 					// Need to keep track of which resources have their descriptor indices in this root param
 					// so that the correct offset into the descriptor table can be set
 
-					// This vector 
+					// This vector keeps track of resources that will have a descriptor in this table
+					// The resource needs to know where in the table its descriptor will lie
 					std::vector<
 						std::pair</* PipelineResource idx */size_t, /* Bind point idx */size_t>
 					> ResourceDescriptorBindings;
 				};
 
-				std::map<PipelineResourceShaderVisibility, DescriptorRangeData> descriptorRangeData;
+				// A separate descriptor table will be built for each shader visibility,
+				// because a different shader visibility requires different root parameter flags
+				std::map<PipelineResourceShaderVisibility, DescriptorRangeData> descriptorTablesToBuild;
+				// When populating the descriptor params, we need to refer back to properties of the resources
+				// We keep track of the resources IN ORDER THEY WERE PROCESSED - so we don't need to constantly look up by name
 				std::vector<PipelineResource*> pipelineResourceRefs;
 
 				size_t totalRangeOffset = 0;
@@ -92,28 +97,23 @@ namespace Graphite::D3D12
 				// Every time the binding method changes the descriptor ranges will be built into root params
 				PipelineResourceBindingFrequency currentBindingFrequency = sortedResources[0].BindingFrequency;
 
-				auto SetResourceSetBaseRootParamOffset = [&]()
-				{
-					PipelineResourceSet& resourceSet = GetPipelineResourceSet(currentBindingFrequency);
-					resourceSet.SetBaseRootArgumentIndex(static_cast<uint32_t>(rootParamData.size()));
-				};
-
 				auto CreateDescriptorTableParams = [&]()
 				{
+					// For prefix sum of 
 					size_t rangeOffset = 0;
 
 					// Each shader visibility type will have its own root parameter
-					for (const auto& data : descriptorRangeData)
+					for (const auto& data : descriptorTablesToBuild)
 					{
 						// Create a new root param for each visibility
-						RootParamData param;
-						param.BindingFrequency = currentBindingFrequency;
-						param.BindingMethod = PipelineResourceBindingMethod::Default;
-						param.Visibility = GraphiteShaderVisibilityToD3D12ShaderVisibility(data.first);
-						param.DefaultBindingData.RangeCount = static_cast<uint32_t>(data.second.Count);
-						param.DefaultBindingData.RangeIndex = static_cast<uint32_t>(totalRangeOffset + rangeOffset);
-						param.DefaultBindingData.DescriptorOffsetInResourceSet = static_cast<uint32_t>(rangeOffset);
-						rootParamData.push_back(param);
+						rootParamData.emplace_back();
+						rootParamData.back().BindingFrequency = currentBindingFrequency;
+						rootParamData.back().BindingMethod = PipelineResourceBindingMethod::Default;
+						rootParamData.back().Visibility = GraphiteShaderVisibilityToD3D12ShaderVisibility(data.first);
+
+						rootParamData.back().DefaultBindingData.RangeCount = static_cast<uint32_t>(data.second.DescriptorRangeCount);
+						rootParamData.back().DefaultBindingData.RangeIndex = static_cast<uint32_t>(totalRangeOffset + rangeOffset);
+						rootParamData.back().DefaultBindingData.DescriptorOffsetInResourceSet = static_cast<uint32_t>(rangeOffset);
 
 						// Apply range offset to all resource binding points
 						for (const auto& binding : data.second.ResourceDescriptorBindings)
@@ -123,32 +123,34 @@ namespace Graphite::D3D12
 
 							// Create a new descriptor range for this
 							// We do this now to ensure that all ranges in the table are contiguous in the descriptorRanges vector
-							CD3DX12_DESCRIPTOR_RANGE descriptorRange;
-							descriptorRange.Init(
+							descriptorRanges.emplace_back();
+							descriptorRanges.back().Init(
 								GraphiteResourceTypeToD3D12DescriptorRangeType(resourceRef->Description.Type),
 								1,
 								resourceRef->Description.BindingSlot,
 								resourceRef->Description.RegisterSpace
 							);
-							descriptorRanges.push_back(descriptorRange);
 						}
 
-						rangeOffset += data.second.Count;
+						rangeOffset += data.second.DescriptorRangeCount;
 					}
 
 					totalRangeOffset += rangeOffset;
 
 					// Counts will reset for next binding type
 					// to create separate tables for all parameters with different frequencies
-					descriptorRangeData.clear();
+					descriptorTablesToBuild.clear();
 				};
 
-				// This will just make sure the first resource set offset is set to 0
-				SetResourceSetBaseRootParamOffset();
-
+				// Iterate over all resources in the layout
 				for (const PipelineResourceDescription& resourceDescription : sortedResources)
 				{
-					// Resource binding is monotonically decreasing as we iterate over the range
+					GRAPHITE_ASSERT(resourceDescription.BindingFrequency != PipelineResourceBindingFrequency::Invalid, "Invalid binding frequency.");
+					GRAPHITE_ASSERT(resourceDescription.BindingMethod != PipelineResourceBindingMethod::Invalid, "Invalid binding method.");
+					GRAPHITE_ASSERT(resourceDescription.ShaderVisibility != ShaderVisibility_None, "Invalid shader visibility.");
+
+					// Resource binding frequency is monotonically decreasing as we iterate over the range
+					// When the binding frequency changes, we need to consolidate all root parameters for the previous binding frequency
 					if (resourceDescription.BindingFrequency != currentBindingFrequency)
 					{
 						inlineResourceCount = 0;
@@ -156,31 +158,27 @@ namespace Graphite::D3D12
 						CreateDescriptorTableParams();
 
 						currentBindingFrequency = resourceDescription.BindingFrequency;
-						SetResourceSetBaseRootParamOffset();
-					}
-
-					if (resourceDescription.ShaderVisibility == ShaderVisibility_None)
-					{
-						GRAPHITE_LOG_WARN("Did you intend to add a resource with ShaderVisibility_None?");
-						continue;
+						// Now that the binding frequency has switched, we need to keep track of where the root parameters for this resource set begin
+						GetPipelineResourceSet(currentBindingFrequency).SetBaseRootArgumentIndex(static_cast<uint32_t>(rootParamData.size()));
 					}
 
 					// All set bits represent a shader stage this resource is used in
 					std::vector<PipelineResourceShaderVisibility> shaderStages;
 					if (resourceDescription.ShaderVisibility == ShaderVisibility_All)
 					{
+						// Visibility_All must be handled uniquely
 						shaderStages.push_back(ShaderVisibility_All);
 					}
 					else
 					{
+						// Extract all the individual shader stages this resource should be visible to
 						std::bitset<sizeof(PipelineResourceShaderVisibility) * 8> visBitset(resourceDescription.ShaderVisibility);
-
 						shaderStages.resize(visBitset.count());
-						for (size_t i = 0; i < shaderStages.size(); i++)
+
+						for (auto& shaderStage : shaderStages)
 						{
-							uint32_t vis = visBitset.to_ulong();
-							int idx = std::countr_zero(vis);
-							shaderStages[i] = static_cast<PipelineResourceShaderVisibility>(1 << idx);
+							int idx = std::countr_zero(visBitset.to_ulong());
+							shaderStage = static_cast<PipelineResourceShaderVisibility>(1 << idx);
 							visBitset.set(idx, false);
 						}
 					}
@@ -189,7 +187,7 @@ namespace Graphite::D3D12
 					// so that it knows how to set and bind it
 					PipelineResource pipelineResource{
 						resourceDescription, // Copy description
-						std::vector<size_t>(shaderStages.size()) // There will be one bind point for each shader stage the resource is used
+						std::vector<size_t>(shaderStages.size())
 					};
 
 					// Add a descriptor for each resource
@@ -200,15 +198,15 @@ namespace Graphite::D3D12
 						{
 							size_t currentRangeInArgCount = 0;
 							
-							if (descriptorRangeData.contains(stage))
+							if (descriptorTablesToBuild.contains(stage))
 							{
-								DescriptorRangeData& data = descriptorRangeData.at(stage);
-								currentRangeInArgCount = data.Count++;
-								data.ResourceDescriptorBindings.push_back({ pipelineResourceRefs.size(), resourceBindPoint });
+								DescriptorRangeData& data = descriptorTablesToBuild.at(stage);
+								currentRangeInArgCount = data.DescriptorRangeCount++;
+								data.ResourceDescriptorBindings.emplace_back(std::make_pair( pipelineResourceRefs.size(), resourceBindPoint ));
 							}
 							else
 							{
-								descriptorRangeData.insert(std::make_pair(stage,
+								descriptorTablesToBuild.insert(std::make_pair(stage,
 									DescriptorRangeData{
 										1,
 										{ { pipelineResourceRefs.size(), resourceBindPoint } }
@@ -224,15 +222,14 @@ namespace Graphite::D3D12
 						{
 							// Inlined resources
 							// We can directly specify the root parameter to create here
-							RootParamData param;
-							param.BindingFrequency = currentBindingFrequency;
-							param.BindingMethod = PipelineResourceBindingMethod::Inline;
-							param.Visibility = GraphiteShaderVisibilityToD3D12ShaderVisibility(stage);
-							param.InlineBindingData.PipelineResourceIndex = pipelineResourceRefs.size();
-							param.InlineBindingData.InlineResourceIndex = inlineResourceCount;
-							rootParamData.push_back(param);
+							rootParamData.emplace_back();
+							rootParamData.back().BindingFrequency = currentBindingFrequency;
+							rootParamData.back().BindingMethod = PipelineResourceBindingMethod::Inline;
+							rootParamData.back().Visibility = GraphiteShaderVisibilityToD3D12ShaderVisibility(stage);
+							rootParamData.back().InlineBindingData.PipelineResourceIndex = pipelineResourceRefs.size();
+							rootParamData.back().InlineBindingData.InlineResourceIndex = inlineResourceCount;
 
-							pipelineResource.InlineResourceIndex = inlineResourceCount;
+							pipelineResource.BindPoints[resourceBindPoint] = inlineResourceCount;
 
 							inlineResourceCount++;
 						}
@@ -254,7 +251,9 @@ namespace Graphite::D3D12
 				{
 					PipelineResourceSet& resourceSet = GetPipelineResourceSet(param.BindingFrequency);
 
-					CD3DX12_ROOT_PARAMETER rootParam;
+					rootParams.emplace_back();
+					CD3DX12_ROOT_PARAMETER& rootParam = rootParams.back();
+
 					switch (param.BindingMethod)
 					{
 					case PipelineResourceBindingMethod::Default:
@@ -300,7 +299,6 @@ namespace Graphite::D3D12
 					default:
 						GRAPHITE_LOG_FATAL("Invalid resource binding method has been encountered!");
 					}
-					rootParams.push_back(rootParam);
 				}
 			}
 

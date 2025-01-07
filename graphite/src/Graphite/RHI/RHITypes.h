@@ -183,8 +183,8 @@ namespace Graphite
 	{
 		GraphiteDescriptorHeap_RTV,
 		GraphiteDescriptorHeap_DSV,
-		GraphiteDescriptorHeap_RESOURCE,
-		GraphiteDescriptorHeap_SAMPLER
+		GraphiteDescriptorHeap_Resource,
+		GraphiteDescriptorHeap_Sampler
 	};
 
 
