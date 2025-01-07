@@ -9,6 +9,8 @@ namespace Graphite
 	class DescriptorHeap;
 	class GraphicsPipeline;
 
+	class ResourceViewList;
+
 	struct VertexBufferView;
 	struct IndexBufferView;
 
@@ -33,6 +35,8 @@ namespace Graphite
 		virtual void SetRenderTargets(uint32_t rtvCount, CPUDescriptorHandle rtvRange, std::optional<CPUDescriptorHandle> dsv) const = 0;
 
 		virtual void SetGraphicsPipelineState(const GraphicsPipeline& pipelineState) const = 0;
+
+		virtual void SetGraphicsPipelineResources(const ResourceViewList& resourceViewList) const = 0;
 
 		virtual void SetPrimitiveTopology(GraphiteTopology topology) const = 0;
 

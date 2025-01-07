@@ -83,6 +83,7 @@ namespace Graphite
 
 		// Get a handle to the start of the resource view list
 		GRAPHITE_API GPUDescriptorHandle GetHandle(uint32_t offsetInDescriptors) const;
+		GRAPHITE_API const PipelineResourceSet& GetPipelineResourceSet() const { return *m_ResourceSet; }
 
 	private:
 		const PipelineResourceSet* m_ResourceSet = nullptr;

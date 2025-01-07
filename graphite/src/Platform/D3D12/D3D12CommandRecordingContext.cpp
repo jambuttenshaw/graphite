@@ -87,17 +87,18 @@ namespace Graphite::D3D12
 		const D3D12GraphicsPipeline& nativePipeline = dynamic_cast<const D3D12GraphicsPipeline&>(pipelineState);
 		m_CommandList->SetPipelineState(nativePipeline.GetPipelineState());
 		m_CommandList->SetGraphicsRootSignature(nativePipeline.GetRootSignature());
+	}
 
-		if (auto staticResources = pipelineState.GetStaticResources())
+	void D3D12CommandRecordingContext::SetGraphicsPipelineResources(const ResourceViewList& resourceViewList) const
+	{
+		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
+		const auto& resourceSet = resourceViewList.GetPipelineResourceSet();
+		uint32_t argIndex = resourceSet.GetBaseRootArgumentIndex();
+		uint32_t i = 0;
+		for (const auto offset : resourceSet.GetRootArgumentOffsets())
 		{
-			const auto& resourceSet = pipelineState.GetPipelineResourceSet(PipelineResourceBindingFrequency::Static);
-			uint32_t argIndex = resourceSet.GetBaseRootArgumentIndex();
-			uint32_t i = 0;
-			for (const auto offset : resourceSet.GetRootArgumentOffsets())
-			{
-				m_CommandList->SetGraphicsRootDescriptorTable(argIndex + i, GraphiteGPUDescriptorToD3D12Descriptor(staticResources->GetHandle(offset)));
-				i++;
-			}
+			m_CommandList->SetGraphicsRootDescriptorTable(argIndex + i, GraphiteGPUDescriptorToD3D12Descriptor(resourceViewList.GetHandle(offset)));
+			i++;
 		}
 	}
 
