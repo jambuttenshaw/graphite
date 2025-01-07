@@ -4,7 +4,11 @@
 #include "imgui.h"
 
 
-struct TriangleConstantBufferType
+struct TriangleOffsetConstantBufferType
+{
+	glm::vec2 Offset;
+};
+struct TriangleColorConstantBufferType
 {
 	glm::vec4 Color;
 };
@@ -35,6 +39,13 @@ void GameLayer::OnAttach()
 	Graphite::PipelineResourceLayout resourceLayout
 	{
 		Graphite::PipelineResourceDescription::ConstantBuffer(
+			"TriangleOffsetConstantBuffer",
+			Graphite::PipelineResourceBindingFrequency::Static,
+			/* Resource Slot = */ 0,
+			/* Register Space = */ 0,
+			Graphite::ShaderVisibility_Vertex
+			),
+		Graphite::PipelineResourceDescription::ConstantBuffer(
 			"TriangleColorConstantBuffer",
 			Graphite::PipelineResourceBindingFrequency::Static,
 			/* Resource Slot = */ 0,
@@ -60,16 +71,24 @@ void GameLayer::OnAttach()
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	m_GraphicsPipeline = Graphite::GraphicsPipeline::Create(*graphicsContext, psoDesc);
 
-	m_ConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleConstantBufferType>(1, 1);
-	TriangleConstantBufferType cb
+	m_OffsetConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleOffsetConstantBufferType>(1, 1);
+	TriangleOffsetConstantBufferType cb1
+	{
+		.Offset = { 0.5f, -0.5f }
+	};
+	m_OffsetConstantBuffer->CopyElement(0, 0, &cb1, sizeof(cb1));
+
+	m_ColorConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleColorConstantBufferType>(1, 1);
+	TriangleColorConstantBufferType cb2
 	{
 		.Color = { 0.0f, 0.0f, 1.0f, 1.0f }
 	};
-	m_ConstantBuffer->CopyElement(0, 0, &cb, sizeof(cb));
+	m_ColorConstantBuffer->CopyElement(0, 0, &cb2, sizeof(cb2));
 
 	// Bind static resources
 	m_PipelineStaticResources = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Static);
-	m_PipelineStaticResources.SetConstantBufferView("TriangleColorConstantBuffer", *m_ConstantBuffer);
+	m_PipelineStaticResources.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer);
+	m_PipelineStaticResources.SetConstantBufferView("TriangleColorConstantBuffer", *m_ColorConstantBuffer);
 
 	m_GraphicsPipeline->SetStaticResources(&m_PipelineStaticResources);
 }

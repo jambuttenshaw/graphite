@@ -16,5 +16,6 @@ protected:
 	std::unique_ptr<Graphite::GraphicsPipeline> m_GraphicsPipeline;
 	Graphite::ResourceViewList m_PipelineStaticResources;
 
-	std::unique_ptr<Graphite::ConstantBuffer> m_ConstantBuffer;
+	std::unique_ptr<Graphite::ConstantBuffer> m_OffsetConstantBuffer;
+	std::unique_ptr<Graphite::ConstantBuffer> m_ColorConstantBuffer;
 };
