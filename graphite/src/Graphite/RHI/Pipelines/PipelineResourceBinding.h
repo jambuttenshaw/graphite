@@ -101,7 +101,7 @@ namespace Graphite
 		GRAPHITE_API_DEFAULT_MOVE(ResourceViewList);
 
 		// Update resources within the list
-		GRAPHITE_API void SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer);
+		GRAPHITE_API void SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer, uint32_t element);
 
 		// Call every frame prior to setting on a command context
 		GRAPHITE_API void CommitResources();

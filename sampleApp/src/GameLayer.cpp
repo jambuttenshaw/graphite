@@ -63,15 +63,18 @@ void GameLayer::OnAttach()
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	m_GraphicsPipeline = Graphite::GraphicsPipeline::Create(*graphicsContext, psoDesc);
 
-	m_OffsetConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleOffsetConstantBufferType>(1, 3);
+	m_OffsetConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleOffsetConstantBufferType>(2, 3);
 	m_ColorConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleColorConstantBufferType>(1, 3);
 
 	// Bind static resources
-	m_DynamicResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
-	m_DynamicResourceList.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer);
+	m_DynamicResourceList1 = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
+	m_DynamicResourceList1.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer, 0);
+
+	m_DynamicResourceList2 = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
+	m_DynamicResourceList2.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer, 1);
 
 	m_StaticResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Static);
-	m_StaticResourceList.SetConstantBufferView("TriangleColorConstantBuffer", *m_ColorConstantBuffer);
+	m_StaticResourceList.SetConstantBufferView("TriangleColorConstantBuffer", *m_ColorConstantBuffer, 0);
 }
 
 
@@ -79,7 +82,8 @@ void GameLayer::OnUpdate()
 {
 	ImGui::Begin("Debug");
 
-	ImGui::DragFloat2("Offset", &m_OffsetCBData.Offset.x, 0.01f);
+	ImGui::DragFloat2("Offset 1", &m_OffsetCBData[0].Offset.x, 0.01f);
+	ImGui::DragFloat2("Offset 2", &m_OffsetCBData[1].Offset.x, 0.01f);
 	ImGui::ColorEdit3("Color", &m_ColorCBData.Color.r);
 
 	ImGui::End();
@@ -91,11 +95,13 @@ void GameLayer::OnRender()
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	Graphite::Window* window = Graphite::g_Application->GetWindow();
 
-	m_OffsetConstantBuffer->CopyElement(0, graphicsContext->GetCurrentBackBuffer(), &m_OffsetCBData, sizeof(m_OffsetCBData));
+	m_OffsetConstantBuffer->CopyElement(0, graphicsContext->GetCurrentBackBuffer(), &m_OffsetCBData[0], sizeof(m_OffsetCBData[0]));
+	m_OffsetConstantBuffer->CopyElement(1, graphicsContext->GetCurrentBackBuffer(), &m_OffsetCBData[1], sizeof(m_OffsetCBData[1]));
 	m_ColorConstantBuffer->CopyElement(0, graphicsContext->GetCurrentBackBuffer(), &m_ColorCBData, sizeof(m_ColorCBData));
 
 	m_StaticResourceList.CommitResources();
-	m_DynamicResourceList.CommitResources();
+	m_DynamicResourceList1.CommitResources();
+	m_DynamicResourceList2.CommitResources();
 
 	// Perform all rendering
 	graphicsContext->BeginPass();
@@ -119,7 +125,6 @@ void GameLayer::OnRender()
 
 		recordingContext->SetGraphicsPipelineState(*m_GraphicsPipeline);
 		recordingContext->SetGraphicsPipelineResources(m_StaticResourceList);
-		recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList);
 
 		recordingContext->SetPrimitiveTopology(Graphite::GraphiteTopology_TRIANGLELIST);
 
@@ -129,7 +134,14 @@ void GameLayer::OnRender()
 		recordingContext->SetVertexBuffers(0, { &vbv, 1 });
 		recordingContext->SetIndexBuffer(ibv);
 
-		recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
+		{
+			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList1);
+			recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
+		}
+		{
+			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList2);
+			recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
+		}
 
 		graphicsContext->CloseRecordingContext(recordingContext);
 	}

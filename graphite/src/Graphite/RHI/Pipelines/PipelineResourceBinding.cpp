@@ -94,7 +94,7 @@ namespace Graphite
 		}
 	}
 
-	void ResourceViewList::SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer)
+	void ResourceViewList::SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer, uint32_t element)
 	{
 		uint32_t instanceCount = constantBuffer.GetInstanceCount();
 #ifdef GRAPHITE_DEBUG
@@ -114,7 +114,7 @@ namespace Graphite
 				for (const auto& bindPoint : resource.BindPoints)
 				{
 					g_GraphicsContext->CreateConstantBufferView(
-						constantBuffer.GetAddressOfElement(0, std::max(i, instanceCount - 1)),
+						constantBuffer.GetAddressOfElement(element, std::max(i, instanceCount - 1)),
 						constantBuffer.GetElementStride(),
 						m_StagingDescriptors.GetCPUHandle(
 							(i * m_DescriptorCount) + static_cast<uint32_t>(bindPoint)
@@ -131,7 +131,7 @@ namespace Graphite
 			for (uint32_t i = 0; i < GraphicsContext::GetBackBufferCount(); i++)
 			{
 				uint32_t index = (i * m_InlineDescriptorCount) + offset;
-				m_InlineDescriptors.at(index) = constantBuffer.GetAddressOfElement(0, std::max(i, instanceCount - 1));
+				m_InlineDescriptors.at(index) = constantBuffer.GetAddressOfElement(element, std::max(i, instanceCount - 1));
 			}
 		}
 	}
