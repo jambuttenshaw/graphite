@@ -64,12 +64,13 @@ void GameLayer::OnAttach()
 	m_GraphicsPipeline = Graphite::GraphicsPipeline::Create(*graphicsContext, psoDesc);
 
 	m_OffsetConstantBuffer = Graphite::ConstantBuffer<TriangleOffsetConstantBufferType>{ {
-		{{0.0f, 0.0f}},
-		{{0.0f, 0.0f}}
+		{{ 0.5f,  0.5f}},
+		{{-0.5f, -0.5f}}
 	} };
 
-	m_ColorConstantBuffer = Graphite::ConstantBuffer<TriangleColorConstantBufferType>(1);
-	m_ColorConstantBuffer.SetElement(0, { { 0.0f, 0.0f, 1.0f, 1.0f } });
+	m_ColorConstantBuffer = Graphite::ConstantBuffer<TriangleColorConstantBufferType>{
+		{ { 0.0f, 0.0f, 1.0f, 1.0f } }
+	};
 
 	m_DynamicResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
 

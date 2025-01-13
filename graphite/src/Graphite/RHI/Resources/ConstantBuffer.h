@@ -30,7 +30,7 @@ namespace Graphite
 
 			// Dirty flags keep track of which elements have changed since last frame
 			m_DirtyFlags.resize((elementCount + s_DirtyFlagBlockWidth - 1) / s_DirtyFlagBlockWidth);
-			m_DirtyCounters = std::vector<uint8_t>(elementCount, GraphicsContext::GetBackBufferCount());
+			m_DirtyCounters = std::vector<uint8_t>(elementCount, static_cast<uint8_t>(GraphicsContext::GetBackBufferCount()));
 
 			SetAllDirty();
 		}
@@ -61,20 +61,24 @@ namespace Graphite
 
 			for (size_t j = 0; j < m_DirtyFlags.size(); j++)
 			{
-				auto flags = m_DirtyFlags.at(j);
-				// Iterate over all set bits in the bitset
-				for (size_t i = 0; i < flags.count(); i++)
+				if (size_t count = m_DirtyFlags.at(j).count())
 				{
-					int idx = std::countr_zero(flags.to_ulong());
-					const uint32_t element = static_cast<uint32_t>(j * s_DirtyFlagBlockWidth) + idx;
-
-					flags.set(idx, false);
-					if (--m_DirtyCounters.at(element) == 0)
+					// Copy required for algorithm - bits are cleared each iteration to find the new rightmost set bit
+					auto flags = m_DirtyFlags.at(j);
+					// Iterate over all set bits in the bitset
+					for (size_t i = 0; i < count; i++)
 					{
-						m_DirtyFlags.at(j).set(idx, false);
-					}
+						int idx = std::countr_zero(flags.to_ulong());
+						const uint32_t element = static_cast<uint32_t>(j * s_DirtyFlagBlockWidth) + idx;
 
-					m_Buffer->CopyElement(element, currentBackBuffer, &m_StagingBuffer.at(element), sizeof(T));
+						flags.set(idx, false);
+						if (--m_DirtyCounters.at(element) == 0)
+						{
+							m_DirtyFlags.at(j).set(idx, false);
+						}
+
+						m_Buffer->CopyElement(element, currentBackBuffer, &m_StagingBuffer.at(element), sizeof(T));
+					}
 				}
 			}
 		}
@@ -94,7 +98,7 @@ namespace Graphite
 				const int shift = static_cast<int>((j + 1) * s_DirtyFlagBlockWidth) - static_cast<int>(m_StagingBuffer.size());
 				flags |= (~(0ull)) >> (shift < 0 ? 0 : shift);
 			}
-			std::ranges::fill(m_DirtyCounters, GraphicsContext::GetBackBufferCount());
+			std::ranges::fill(m_DirtyCounters, static_cast<uint8_t>(GraphicsContext::GetBackBufferCount()));
 		}
 
 	private:
