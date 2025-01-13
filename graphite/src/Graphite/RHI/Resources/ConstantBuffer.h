@@ -30,12 +30,14 @@ namespace Graphite
 
 			// Dirty flags keep track of which elements have changed since last frame
 			m_DirtyFlags.resize((elementCount + s_DirtyFlagBlockWidth - 1) / s_DirtyFlagBlockWidth);
+			m_DirtyCounters = std::vector<uint8_t>(elementCount, GraphicsContext::GetBackBufferCount());
+
+			SetAllDirty();
 		}
 		ConstantBuffer(std::initializer_list<T> elements)
 			: ConstantBuffer(static_cast<uint32_t>(elements.size()))
 		{
 			m_StagingBuffer = elements;
-			SetAllDirty();
 		}
 		~ConstantBuffer() = default;
 
@@ -45,7 +47,7 @@ namespace Graphite
 		void SetElement(uint32_t element, const T& data)
 		{
 			m_StagingBuffer.at(element) = data;
-			SetDirtyFlag(element);
+			SetDirty(element);
 		}
 		const T& GetElement(uint32_t element) const
 		{
@@ -59,13 +61,19 @@ namespace Graphite
 
 			for (size_t j = 0; j < m_DirtyFlags.size(); j++)
 			{
-				auto& flags = m_DirtyFlags.at(j);
+				auto flags = m_DirtyFlags.at(j);
 				// Iterate over all set bits in the bitset
 				for (size_t i = 0; i < flags.count(); i++)
 				{
 					int idx = std::countr_zero(flags.to_ulong());
-					flags.set(idx, false);
 					const uint32_t element = static_cast<uint32_t>(j * s_DirtyFlagBlockWidth) + idx;
+
+					flags.set(idx, false);
+					if (--m_DirtyCounters.at(element) == 0)
+					{
+						m_DirtyFlags.at(j).set(idx, false);
+					}
+
 					m_Buffer->CopyElement(element, currentBackBuffer, &m_StagingBuffer.at(element), sizeof(T));
 				}
 			}
@@ -74,7 +82,7 @@ namespace Graphite
 		const UploadBuffer* GetBuffer() const { return m_Buffer.get(); }
 
 	private:
-		void SetDirtyFlag(uint32_t index, bool val = true)
+		void SetDirty(uint32_t index, bool val = true)
 		{
 			m_DirtyFlags.at(index / s_DirtyFlagBlockWidth).set(index % s_DirtyFlagBlockWidth, val);
 		}
@@ -86,6 +94,7 @@ namespace Graphite
 				const int shift = static_cast<int>((j + 1) * s_DirtyFlagBlockWidth) - static_cast<int>(m_StagingBuffer.size());
 				flags |= (~(0ull)) >> (shift < 0 ? 0 : shift);
 			}
+			std::ranges::fill(m_DirtyCounters, GraphicsContext::GetBackBufferCount());
 		}
 
 	private:
@@ -96,7 +105,10 @@ namespace Graphite
 		std::unique_ptr<UploadBuffer> m_Buffer;
 		// CPU read-write staging buffer that can be manipulated at all times
 		std::vector<T> m_StagingBuffer;
+
 		// Dirty flags keep track of which elements have changed, to save copying the entire staging buffer every frame
 		std::vector<std::bitset<s_DirtyFlagBlockWidth>> m_DirtyFlags;
+		// Need to also count how many frames an element has been dirty for
+		std::vector<uint8_t> m_DirtyCounters;
 	};
 }
