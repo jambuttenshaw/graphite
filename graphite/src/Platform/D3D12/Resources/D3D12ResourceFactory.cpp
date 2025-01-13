@@ -48,29 +48,13 @@ namespace Graphite::D3D12
 		uint64_t elementStride = elementSize;
 		if (elementAlignment > 0)
 		{
-			AlignSize(elementStride, elementAlignment);
+			elementStride = AlignSize(elementStride, elementAlignment);
 		}
 		auto allocation = AllocateBuffer(D3D12_HEAP_TYPE_UPLOAD,
 			elementStride * elementCount * instanceCount,
 			D3D12_RESOURCE_FLAG_NONE);
 
 		auto buffer = std::unique_ptr<UploadBuffer>(new D3D12UploadBuffer(allocation, elementCount, instanceCount, static_cast<uint32_t>(elementStride)));
-		return std::move(buffer);
-	}
-
-
-	std::unique_ptr<ConstantBuffer> D3D12ResourceFactory::CreateConstantBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementSize) const
-	{
-		// Calculate properties of the required memory
-
-		// Align the element stride to be a multiple of alignment
-		const uint64_t elementStride = AlignSize(elementSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-
-		auto allocation = AllocateBuffer(D3D12_HEAP_TYPE_UPLOAD,
-			elementStride * elementCount * instanceCount,
-			D3D12_RESOURCE_FLAG_NONE);
-
-		auto buffer = std::unique_ptr<ConstantBuffer>(new D3D12ConstantBuffer(allocation, elementCount, instanceCount, static_cast<uint32_t>(elementStride)));
 		return std::move(buffer);
 	}
 

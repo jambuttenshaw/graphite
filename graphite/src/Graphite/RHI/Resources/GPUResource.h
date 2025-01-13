@@ -12,7 +12,6 @@ namespace Graphite
 
 		// Buffers
 		UploadBuffer,
-		ConstantBuffer,
 		ByteAddressBuffer,
 		StructuredBuffer,
 		ReadbackBuffer,

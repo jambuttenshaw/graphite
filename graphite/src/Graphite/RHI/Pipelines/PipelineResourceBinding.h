@@ -7,7 +7,7 @@
 
 namespace Graphite
 {
-	class ConstantBuffer;
+	class UploadBuffer;
 
 	struct PipelineResource
 	{
@@ -98,7 +98,7 @@ namespace Graphite
 		GRAPHITE_API_DEFAULT_MOVE(ResourceViewList);
 
 		// Update resources within the list
-		GRAPHITE_API void SetConstantBufferView(const std::string& resourceName, const ConstantBuffer& constantBuffer, uint32_t element);
+		GRAPHITE_API void SetConstantBufferView(const std::string& resourceName, const UploadBuffer& buffer, uint32_t element);
 
 		// This will update all GPU data for this resource view list
 		// It is important to call this every frame to make sure that resources using DEFAULT BINDING are updated correctly

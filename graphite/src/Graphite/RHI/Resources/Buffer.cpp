@@ -2,6 +2,7 @@
 #include "Buffer.h"
 
 #include "Graphite/Core/Assert.h"
+#include "Graphite/RHI/GraphicsContext.h"
 
 
 namespace Graphite

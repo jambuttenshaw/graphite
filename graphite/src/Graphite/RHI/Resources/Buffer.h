@@ -49,24 +49,6 @@ namespace Graphite
 	};
 
 
-	class ConstantBuffer : public UploadBuffer
-	{
-	protected:
-		friend class ResourceFactory;
-		ConstantBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride)
-			: UploadBuffer(elementCount, instanceCount, elementStride)
-		{}
-	public:
-		virtual ~ConstantBuffer() = default;
-
-		DELETE_COPY(ConstantBuffer);
-		DEFAULT_MOVE(ConstantBuffer);
-
-		// Getters
-		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::ConstantBuffer; }
-	};
-
-
 	class ByteAddressBuffer : public GPUResource
 	{
 	protected:

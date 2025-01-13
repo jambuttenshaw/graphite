@@ -10,6 +10,7 @@
 #include <ranges>
 #include <iostream>
 #include <bitset>
+#include <bit>
 
 #include <string>
 #include <sstream>

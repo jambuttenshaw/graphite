@@ -32,31 +32,6 @@ namespace Graphite::D3D12
 	};
 
 
-	class D3D12ConstantBuffer : public ConstantBuffer, public D3D12Resource
-	{
-	protected:
-		friend class D3D12ResourceFactory;
-		D3D12ConstantBuffer(D3D12MA::Allocation* allocation, uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride);
-	public:
-		virtual ~D3D12ConstantBuffer();
-
-		DELETE_COPY(D3D12ConstantBuffer);
-		DEFAULT_MOVE(D3D12ConstantBuffer);
-
-		// Getters
-		inline virtual GPUVirtualAddress GetResourceAddress() const override { return D3D12Resource::GetAddress(); }
-		virtual GPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const override;
-
-		// Populate buffer
-		virtual void CopyElement(uint32_t element, uint32_t instance, const void* data, uint64_t dataSize) const override;
-		virtual void CopyElements(uint32_t startElement, uint32_t elementCount, uint32_t instance, const void* data, uint64_t dataSize) const override;
-
-	private:
-		// Mapped pointer to write to buffer
-		uint8_t* m_MappedData;
-	};
-
-
 	class D3D12ByteAddressBuffer : public ByteAddressBuffer, public D3D12Resource
 	{
 	protected:

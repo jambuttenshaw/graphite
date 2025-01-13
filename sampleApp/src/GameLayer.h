@@ -28,12 +28,6 @@ protected:
 	Graphite::ResourceViewList m_StaticResourceList;
 	Graphite::ResourceViewList m_DynamicResourceList;
 
-	std::unique_ptr<Graphite::ConstantBuffer> m_OffsetConstantBuffer;
-	std::unique_ptr<Graphite::ConstantBuffer> m_ColorConstantBuffer;
-
-	TriangleOffsetConstantBufferType m_OffsetCBData[2] = {
-		{{0.0f, 0.0f}},
-		{{0.0f, 0.0f}}
-	};
-	TriangleColorConstantBufferType m_ColorCBData = { { 0.0f, 0.0f, 1.0f, 1.0f } };
+	Graphite::ConstantBuffer<TriangleOffsetConstantBufferType> m_OffsetConstantBuffer;
+	Graphite::ConstantBuffer<TriangleColorConstantBufferType> m_ColorConstantBuffer;
 };

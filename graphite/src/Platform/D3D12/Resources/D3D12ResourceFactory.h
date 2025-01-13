@@ -27,7 +27,6 @@ namespace Graphite::D3D12
 
 		// Buffers
 		virtual std::unique_ptr<UploadBuffer> CreateUploadBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementSize, uint32_t elementAlignment) const override;
-		virtual std::unique_ptr<ConstantBuffer> CreateConstantBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementSize) const override;
 		virtual std::unique_ptr<ByteAddressBuffer> CreateByteAddressBuffer(uint64_t width, bool readOnly) const override;
 		virtual std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(uint32_t elementCount, uint32_t elementSize, bool readOnly) const override;
 		virtual std::unique_ptr<ReadbackBuffer> CreateReadbackBuffer(uint64_t width) const override;

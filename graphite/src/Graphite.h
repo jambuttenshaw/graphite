@@ -8,7 +8,11 @@
 #include <algorithm>
 #include <thread>
 #include <utility>
+#include <numeric>
+#include <ranges>
 #include <iostream>
+#include <bitset>
+#include <bit>
 
 #include <string>
 #include <sstream>
@@ -52,6 +56,7 @@
 #include "Graphite/RHI/CommandRecordingContext.h"
 
 #include "Graphite/RHI/Resources/ResourceFactory.h"
+#include "Graphite/RHI/Resources/ConstantBuffer.h"
 #include "Graphite/RHI/Resources/ResourceViews.h"
 
 #include "Graphite/RHI/Resources/InputLayout.h"

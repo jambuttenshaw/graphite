@@ -63,13 +63,18 @@ void GameLayer::OnAttach()
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
 	m_GraphicsPipeline = Graphite::GraphicsPipeline::Create(*graphicsContext, psoDesc);
 
-	m_OffsetConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleOffsetConstantBufferType>(2, 3);
-	m_ColorConstantBuffer = Graphite::ResourceFactory::Get().CreateConstantBuffer<TriangleColorConstantBufferType>(1, 3);
+	m_OffsetConstantBuffer = Graphite::ConstantBuffer<TriangleOffsetConstantBufferType>{ {
+		{{0.0f, 0.0f}},
+		{{0.0f, 0.0f}}
+	} };
+
+	m_ColorConstantBuffer = Graphite::ConstantBuffer<TriangleColorConstantBufferType>(1);
+	m_ColorConstantBuffer.SetElement(0, { { 0.0f, 0.0f, 1.0f, 1.0f } });
 
 	m_DynamicResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
 
 	m_StaticResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Static);
-	m_StaticResourceList.SetConstantBufferView("TriangleColorConstantBuffer", *m_ColorConstantBuffer, 0);
+	m_StaticResourceList.SetConstantBufferView("TriangleColorConstantBuffer", *m_ColorConstantBuffer.GetBuffer(), 0);
 }
 
 
@@ -77,9 +82,28 @@ void GameLayer::OnUpdate()
 {
 	ImGui::Begin("Debug");
 
-	ImGui::DragFloat2("Offset 1", &m_OffsetCBData[0].Offset.x, 0.01f);
-	ImGui::DragFloat2("Offset 2", &m_OffsetCBData[1].Offset.x, 0.01f);
-	ImGui::ColorEdit3("Color", &m_ColorCBData.Color.r);
+	{
+		auto offset = m_OffsetConstantBuffer.GetElement(0);
+		if (ImGui::DragFloat2("Offset 1", &offset.Offset.x, 0.01f))
+		{
+			m_OffsetConstantBuffer.SetElement(0, offset);
+		}
+	}
+	{
+		auto offset = m_OffsetConstantBuffer.GetElement(1);
+		if (ImGui::DragFloat2("Offset 2", &offset.Offset.x, 0.01f))
+		{
+			m_OffsetConstantBuffer.SetElement(1, offset);
+
+		}
+	}
+	{
+		auto color = m_ColorConstantBuffer.GetElement(0);
+		if (ImGui::ColorEdit3("Color", &color.Color.r))
+		{
+			m_ColorConstantBuffer.SetElement(0, color);
+		}
+	}
 
 	ImGui::End();
 }
@@ -91,9 +115,8 @@ void GameLayer::OnRender()
 	Graphite::Window* window = Graphite::g_Application->GetWindow();
 
 	// Update the data in the constant buffers
-	m_OffsetConstantBuffer->CopyElement(0, graphicsContext->GetCurrentBackBuffer(), &m_OffsetCBData[0], sizeof(m_OffsetCBData[0]));
-	m_OffsetConstantBuffer->CopyElement(1, graphicsContext->GetCurrentBackBuffer(), &m_OffsetCBData[1], sizeof(m_OffsetCBData[1]));
-	m_ColorConstantBuffer->CopyElement(0, graphicsContext->GetCurrentBackBuffer(), &m_ColorCBData, sizeof(m_ColorCBData));
+	m_OffsetConstantBuffer.CommitDirtyElements(graphicsContext);
+	m_ColorConstantBuffer.CommitDirtyElements(graphicsContext);
 
 	// Ensure resource list is up to date
 	m_StaticResourceList.CommitResources();
@@ -131,13 +154,13 @@ void GameLayer::OnRender()
 
 		// Using dynamic resource lists like this is only possible with inline pipeline resources
 		{
-			m_DynamicResourceList.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer, 0);
+			m_DynamicResourceList.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer.GetBuffer(), 0);
 			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList);
 
 			recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
 		}
 		{
-			m_DynamicResourceList.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer, 1);
+			m_DynamicResourceList.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer.GetBuffer(), 1);
 			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList);
 
 			recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
