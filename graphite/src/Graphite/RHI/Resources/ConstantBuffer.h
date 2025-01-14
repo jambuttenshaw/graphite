@@ -68,7 +68,7 @@ namespace Graphite
 					// Iterate over all set bits in the bitset
 					for (size_t i = 0; i < count; i++)
 					{
-						int idx = std::countr_zero(flags.to_ulong());
+						int idx = std::countr_zero(flags.to_ullong());
 						const uint32_t element = static_cast<uint32_t>(j * s_DirtyFlagBlockWidth) + idx;
 
 						flags.set(idx, false);
