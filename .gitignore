@@ -410,3 +410,7 @@ bin-int/
 
 # Bundle premake executable
 !vendor/bin/premake5.exe
+
+# Include DXC binaries
+!graphite/vendor/dxc/lib/
+!graphite/vendor/dxc/bin/
