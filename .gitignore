@@ -398,3 +398,15 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Output and intermediate directories
+bin/
+bin-int/
+
+# Visual Studio Solution and Project Files (now using premake)
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# Bundle premake executable
+!vendor/bin/premake5.exe

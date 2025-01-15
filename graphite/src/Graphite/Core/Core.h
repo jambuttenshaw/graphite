@@ -11,9 +11,13 @@
 
 
 #ifdef _DEBUG
+	#ifndef GRAPHITE_DEBUG
 	#define GRAPHITE_DEBUG
+	#endif
 #else
+	#ifndef GRAPHITE_RELEASE
 	#define GRAPHITE_RELEASE
+	#endif
 #endif
 
 

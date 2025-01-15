@@ -1,4 +1,4 @@
-#include "graphite_d3d12_pch.h"
+#include "graphite_pch.h"
 #include "D3D12DescriptorHeap.h"
 
 #include "Graphite/Core/Assert.h"
