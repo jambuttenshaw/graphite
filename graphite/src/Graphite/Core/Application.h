@@ -12,16 +12,14 @@
 
 namespace Graphite
 {
+	class Platform;
 	class GraphicsContext;
 
-	class UploadBuffer;
-
-	class GraphicsPipeline;
 
 	class Application
 	{
 	public:
-		GRAPHITE_API Application();
+		GRAPHITE_API Application(Platform& platform);
 		GRAPHITE_API virtual ~Application();
 
 		GRAPHITE_API_DELETE_COPY(Application);
@@ -35,7 +33,8 @@ namespace Graphite
 
 		// Get application objects
 		GRAPHITE_API Window* GetWindow() const { return m_Window.get(); }
-		GRAPHITE_API GraphicsContext* GetGraphicsContext() const { return m_GraphicsContext.get(); }
+		GRAPHITE_API GraphicsContext* GetGraphicsContext() const { return m_GraphicsContext; }
+		GRAPHITE_API Platform* GetPlatform() const { return &m_Platform; }
 
 		// General purpose getters
 		GRAPHITE_API float GetDeltaTime() const { return m_Timer.GetDeltaTime(); }
@@ -52,9 +51,11 @@ namespace Graphite
 		void OnEvent(Event& event);
 
 	protected:
+		Platform& m_Platform;
+
 		Timer m_Timer;
 
-		std::unique_ptr<GraphicsContext> m_GraphicsContext;
+		GraphicsContext* m_GraphicsContext;
 		std::unique_ptr<Window> m_Window;
 
 	private:

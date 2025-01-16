@@ -4,6 +4,8 @@
 #include "RHITypes.h"
 
 #include "Descriptors.h"
+#include "Core/Assert.h"
+
 
 
 namespace Graphite
@@ -11,8 +13,11 @@ namespace Graphite
 	class CommandRecordingContext;
 	class DescriptorHeap;
 
+	class GraphicsPipeline;
+	struct GraphicsPipelineDescription;
 
-	struct GraphiteGraphicsContextDesc
+
+	struct GraphicsContextDesc
 	{
 		// The window that the graphics context is being created for
 		HWND WindowHandle;
@@ -26,30 +31,23 @@ namespace Graphite
 		uint32_t MaxRecordingContextsPerFrame;
 	};
 
-	extern class GraphicsContext* g_GraphicsContext;
 
 
 	class GraphicsContext
 	{
 	public:
-		// Factory
-		static std::unique_ptr<GraphicsContext> Create(const GraphiteGraphicsContextDesc& contextDesc);
-
+		GRAPHITE_API static GraphicsContext* Get();
 	protected:
-		GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc)
-			: m_BackBufferWidth(contextDesc.BackBufferWidth)
-			, m_BackBufferHeight(contextDesc.BackBufferHeight)
-			, m_BackBufferFormat(contextDesc.BackBufferFormat)
-		{}
+		GRAPHITE_API GraphicsContext(const GraphicsContextDesc& contextDesc);
 	public:
-		virtual ~GraphicsContext() = default;
+		GRAPHITE_API virtual ~GraphicsContext() = default;
 
-		DELETE_COPY(GraphicsContext);
-		DEFAULT_MOVE(GraphicsContext);
+		GRAPHITE_API_DELETE_COPY(GraphicsContext);
+		GRAPHITE_API_DEFAULT_MOVE(GraphicsContext);
 
 		// These are called internally to Graphite
-		virtual void BeginFrame() = 0;
-		virtual void EndFrame() = 0;
+		GRAPHITE_API virtual void BeginFrame() = 0;
+		GRAPHITE_API virtual void EndFrame() = 0;
 
 		// Application API
 
@@ -66,9 +64,9 @@ namespace Graphite
 		GRAPHITE_API virtual CommandRecordingContext* AcquireRecordingContext() = 0;
 		GRAPHITE_API virtual void CloseRecordingContext(CommandRecordingContext* recordingContext) = 0;
 
-		virtual void Present() = 0;
+		GRAPHITE_API virtual void Present() = 0;
 
-		virtual void ResizeBackBuffer(uint32_t width, uint32_t height) = 0;
+		GRAPHITE_API virtual void ResizeBackBuffer(uint32_t width, uint32_t height) = 0;
 
 		GRAPHITE_API virtual void WaitForGPUIdle() const = 0;
 
@@ -81,6 +79,10 @@ namespace Graphite
 		GRAPHITE_API inline uint32_t GetBackBufferHeight() const { return m_BackBufferHeight; }
 
 		GRAPHITE_API virtual CPUDescriptorHandle GetBackBufferRenderTargetView() const = 0;
+
+		// Object creation
+
+		GRAPHITE_API virtual std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(const GraphicsPipelineDescription& description) = 0;
 
 		// Resource management
 

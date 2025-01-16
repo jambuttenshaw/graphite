@@ -45,6 +45,7 @@
 #include "Graphite/Core/Log.h"
 
 #include "Graphite/Core/Application.h"
+#include "Graphite/Core/Platform.h"
 
 // Events
 #include "Graphite/Events/KeyboardEvent.h"

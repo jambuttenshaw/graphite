@@ -1,11 +1,16 @@
 #include "pch.h"
 
+#include "D3D12Platform.h"
 #include "GameLayer.h"
 #include "imgui.h"
 
 class SampleApplication : public Graphite::Application
 {
 public:
+	SampleApplication(Graphite::Platform& platform)
+		:Application(platform)
+	{}
+
 
 	virtual void OnInit() override
 	{
@@ -27,5 +32,6 @@ public:
 
 std::unique_ptr<Graphite::Application> Graphite::CreateApplication()
 {
-	return std::make_unique<SampleApplication>();
+	D3D12::D3D12Platform platform;
+	return std::make_unique<SampleApplication>(platform);
 }

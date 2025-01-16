@@ -2,6 +2,7 @@
 #include "ImGuiLayer.h"
 
 #include "Graphite/Core/Application.h"
+#include "Graphite/Core/Platform.h"
 #include "Graphite/Core/Assert.h"
 #include "Graphite/RHI/GraphicsContext.h"
 
@@ -269,7 +270,8 @@ namespace Graphite
 		m_ImGuiResources = graphicsContext->AllocateStaticDescriptors(1);
 		GRAPHITE_ASSERT(m_ImGuiResources.IsValid(), "Failed to allocate ImGui resources.");
 
-		m_Backend = ImGuiBackend::Create(*graphicsContext, m_ImGuiResources);
+		m_Backend = g_Application->GetPlatform()->GetImGuiBackend();
+		m_Backend->Init(*graphicsContext, m_ImGuiResources);
 
 		// To capture all ImGui usage between updates of this layer
 		NewFrame();
@@ -277,7 +279,7 @@ namespace Graphite
 
 	void ImGuiLayer::OnDetach()
 	{
-		m_Backend.reset();
+		m_Backend->Destroy();
 		m_ImGuiResources.Free();
 
 		ImGui::DestroyContext();

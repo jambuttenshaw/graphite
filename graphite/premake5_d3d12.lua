@@ -1,39 +1,43 @@
-
-group "Dependencies"
-    include "vendor/spdlog.lua"
-    include "vendor/imgui.lua"
-    include "vendor/D3D12MemoryAllocator.lua"
-group ""
-
-group "Core"
-
-    project "graphite"
+project "graphiteD3D12"
         kind "SharedLib"
         language "C++"
         cppdialect "C++20"
 
         files {
-            "src/Graphite/**.h",
-            "src/Graphite/**.cpp"
+            "Platform/D3D12/src/**.h",
+            "Platform/D3D12/src/**.cpp"
         }
 
         includedirs {
-            "%{prj.directory}",
             "src",
             "src/Graphite",
 
+            "Platform/D3D12/src",
+
             "vendor/spdlog/include",
             "vendor/imgui/",
-            "vendor/glm/"
+            "vendor/glm/",
+
+            -- DirectX Libraries
+            "vendor/DirectX-Headers/include",
+            "vendor/D3D12MemoryAllocator/include",
+            "vendor/dxc/lib/"
         }
 
         links {
             "spdlog",
-            "imgui"
+            "imgui",
+            "D3D12MemoryAllocator",
+            "graphite",
+
+            "d3d12",
+            "dxgi",
+            "dxguid",
+            "dxcompiler"
         }
 
-        pchheader "graphite_pch.h"
-        pchsource "src/Graphite/graphite_pch.cpp"
+        pchheader "graphite_d3d12_pch.h"
+        pchsource "Platform/D3D12/src/graphite_d3d12_pch.cpp"
 
         defines { "GRAPHITE_BUILD" }
 
@@ -52,8 +56,3 @@ group "Core"
             runtime "Release"
             optimize "On"
             symbols "Off"
-
-    include "premake5_d3d12.lua"
-    
-
-group ""

@@ -1,22 +1,23 @@
 #include "graphite_pch.h"
 #include "GraphicsContext.h"
 
-#include "Graphite/Core/Assert.h"
-#include "Platform/D3D12/GraphiteD3D12.h"
-
 
 namespace Graphite
 {
 	GraphicsContext* g_GraphicsContext = nullptr;
 
-	std::unique_ptr<GraphicsContext> GraphicsContext::Create(const GraphiteGraphicsContextDesc& contextDesc)
+	GraphicsContext* GraphicsContext::Get()
 	{
-		GRAPHITE_ASSERT(g_GraphicsContext == nullptr, "Cannot create a second graphics context.");
-		
-		GraphicsContext* graphicsContext = D3D12::CreateD3D12GraphicsContext(contextDesc);
-		g_GraphicsContext = graphicsContext;
-
-		return std::unique_ptr<GraphicsContext>(graphicsContext);
+		GRAPHITE_ASSERT(g_GraphicsContext, "Graphics context does not exist!");
+		return g_GraphicsContext;
 	}
 
+	GraphicsContext::GraphicsContext(const GraphicsContextDesc& contextDesc)
+		: m_BackBufferWidth(contextDesc.BackBufferWidth)
+		, m_BackBufferHeight(contextDesc.BackBufferHeight)
+		, m_BackBufferFormat(contextDesc.BackBufferFormat)
+	{
+		GRAPHITE_ASSERT(!g_GraphicsContext, "Only one graphics context may exist!");
+		g_GraphicsContext = this;
+	}
 }

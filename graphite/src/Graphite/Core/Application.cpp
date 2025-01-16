@@ -8,6 +8,7 @@
 #include "Graphite/Events/WindowEvent.h"
 
 // Graphics
+#include "Platform.h"
 #include "Graphite/ImGui/ImGuiLayer.h"
 #include "Graphite/RHI/GraphicsContext.h"
 
@@ -16,7 +17,8 @@ namespace Graphite
 {
 	Application* g_Application = nullptr;
 
-	Application::Application()
+	Application::Application(Platform& platform)
+		: m_Platform(platform)
 	{
 		// Logging must be initialised immediately
 		// so that assertions are available
@@ -41,7 +43,7 @@ namespace Graphite
 		m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
 		// Create graphics context
-		GraphiteGraphicsContextDesc graphicsContextDesc
+		GraphicsContextDesc graphicsContextDesc
 		{
 			.WindowHandle = m_Window->GetHandle(),
 
@@ -52,7 +54,13 @@ namespace Graphite
 			// Allow for one recording context per CPU core
 			.MaxRecordingContextsPerFrame = std::thread::hardware_concurrency()
 		};
-		m_GraphicsContext = GraphicsContext::Create(graphicsContextDesc);
+
+		// Setup platform
+		m_Platform.InitPlatform(
+			graphicsContextDesc
+		);
+
+		m_GraphicsContext = m_Platform.GetGraphicsContext();
 	}
 
 	Application::~Application()

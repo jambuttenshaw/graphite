@@ -20,14 +20,14 @@ namespace Graphite
 	class ImGuiBackend
 	{
 	public:
-		static std::unique_ptr<ImGuiBackend> Create(const GraphicsContext& graphicsContext, const DescriptorAllocation& imGuiResources);
-
-	public:
 		ImGuiBackend() = default;
 		virtual ~ImGuiBackend() = default;
 
-		DELETE_COPY(ImGuiBackend)
-		DEFAULT_MOVE(ImGuiBackend)
+		DELETE_COPY(ImGuiBackend);
+		DEFAULT_MOVE(ImGuiBackend);
+
+		virtual void Init(const GraphicsContext& graphicsContext, const DescriptorAllocation& imGuiResources) = 0;
+		virtual void Destroy() = 0;
 
 		virtual void NewFrame() = 0;
 		virtual void Render(ImDrawData* drawData, CommandRecordingContext* recordingContext) = 0;

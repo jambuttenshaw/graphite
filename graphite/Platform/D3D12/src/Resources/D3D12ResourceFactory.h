@@ -9,10 +9,6 @@ namespace D3D12MA
 	class Allocation;
 }
 
-namespace Graphite
-{
-	class GraphicsContext;
-}
 
 namespace Graphite::D3D12
 {

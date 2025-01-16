@@ -9,7 +9,7 @@ namespace Graphite
 	{
 		extern void InitLogging();
 		
-		extern std::shared_ptr<spdlog::logger>& GetEngineLogger();
+		GRAPHITE_API extern std::shared_ptr<spdlog::logger>& GetEngineLogger();
 		GRAPHITE_API extern std::shared_ptr<spdlog::logger>& GetAppLogger();
 	}
 }

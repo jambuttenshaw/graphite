@@ -30,30 +30,30 @@ namespace Graphite
 		};
 
 	public:
-		PipelineResourceSet(PipelineResourceBindingFrequency bindingFrequency);
-		~PipelineResourceSet() = default;
+		GRAPHITE_API PipelineResourceSet(PipelineResourceBindingFrequency bindingFrequency);
+		GRAPHITE_API ~PipelineResourceSet() = default;
 
-		DELETE_COPY(PipelineResourceSet);
-		DEFAULT_MOVE(PipelineResourceSet);
+		GRAPHITE_API_DELETE_COPY(PipelineResourceSet);
+		GRAPHITE_API_DEFAULT_MOVE(PipelineResourceSet);
 
 		// These should only be used in pipeline construction
-		PipelineResource& AddResource(const std::string& name, PipelineResourceDescription resourceDescription);
+		GRAPHITE_API PipelineResource& AddResource(const std::string& name, PipelineResourceDescription resourceDescription);
 
-		void SetBaseRootArgumentIndex(uint32_t baseIndex) { m_BaseRootArgumentIndex = baseIndex; }
+		GRAPHITE_API void SetBaseRootArgumentIndex(uint32_t baseIndex) { m_BaseRootArgumentIndex = baseIndex; }
 
-		void AddDefaultRootArgument();
-		void AddInlineRootArgument(PipelineResourceType type, uint32_t offset);
+		GRAPHITE_API void AddDefaultRootArgument();
+		GRAPHITE_API void AddInlineRootArgument(PipelineResourceType type, uint32_t offset);
 
 		// Getters
 
-		PipelineResource& GetResource(const std::string& name);
-		const PipelineResource& GetResource(const std::string& name) const;
+		GRAPHITE_API PipelineResource& GetResource(const std::string& name);
+		GRAPHITE_API const PipelineResource& GetResource(const std::string& name) const;
 
-		inline uint32_t GetDefaultResourceCount() const { return m_DefaultResourceCount; }
-		inline uint32_t GetInlineResourceCount() const { return m_InlineResourceCount; }
+		GRAPHITE_API inline uint32_t GetDefaultResourceCount() const { return m_DefaultResourceCount; }
+		GRAPHITE_API inline uint32_t GetInlineResourceCount() const { return m_InlineResourceCount; }
 
-		inline uint32_t GetBaseRootArgumentIndex() const { return m_BaseRootArgumentIndex; }
-		inline std::span<const RootArgument> GetRootArguments() const { return m_RootArguments; }
+		GRAPHITE_API inline uint32_t GetBaseRootArgumentIndex() const { return m_BaseRootArgumentIndex; }
+		GRAPHITE_API inline std::span<const RootArgument> GetRootArguments() const { return m_RootArguments; }
 
 	private:
 		PipelineResourceBindingFrequency m_BindingFrequency;

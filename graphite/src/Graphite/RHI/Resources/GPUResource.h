@@ -40,20 +40,20 @@ namespace Graphite
 	protected:
 		// GPU resources can only be constructed through the resource manager
 		friend class ResourceFactory;
-		GPUResource(ResourceAccessFlags accessFlags);
+		GRAPHITE_API GPUResource(ResourceAccessFlags accessFlags);
 	public:
-		GPUResource() = delete;
-		virtual ~GPUResource() = default;
+		GRAPHITE_API GPUResource() = delete;
+		GRAPHITE_API virtual ~GPUResource() = default;
 
-		DELETE_COPY(GPUResource);
-		DEFAULT_MOVE(GPUResource);
+		GRAPHITE_API_DELETE_COPY(GPUResource);
+		GRAPHITE_API_DEFAULT_MOVE(GPUResource);
 
 		// Getters
-		virtual GPUResourceType GetResourceType() const = 0;
-		virtual GPUVirtualAddress GetResourceAddress() const = 0;
+		GRAPHITE_API virtual GPUResourceType GetResourceType() const = 0;
+		GRAPHITE_API virtual GPUVirtualAddress GetResourceAddress() const = 0;
 
-		inline ResourceAccessFlags GetAccessFlags() const { return m_AccessFlags; }
-		inline bool CheckAccessFlags(ResourceAccessFlags flags) const { return m_AccessFlags & flags; }
+		GRAPHITE_API inline ResourceAccessFlags GetAccessFlags() const { return m_AccessFlags; }
+		GRAPHITE_API inline bool CheckAccessFlags(ResourceAccessFlags flags) const { return m_AccessFlags & flags; }
 
 	protected:
 		// Common properties about this resource, including usage

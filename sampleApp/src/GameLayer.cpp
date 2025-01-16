@@ -69,7 +69,7 @@ void GameLayer::OnAttach()
 	};
 
 	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
-	m_GraphicsPipeline = Graphite::GraphicsPipeline::Create(*graphicsContext, psoDesc);
+	m_GraphicsPipeline = graphicsContext->CreateGraphicsPipeline(psoDesc);
 
 	m_OffsetConstantBuffer = Graphite::ConstantBuffer<TriangleOffsetConstantBufferType>{ {
 		{{ 0.5f,  0.5f}},

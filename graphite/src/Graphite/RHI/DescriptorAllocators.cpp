@@ -83,7 +83,7 @@ namespace Graphite
 		// Make sure this heap contains this allocation
 		GRAPHITE_ASSERT(allocation.GetAllocator() == this, "Trying to free an allocation from the wrong allocator");
 
-		m_DeferredFrees.at(g_GraphicsContext->GetCurrentBackBuffer()).push_back(std::make_pair(allocation.GetIndex(), allocation.GetCount()));
+		m_DeferredFrees.at(GraphicsContext::Get()->GetCurrentBackBuffer()).push_back(std::make_pair(allocation.GetIndex(), allocation.GetCount()));
 		allocation.ResetWithoutFree();
 	}
 

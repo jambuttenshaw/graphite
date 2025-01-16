@@ -1,16 +1,11 @@
-#include "graphite_pch.h"
+#include "graphite_d3d12_pch.h"
 #include "D3D12ShaderCompiler.h"
 
-#include "Platform/D3D12/D3D12Exceptions.h"
+#include "D3D12Exceptions.h"
 
 
 namespace Graphite::D3D12
 {
-	ShaderCompiler* CreateD3D12ShaderCompiler()
-	{
-		return new D3D12ShaderCompiler;
-	}
-
 
 	static std::wstring CreateTargetStr(ShaderType type, uint32_t shaderModelMajor, uint32_t shaderModelMinor)
 	{

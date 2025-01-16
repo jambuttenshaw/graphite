@@ -71,8 +71,8 @@ namespace Graphite
 
 		if (m_DescriptorCount > 0)
 		{
-			m_StagingDescriptors = g_GraphicsContext->AllocateStagingDescriptors(m_DescriptorCount * GraphicsContext::GetBackBufferCount());
-			m_ResourcesDescriptors = g_GraphicsContext->AllocateStaticDescriptors(m_DescriptorCount * GraphicsContext::GetBackBufferCount());
+			m_StagingDescriptors = GraphicsContext::Get()->AllocateStagingDescriptors(m_DescriptorCount * GraphicsContext::GetBackBufferCount());
+			m_ResourcesDescriptors = GraphicsContext::Get()->AllocateStaticDescriptors(m_DescriptorCount * GraphicsContext::GetBackBufferCount());
 		}
 
 		m_InlineDescriptorCount = resourceSet.GetInlineResourceCount();
@@ -110,7 +110,7 @@ namespace Graphite
 		{
 			for (uint32_t i = 0; i < GraphicsContext::GetBackBufferCount(); i++)
 			{
-				g_GraphicsContext->CreateConstantBufferView(
+				GraphicsContext::Get()->CreateConstantBufferView(
 					buffer.GetAddressOfElement(element, std::max(i, instanceCount - 1)),
 					buffer.GetElementStride(),
 					m_StagingDescriptors.GetCPUHandle(
@@ -137,8 +137,8 @@ namespace Graphite
 		{
 			m_FramesDirty--;
 
-			const uint32_t offset = g_GraphicsContext->GetCurrentBackBuffer() * m_DescriptorCount;
-			g_GraphicsContext->CopyDescriptors(
+			const uint32_t offset = GraphicsContext::Get()->GetCurrentBackBuffer() * m_DescriptorCount;
+			GraphicsContext::Get()->CopyDescriptors(
 				m_StagingDescriptors.GetCPUHandle(offset),
 				m_ResourcesDescriptors.GetCPUHandle(offset),
 				m_DescriptorCount,
@@ -150,12 +150,12 @@ namespace Graphite
 
 	GPUDescriptorHandle ResourceViewList::GetDescriptorTableHandle(uint32_t offsetInDescriptors) const
 	{
-		return m_ResourcesDescriptors.GetGPUHandle((g_GraphicsContext->GetCurrentBackBuffer() * m_DescriptorCount) + offsetInDescriptors);
+		return m_ResourcesDescriptors.GetGPUHandle((GraphicsContext::Get()->GetCurrentBackBuffer() * m_DescriptorCount) + offsetInDescriptors);
 	}
 
 	GPUVirtualAddress ResourceViewList::GetInlineResourceHandle(uint32_t inlineResourceOffset) const
 	{
-		return m_InlineDescriptors.at((g_GraphicsContext->GetCurrentBackBuffer() * m_InlineDescriptorCount) + inlineResourceOffset);
+		return m_InlineDescriptors.at((GraphicsContext::Get()->GetCurrentBackBuffer() * m_InlineDescriptorCount) + inlineResourceOffset);
 	}
 
 

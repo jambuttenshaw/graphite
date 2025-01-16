@@ -25,7 +25,7 @@ namespace Graphite
 		void NewFrame();
 
 	private:
-		std::unique_ptr<ImGuiBackend> m_Backend;
+		ImGuiBackend* m_Backend = nullptr;
 		DescriptorAllocation m_ImGuiResources;
 	};
 

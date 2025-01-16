@@ -14,8 +14,8 @@ namespace Graphite
 	class DescriptorAllocation
 	{
 	public:
-		DescriptorAllocation() = default;
-		DescriptorAllocation(
+		GRAPHITE_API DescriptorAllocation() = default;
+		GRAPHITE_API DescriptorAllocation(
 			DescriptorHeap* heap,
 			DescriptorAllocatorInterface* allocator,
 			uint32_t index,
@@ -60,23 +60,23 @@ namespace Graphite
 	class DescriptorHeap
 	{
 	public:
-		DescriptorHeap(DescriptorHeapType heapType, uint32_t descriptorSize, uint32_t capacity, bool cpuOnly);
-		virtual ~DescriptorHeap() = default;
+		GRAPHITE_API DescriptorHeap(DescriptorHeapType heapType, uint32_t descriptorSize, uint32_t capacity, bool cpuOnly);
+		GRAPHITE_API virtual ~DescriptorHeap() = default;
 
 		// cannot be copied or moved
 		DELETE_COPY(DescriptorHeap);
 		DEFAULT_MOVE(DescriptorHeap);
 
-		virtual CPUDescriptorHandle GetCPUHandleForHeapStart() const = 0;
-		virtual GPUDescriptorHandle GetGPUHandleForHeapStart() const = 0;
+		GRAPHITE_API virtual CPUDescriptorHandle GetCPUHandleForHeapStart() const = 0;
+		GRAPHITE_API virtual GPUDescriptorHandle GetGPUHandleForHeapStart() const = 0;
 
 		// Getters
-		inline DescriptorHeapType GetType() const { return m_HeapType; }
-		inline uint32_t GetDescriptorSize() const { return m_DescriptorSize; }
+		GRAPHITE_API inline DescriptorHeapType GetType() const { return m_HeapType; }
+		GRAPHITE_API inline uint32_t GetDescriptorSize() const { return m_DescriptorSize; }
 
-		inline uint32_t GetCapacity() const { return m_Capacity; }
+		GRAPHITE_API inline uint32_t GetCapacity() const { return m_Capacity; }
 
-		inline bool IsCPUOnly() const { return m_CPUOnly; }
+		GRAPHITE_API inline bool IsCPUOnly() const { return m_CPUOnly; }
 
 	protected:
 		DescriptorHeapType m_HeapType;

@@ -13,23 +13,23 @@ namespace Graphite
 	class DescriptorAllocatorInterface
 	{
 	public:
-		DescriptorAllocatorInterface();
-		DescriptorAllocatorInterface(DescriptorHeap* heap, uint32_t rangeStart, uint32_t rangeSize);
-		virtual ~DescriptorAllocatorInterface() = default;
+		GRAPHITE_API DescriptorAllocatorInterface();
+		GRAPHITE_API DescriptorAllocatorInterface(DescriptorHeap* heap, uint32_t rangeStart, uint32_t rangeSize);
+		GRAPHITE_API virtual ~DescriptorAllocatorInterface() = default;
 
-		DELETE_COPY(DescriptorAllocatorInterface);
-		DEFAULT_MOVE(DescriptorAllocatorInterface);
+		GRAPHITE_API_DELETE_COPY(DescriptorAllocatorInterface);
+		GRAPHITE_API_DEFAULT_MOVE(DescriptorAllocatorInterface);
 
-		virtual DescriptorAllocation Allocate(uint32_t countToAlloc) = 0;
-		virtual void Free(DescriptorAllocation& allocation) = 0;
+		GRAPHITE_API virtual DescriptorAllocation Allocate(uint32_t countToAlloc) = 0;
+		GRAPHITE_API virtual void Free(DescriptorAllocation& allocation) = 0;
 
-		virtual void ReleasePendingFrees(uint32_t frameIndex) = 0;
+		GRAPHITE_API virtual void ReleasePendingFrees(uint32_t frameIndex) = 0;
 
 
-		inline DescriptorHeap* GetHeap() const { return m_Heap; }
+		GRAPHITE_API inline DescriptorHeap* GetHeap() const { return m_Heap; }
 
-		inline uint32_t GetCapacity() const { return m_Capacity; }
-		inline uint32_t GetCountAllocated() const { return m_CountAllocated; }
+		GRAPHITE_API inline uint32_t GetCapacity() const { return m_Capacity; }
+		GRAPHITE_API inline uint32_t GetCountAllocated() const { return m_CountAllocated; }
 
 	protected:
 		DescriptorHeap* m_Heap;
@@ -46,17 +46,17 @@ namespace Graphite
 	class StaticDescriptorAllocator : public DescriptorAllocatorInterface
 	{
 	public:
-		StaticDescriptorAllocator() = default;
-		StaticDescriptorAllocator(DescriptorHeap* heap, uint32_t rangeStart, uint32_t rangeSize);
-		virtual ~StaticDescriptorAllocator();
+		GRAPHITE_API StaticDescriptorAllocator() = default;
+		GRAPHITE_API StaticDescriptorAllocator(DescriptorHeap* heap, uint32_t rangeStart, uint32_t rangeSize);
+		GRAPHITE_API virtual ~StaticDescriptorAllocator();
 
-		DELETE_COPY(StaticDescriptorAllocator);
-		DEFAULT_MOVE(StaticDescriptorAllocator);
+		GRAPHITE_API_DELETE_COPY(StaticDescriptorAllocator);
+		GRAPHITE_API_DEFAULT_MOVE(StaticDescriptorAllocator);
 
-		virtual DescriptorAllocation Allocate(uint32_t countToAlloc) override;
-		virtual void Free(DescriptorAllocation& allocation) override;
+		GRAPHITE_API virtual DescriptorAllocation Allocate(uint32_t countToAlloc) override;
+		GRAPHITE_API virtual void Free(DescriptorAllocation& allocation) override;
 
-		virtual void ReleasePendingFrees(uint32_t frameIndex) override;
+		GRAPHITE_API virtual void ReleasePendingFrees(uint32_t frameIndex) override;
 
 	protected:
 		// Free-list allocator implementation
@@ -74,19 +74,19 @@ namespace Graphite
 	class DynamicDescriptorAllocator : public DescriptorAllocatorInterface
 	{
 	public:
-		DynamicDescriptorAllocator() = default;
+		GRAPHITE_API DynamicDescriptorAllocator() = default;
 		// FrameIndex specifies which frame this allocator is allocating for.
 		// This is to allow this allocator to know when it's allocations will no longer be in flight
-		DynamicDescriptorAllocator(DescriptorHeap* heap, uint32_t rangeStart, uint32_t rangeSize, uint32_t frameIndex);
-		virtual ~DynamicDescriptorAllocator() = default;
+		GRAPHITE_API DynamicDescriptorAllocator(DescriptorHeap* heap, uint32_t rangeStart, uint32_t rangeSize, uint32_t frameIndex);
+		GRAPHITE_API virtual ~DynamicDescriptorAllocator() = default;
 
-		DELETE_COPY(DynamicDescriptorAllocator);
-		DEFAULT_MOVE(DynamicDescriptorAllocator);
+		GRAPHITE_API_DELETE_COPY(DynamicDescriptorAllocator);
+		GRAPHITE_API_DEFAULT_MOVE(DynamicDescriptorAllocator);
 
-		virtual DescriptorAllocation Allocate(uint32_t countToAlloc) override;
-		virtual void Free(DescriptorAllocation& allocation) override;
+		GRAPHITE_API virtual DescriptorAllocation Allocate(uint32_t countToAlloc) override;
+		GRAPHITE_API virtual void Free(DescriptorAllocation& allocation) override;
 
-		virtual void ReleasePendingFrees(uint32_t frameIndex) override;
+		GRAPHITE_API virtual void ReleasePendingFrees(uint32_t frameIndex) override;
 	protected:
 		uint32_t m_FrameIndex;
 	};

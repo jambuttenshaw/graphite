@@ -1,4 +1,4 @@
-#include "graphite_pch.h"
+#include "graphite_d3d12_pch.h"
 #include "D3D12ResourceFactory.h"
 
 #include "D3D12MemAlloc.h"
@@ -7,18 +7,13 @@
 
 #include "Graphite/RHI/Resources/ResourceFactory.h"
 
-#include "Platform/D3D12/D3D12GraphicsContext.h"
-#include "Platform/D3D12/D3D12Exceptions.h"
+#include "D3D12GraphicsContext.h"
+#include "D3D12Exceptions.h"
 #include "D3D12Buffer.h"
 
 
 namespace Graphite::D3D12
 {
-	ResourceFactory* CreateD3D12ResourceFactory(const GraphicsContext& graphicsContext)
-	{
-		return new D3D12ResourceFactory(graphicsContext);
-	}
-
 
 	D3D12ResourceFactory::D3D12ResourceFactory(const GraphicsContext& graphicsContext)
 		: ResourceFactory()

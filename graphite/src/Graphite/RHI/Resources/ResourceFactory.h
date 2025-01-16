@@ -7,25 +7,20 @@ namespace Graphite
 {
 	class GraphicsContext;
 
+
 	class ResourceFactory
 	{
-		// Singleton
-		static std::unique_ptr<ResourceFactory> s_ResourceFactory;
-
 	protected:
-		ResourceFactory() = default;
+		GRAPHITE_API ResourceFactory() = default;
 	public:
-		static void CreateResourceFactory(const GraphicsContext& graphicsContext);
-		static void DestroyResourceFactory();
-
 		// Allow client applications to access resource factory
 		GRAPHITE_API static ResourceFactory& Get();
 
 	public:
-		virtual ~ResourceFactory() = default;
+		GRAPHITE_API virtual ~ResourceFactory() = default;
 
-		DELETE_COPY(ResourceFactory);
-		DELETE_MOVE(ResourceFactory);
+		GRAPHITE_API_DELETE_COPY(ResourceFactory);
+		GRAPHITE_API_DELETE_MOVE(ResourceFactory);
 
 		// Resource Factory
 
@@ -53,6 +48,6 @@ namespace Graphite
 
 	protected:
 		// Helper functions
-		static uint64_t AlignSize(uint64_t size, uint64_t alignment);
+		GRAPHITE_API static uint64_t AlignSize(uint64_t size, uint64_t alignment);
 	};
 }

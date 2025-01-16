@@ -12,6 +12,8 @@ project "sampleApp"
         "../graphite/vendor/glm/",
 
         "../graphite/src",
+        "../graphite/src/Graphite",
+        "../graphite/Platform/D3D12/src",
 
         "src"
     }
@@ -20,7 +22,9 @@ project "sampleApp"
     {
         "spdlog",
         "imgui",
-        "graphite"
+
+        "graphite",
+        "graphiteD3D12"
     }
 
     pchheader "pch.h"
@@ -34,6 +38,7 @@ project "sampleApp"
     objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
     postbuildcommands ("{COPYDIR} \"../graphite/bin/" .. outputdir .. "/graphite/\" \"%{cfg.buildtarget.directory}\"\n")
+    postbuildcommands ("{COPYDIR} \"../graphite/bin/" .. outputdir .. "/graphiteD3D12/\" \"%{cfg.buildtarget.directory}\"\n")
     postbuildcommands ("{COPYDIR} \"../graphite/vendor/dxc/bin/x64/\" \"%{cfg.buildtarget.directory}\"")
     
 

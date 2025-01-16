@@ -1,9 +1,9 @@
 #include "graphite_pch.h"
 #include "ShaderCompiler.h"
 
+#include "Core/Application.h"
+#include "Core/Platform.h"
 #include "Graphite/Core/Assert.h"
-
-#include "Platform/D3D12/GraphiteD3D12.h"
 
 
 namespace Graphite
@@ -21,24 +21,11 @@ namespace Graphite
 	}
 
 
-	std::unique_ptr<ShaderCompiler> s_ShaderCompiler;
-
-	void ShaderCompiler::CreateShaderCompiler()
-	{
-		GRAPHITE_ASSERT(!s_ShaderCompiler, "Only one shader compiler can exist. Call ShaderCompiler::Get() to retrieve the shader compiler.");
-
-		s_ShaderCompiler = std::unique_ptr<ShaderCompiler>(D3D12::CreateD3D12ShaderCompiler());
-	}
-
-	void ShaderCompiler::DestroyShaderCompiler()
-	{
-		s_ShaderCompiler.reset();
-	}
-
 	ShaderCompiler& ShaderCompiler::Get()
 	{
-		GRAPHITE_ASSERT(s_ShaderCompiler, "Shader compiler has not been created. Call ShaderCompiler::CreateShaderCompiler() first.")
-		return *s_ShaderCompiler;
+		auto shaderCompiler = g_Application->GetPlatform()->GetShaderCompiler();
+		GRAPHITE_ASSERT(shaderCompiler, "Shader compiler has not been created.")
+		return *shaderCompiler;
 	}
 
 }

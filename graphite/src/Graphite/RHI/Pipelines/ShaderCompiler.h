@@ -33,18 +33,18 @@ namespace Graphite
 	{
 	public:
 		// Default constructor creates a null bytecode
-		ShaderBytecode();
-		ShaderBytecode(uint64_t bufferSize, void* bufferPointer);
+		GRAPHITE_API ShaderBytecode();
+		GRAPHITE_API ShaderBytecode(uint64_t bufferSize, void* bufferPointer);
 
-		virtual ~ShaderBytecode() = default;
+		GRAPHITE_API virtual ~ShaderBytecode() = default;
 
-		DEFAULT_COPY(ShaderBytecode);
-		DEFAULT_MOVE(ShaderBytecode);
+		GRAPHITE_API_DEFAULT_COPY(ShaderBytecode);
+		GRAPHITE_API_DEFAULT_MOVE(ShaderBytecode);
 
-		bool IsValid() const { return m_BufferPointer != nullptr; };
+		GRAPHITE_API bool IsValid() const { return m_BufferPointer != nullptr; };
 
-		uint64_t GetBufferSize() const { return m_BufferSize; }
-		void* GetBufferPointer() const { return m_BufferPointer; }
+		GRAPHITE_API uint64_t GetBufferSize() const { return m_BufferSize; }
+		GRAPHITE_API void* GetBufferPointer() const { return m_BufferPointer; }
 
 	protected:
 		uint64_t m_BufferSize;
@@ -56,30 +56,26 @@ namespace Graphite
 	{
 	protected:
 		// Lazy initialized singleton
-		ShaderCompiler() = default;
+		GRAPHITE_API ShaderCompiler() = default;
 	public:
-		virtual ~ShaderCompiler() = default;
+		GRAPHITE_API virtual ~ShaderCompiler() = default;
 
-		DELETE_COPY(ShaderCompiler);
-		DEFAULT_MOVE(ShaderCompiler);
+		GRAPHITE_API_DELETE_COPY(ShaderCompiler);
+		GRAPHITE_API_DEFAULT_MOVE(ShaderCompiler);
 
 	public:
-		// Static access to compiler
-		static void CreateShaderCompiler();
-		static void DestroyShaderCompiler();
-
-		static ShaderCompiler& Get();
+		GRAPHITE_API static ShaderCompiler& Get();
 
 	public:
 		// Shader compiler interface
-		inline bool CompileFromFile(
+		GRAPHITE_API inline bool CompileFromFile(
 			const ShaderDescription& shader,
 			ShaderType target,
 			std::unique_ptr<ShaderBytecode>& outBytecode) const
 		{
 			return CompileFromFile(shader.FilePath, shader.EntryPoint, target, outBytecode);
 		}
-		virtual bool CompileFromFile(
+		GRAPHITE_API virtual bool CompileFromFile(
 			const wchar_t* file,
 			const wchar_t* entryPoint,
 			ShaderType target,

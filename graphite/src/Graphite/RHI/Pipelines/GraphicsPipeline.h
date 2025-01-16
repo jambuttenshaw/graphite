@@ -25,12 +25,8 @@ namespace Graphite
 
 	class GraphicsPipeline
 	{
-	public:
-		// Factory
-		GRAPHITE_API static std::unique_ptr<GraphicsPipeline> Create(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& pipelineDesc);
-
 	protected:
-		GraphicsPipeline();
+		GRAPHITE_API GraphicsPipeline();
 	public:
 		GRAPHITE_API virtual ~GraphicsPipeline() = default;
 
@@ -41,7 +37,7 @@ namespace Graphite
 
 	protected:
 		// Non-const used in pipeline creation
-		PipelineResourceSet& GetPipelineResourceSet(PipelineResourceBindingFrequency bindingFrequency);
+		GRAPHITE_API PipelineResourceSet& GetPipelineResourceSet(PipelineResourceBindingFrequency bindingFrequency);
 
 		// Descriptions of the resources used by this pipeline
 		// These do not refer to actual resources and their data

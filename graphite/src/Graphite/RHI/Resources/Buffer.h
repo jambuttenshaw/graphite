@@ -13,32 +13,32 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		UploadBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride);
+		GRAPHITE_API UploadBuffer(uint32_t elementCount, uint32_t instanceCount, uint32_t elementStride);
 	public:
-		virtual ~UploadBuffer() = default;
+		GRAPHITE_API virtual ~UploadBuffer() = default;
 
-		DELETE_COPY(UploadBuffer);
-		DEFAULT_MOVE(UploadBuffer);
+		GRAPHITE_API_DELETE_COPY(UploadBuffer);
+		GRAPHITE_API_DEFAULT_MOVE(UploadBuffer);
 
 		// Getters
-		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::UploadBuffer; }
+		GRAPHITE_API inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::UploadBuffer; }
 
-		inline uint32_t GetElementCount() const { return m_ElementCount; }
-		inline uint32_t GetElementStride() const { return m_ElementStride; }
+		GRAPHITE_API inline uint32_t GetElementCount() const { return m_ElementCount; }
+		GRAPHITE_API inline uint32_t GetElementStride() const { return m_ElementStride; }
 
-		inline uint32_t GetInstanceCount() const { return m_InstanceCount; }
-		inline uint32_t GetInstanceStride() const { return m_InstanceStride; }
+		GRAPHITE_API inline uint32_t GetInstanceCount() const { return m_InstanceCount; }
+		GRAPHITE_API inline uint32_t GetInstanceStride() const { return m_InstanceStride; }
 
-		virtual GPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const = 0;
+		GRAPHITE_API virtual GPUVirtualAddress GetAddressOfElement(uint32_t element, uint32_t instance) const = 0;
 
 		// Populate buffer
-		virtual void CopyElement(uint32_t element, uint32_t instance, const void* data, uint64_t dataSize) const = 0;
-		virtual void CopyElements(uint32_t startElement, uint32_t elementCount, uint32_t instance, const void* data, uint64_t dataSize) const = 0;
+		GRAPHITE_API virtual void CopyElement(uint32_t element, uint32_t instance, const void* data, uint64_t dataSize) const = 0;
+		GRAPHITE_API virtual void CopyElements(uint32_t startElement, uint32_t elementCount, uint32_t instance, const void* data, uint64_t dataSize) const = 0;
 
 	protected:
 		// For writing use only
 		// Helper function to find offset
-		uint64_t GetElementOffset(uint32_t element, uint32_t instance) const;
+		GRAPHITE_API uint64_t GetElementOffset(uint32_t element, uint32_t instance) const;
 
 	protected:
 		uint32_t m_ElementCount;
@@ -53,14 +53,14 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		ByteAddressBuffer(bool readOnly);
+		GRAPHITE_API ByteAddressBuffer(bool readOnly);
 	public:
-		virtual ~ByteAddressBuffer() = default;
+		GRAPHITE_API virtual ~ByteAddressBuffer() = default;
 
-		DELETE_COPY(ByteAddressBuffer);
-		DEFAULT_MOVE(ByteAddressBuffer);
+		GRAPHITE_API_DELETE_COPY(ByteAddressBuffer);
+		GRAPHITE_API_DEFAULT_MOVE(ByteAddressBuffer);
 
-		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::ByteAddressBuffer; }
+		GRAPHITE_API inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::ByteAddressBuffer; }
 	};
 
 
@@ -68,21 +68,21 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		StructuredBuffer(uint32_t elementCount, uint32_t elementSize, bool readOnly)
+		GRAPHITE_API StructuredBuffer(uint32_t elementCount, uint32_t elementSize, bool readOnly)
 			: ByteAddressBuffer(readOnly)
 			, m_ElementCount(elementCount)
 			, m_ElementSize(elementSize)
 		{}
 	public:
-		virtual ~StructuredBuffer() = default;
+		GRAPHITE_API virtual ~StructuredBuffer() = default;
 
-		DELETE_COPY(StructuredBuffer);
-		DEFAULT_MOVE(StructuredBuffer);
+		GRAPHITE_API_DELETE_COPY(StructuredBuffer);
+		GRAPHITE_API_DEFAULT_MOVE(StructuredBuffer);
 
-		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::StructuredBuffer; }
+		GRAPHITE_API inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::StructuredBuffer; }
 
-		inline uint32_t GetElementCount() const { return m_ElementCount; }
-		inline uint32_t GetElementSize() const { return m_ElementSize; }
+		GRAPHITE_API inline uint32_t GetElementCount() const { return m_ElementCount; }
+		GRAPHITE_API inline uint32_t GetElementSize() const { return m_ElementSize; }
 
 	private:
 		uint32_t m_ElementCount;
@@ -94,14 +94,14 @@ namespace Graphite
 	{
 	protected:
 		friend class ResourceFactory;
-		ReadbackBuffer();
+		GRAPHITE_API ReadbackBuffer();
 	public:
-		virtual ~ReadbackBuffer() = default;
+		GRAPHITE_API virtual ~ReadbackBuffer() = default;
 
-		DELETE_COPY(ReadbackBuffer);
-		DEFAULT_MOVE(ReadbackBuffer);
+		GRAPHITE_API_DELETE_COPY(ReadbackBuffer);
+		GRAPHITE_API_DEFAULT_MOVE(ReadbackBuffer);
 
-		inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::ReadbackBuffer; }
+		GRAPHITE_API inline virtual GPUResourceType GetResourceType() const override { return GPUResourceType::ReadbackBuffer; }
 	};
 
 }

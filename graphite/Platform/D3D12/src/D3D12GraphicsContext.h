@@ -27,7 +27,7 @@ namespace Graphite::D3D12
 	class D3D12GraphicsContext : public GraphicsContext
 	{
 	public:
-		D3D12GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc);
+		D3D12GraphicsContext(const GraphicsContextDesc& contextDesc);
 		virtual ~D3D12GraphicsContext();
 
 		DELETE_COPY(D3D12GraphicsContext);
@@ -50,6 +50,10 @@ namespace Graphite::D3D12
 
 		void DeferResourceRelease(const ComPtr<IUnknown>& resource);
 		virtual void WaitForGPUIdle() const override;
+
+	public:
+
+		virtual std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(const GraphicsPipelineDescription& description) override;
 
 	public:
 		virtual DescriptorAllocation AllocateStaticDescriptors(uint32_t count) override;

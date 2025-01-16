@@ -1,7 +1,7 @@
-#include "graphite_pch.h"
+#include "graphite_d3d12_pch.h"
 #include "D3D12CommandQueue.h"
 
-#include "Platform/D3D12/D3D12Exceptions.h"
+#include "D3D12Exceptions.h"
 #include "Graphite/Core/Assert.h"
 
 namespace Graphite::D3D12

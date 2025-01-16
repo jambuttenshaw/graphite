@@ -1,22 +1,17 @@
-#include "graphite_pch.h"
+#include "graphite_d3d12_pch.h"
 #include "D3D12GraphicsPipeline.h"
 
 #include "Graphite/Core/Assert.h"
 
 #include "Graphite/RHI/GraphicsContext.h"
 
-#include "Platform/D3D12/D3D12Exceptions.h"
-#include "Platform/D3D12/D3D12GraphicsContext.h"
+#include "D3D12Exceptions.h"
+#include "D3D12GraphicsContext.h"
+#include "D3D12Types.h"
 #include "D3D12ShaderCompiler.h"
-#include "Platform/D3D12/D3D12Types.h"
 
 namespace Graphite::D3D12
 {
-	GraphicsPipeline* CreateD3D12GraphicsPipeline(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& description)
-	{
-		return new D3D12GraphicsPipeline(graphicsContext, description);
-	}
-
 
 	D3D12GraphicsPipeline::D3D12GraphicsPipeline(const GraphicsContext& graphicsContext, const GraphicsPipelineDescription& description)
 	{

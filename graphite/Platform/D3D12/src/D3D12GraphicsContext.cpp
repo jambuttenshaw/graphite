@@ -1,35 +1,24 @@
-#include "graphite_pch.h"
+#include "graphite_d3d12_pch.h"
 #include "D3D12GraphicsContext.h"
 
 #include "Graphite/Core/Assert.h"
 #include "Graphite/RHI/CommandRecordingContext.h"
-#include "Graphite/RHI/Resources/ResourceFactory.h"
-#include "Graphite/RHI/Pipelines/ShaderCompiler.h"
+#include "Pipelines/D3D12GraphicsPipeline.h"
+#include "Graphite/RHI/DescriptorAllocators.h"
 
 #include "D3D12Types.h"
 #include "D3D12Exceptions.h"
 #include "D3D12CommandQueue.h"
-#include "D3D12CommandRecordingContext.h"	
-#include "Graphite/RHI/DescriptorAllocators.h"
+#include "D3D12CommandRecordingContext.h"
 
 
 namespace Graphite::D3D12
 {
 
-	GraphicsContext* CreateD3D12GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc)
-	{
-		return new D3D12GraphicsContext(contextDesc);
-	}
-
-
-	D3D12GraphicsContext::D3D12GraphicsContext(const GraphiteGraphicsContextDesc& contextDesc)
+	D3D12GraphicsContext::D3D12GraphicsContext(const GraphicsContextDesc& contextDesc)
 		: GraphicsContext(contextDesc)
 		, m_NativeBackBufferFormat(GraphiteFormatToD3D12Format(contextDesc.BackBufferFormat))
 	{
-		static bool s_GraphicsContextExists = false;
-		GRAPHITE_ASSERT(!s_GraphicsContextExists, "Only one graphics context may exist!");
-		s_GraphicsContextExists = true;
-
 		// Validate description
 		GRAPHITE_ASSERT(contextDesc.WindowHandle, "Invalid window handle.");
 		GRAPHITE_ASSERT(contextDesc.BackBufferWidth && contextDesc.BackBufferHeight, "Invalid back buffer dimensions.");
@@ -40,9 +29,6 @@ namespace Graphite::D3D12
 		// Initialization
 		CreateAdapter();
 		CreateDevice();
-
-		ResourceFactory::CreateResourceFactory(*this);
-		ShaderCompiler::CreateShaderCompiler();
 
 		CreateCommandQueues();
 		CreateSwapChain(contextDesc.WindowHandle);
@@ -72,9 +58,6 @@ namespace Graphite::D3D12
 		m_BackBufferRTVs.Free();
 
 		ProcessAllDeferrals();
-
-		ResourceFactory::DestroyResourceFactory();
-		ShaderCompiler::DestroyShaderCompiler();
 	}
 
 
@@ -239,6 +222,11 @@ namespace Graphite::D3D12
 		m_DirectQueue->WaitForIdleCPUBlocking();
 		m_ComputeQueue->WaitForIdleCPUBlocking();
 		m_CopyQueue->WaitForIdleCPUBlocking();
+	}
+
+	std::unique_ptr<GraphicsPipeline> D3D12GraphicsContext::CreateGraphicsPipeline(const GraphicsPipelineDescription& description)
+	{
+		return std::make_unique<D3D12GraphicsPipeline>(*this, description);
 	}
 
 	DescriptorAllocation D3D12GraphicsContext::AllocateStaticDescriptors(uint32_t count)
