@@ -323,6 +323,19 @@ namespace Graphite::D3D12
         }
     }
 
+    D3D12_ROOT_PARAMETER_TYPE GraphiteResourceTypeToD3D12RootParameterType(PipelineResourceType type)
+    {
+        switch (type)
+        {
+        case PipelineResourceType::ConstantBufferView: return D3D12_ROOT_PARAMETER_TYPE_CBV;
+        case PipelineResourceType::ShaderResourceView: return D3D12_ROOT_PARAMETER_TYPE_SRV;
+        case PipelineResourceType::UnorderedAccessView: return D3D12_ROOT_PARAMETER_TYPE_UAV;
+        default:
+            GRAPHITE_LOG_ERROR("Invalid resource type!");
+            return static_cast<D3D12_ROOT_PARAMETER_TYPE>(-1);
+        }
+    }
+
     D3D12_SHADER_VISIBILITY GraphiteShaderVisibilityToD3D12ShaderVisibility(PipelineResourceShaderVisibility visibility)
     {
         switch (visibility)
@@ -336,9 +349,8 @@ namespace Graphite::D3D12
         case ShaderVisibility_Mesh: return D3D12_SHADER_VISIBILITY_MESH;
         case ShaderVisibility_All: return D3D12_SHADER_VISIBILITY_ALL;
         default:
-            GRAPHITE_LOG_ERROR("Invalid shader visibility type!");
-            return static_cast<D3D12_SHADER_VISIBILITY>(-1);
-
+        case ShaderVisibility_None:
+            GRAPHITE_LOG_FATAL("Invalid shader visibility!") return static_cast<D3D12_SHADER_VISIBILITY>(-1);
         }
     }
 }

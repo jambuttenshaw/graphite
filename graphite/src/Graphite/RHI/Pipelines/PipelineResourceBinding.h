@@ -13,8 +13,9 @@ namespace Graphite
 	{
 		PipelineResourceDescription Description;
 
-		// For default binding:
-		std::vector<size_t> BindPoints;	// A resource shared between shader stages may have more than one descriptor within the resource view list
+		// For Default binding, this will be an offset in the descriptor allocation
+		// For Inline binding, this will be the index in the array of GPU virtual addresses
+		size_t DescriptorOffsetOrAddressIndex;
 	};
 
 	class PipelineResourceSet
@@ -23,19 +24,9 @@ namespace Graphite
 		struct RootArgument
 		{
 			PipelineResourceBindingMethod BindingMethod;
-			union
-			{
-				struct
-				{
-					uint32_t DescriptorOffset;
-				} DefaultBinding;
-
-				struct
-				{
-					PipelineResourceType Type;
-					uint32_t ResourceOffset;
-				} InlineBinding;
-			};
+			// Only applies to inline binding - descriptor tables are all overlapping
+			PipelineResourceType Type;
+			uint32_t InlineResourceOffset;
 		};
 
 	public:
@@ -46,11 +37,11 @@ namespace Graphite
 		DEFAULT_MOVE(PipelineResourceSet);
 
 		// These should only be used in pipeline construction
-		void AddResource(const std::string& name, PipelineResource&& resource);
+		PipelineResource& AddResource(const std::string& name, PipelineResourceDescription resourceDescription);
 
 		void SetBaseRootArgumentIndex(uint32_t baseIndex) { m_BaseRootArgumentIndex = baseIndex; }
 
-		void AddDefaultRootArgument(uint32_t offset);
+		void AddDefaultRootArgument();
 		void AddInlineRootArgument(PipelineResourceType type, uint32_t offset);
 
 		// Getters
@@ -58,7 +49,7 @@ namespace Graphite
 		PipelineResource& GetResource(const std::string& name);
 		const PipelineResource& GetResource(const std::string& name) const;
 
-		inline uint32_t GetDescriptorCount() const { return m_DescriptorCount; }
+		inline uint32_t GetDefaultResourceCount() const { return m_DefaultResourceCount; }
 		inline uint32_t GetInlineResourceCount() const { return m_InlineResourceCount; }
 
 		inline uint32_t GetBaseRootArgumentIndex() const { return m_BaseRootArgumentIndex; }
@@ -68,8 +59,8 @@ namespace Graphite
 		PipelineResourceBindingFrequency m_BindingFrequency;
 
 		std::map<std::string, PipelineResource> m_Resources;
-		// The total number of descriptors needed to describe all bind points of all resources
-		uint32_t m_DescriptorCount = 0;
+
+		uint32_t m_DefaultResourceCount = 0;
 		uint32_t m_InlineResourceCount = 0;
 
 		uint32_t m_BaseRootArgumentIndex = 0;
@@ -106,7 +97,7 @@ namespace Graphite
 		GRAPHITE_API void CommitResources();
 
 		// Get a handle to the start of the resource view list
-		GRAPHITE_API GPUDescriptorHandle GetDescriptorTableHandle(uint32_t offsetInDescriptors) const;
+		GRAPHITE_API GPUDescriptorHandle GetDescriptorTableHandle(uint32_t offsetInDescriptors = 0) const;
 		GRAPHITE_API GPUVirtualAddress GetInlineResourceHandle(uint32_t inlineResourceOffset) const;
 		GRAPHITE_API const PipelineResourceSet& GetPipelineResourceSet() const { return *m_ResourceSet; }
 

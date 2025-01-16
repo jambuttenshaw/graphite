@@ -19,7 +19,7 @@ namespace Graphite
 		ShaderDescription VertexShader;
 		ShaderDescription PixelShader;
 
-		const PipelineResourceLayout* ResourceLayout;
+		const std::vector<PipelineResourceDescription>* ResourceLayout;
 	};
 
 

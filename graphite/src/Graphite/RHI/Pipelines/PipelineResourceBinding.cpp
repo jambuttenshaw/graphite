@@ -17,36 +17,34 @@ namespace Graphite
 		
 	}
 
-	void PipelineResourceSet::AddResource(const std::string& name, PipelineResource&& resource)
+	PipelineResource& PipelineResourceSet::AddResource(const std::string& name, PipelineResourceDescription resourceDescription)
 	{
-		GRAPHITE_ASSERT(resource.Description.BindingFrequency == m_BindingFrequency,
+		GRAPHITE_ASSERT(resourceDescription.BindingFrequency == m_BindingFrequency,
 			"The binding frequency of this resource does not match the binding frequency of this resource list!");
 
-		if (resource.Description.BindingMethod == PipelineResourceBindingMethod::Default)
-		{
-			m_DescriptorCount += static_cast<uint32_t>(resource.BindPoints.size());
-		}
-		else
-		{
-			m_InlineResourceCount++;
-		}
+		uint32_t index = resourceDescription.BindingMethod == PipelineResourceBindingMethod::Default
+			? m_DefaultResourceCount++
+			: m_InlineResourceCount++;
 
-		m_Resources.insert(std::make_pair(name, std::move(resource)));
+		auto result = m_Resources.emplace(std::make_pair(name, 
+			PipelineResource{ std::move(resourceDescription), index })
+		);
+		GRAPHITE_ASSERT(result.second, "Insertion failed!");
+		return result.first->second;
 	}
 
-	void PipelineResourceSet::AddDefaultRootArgument(uint32_t offset)
+	void PipelineResourceSet::AddDefaultRootArgument()
 	{
 		m_RootArguments.emplace_back();
 		m_RootArguments.back().BindingMethod = PipelineResourceBindingMethod::Default;
-		m_RootArguments.back().DefaultBinding.DescriptorOffset = offset;
 	}
 
 	void PipelineResourceSet::AddInlineRootArgument(PipelineResourceType type, uint32_t offset)
 	{
 		m_RootArguments.emplace_back();
 		m_RootArguments.back().BindingMethod = PipelineResourceBindingMethod::Inline;
-		m_RootArguments.back().InlineBinding.Type = type;
-		m_RootArguments.back().InlineBinding.ResourceOffset = offset;
+		m_RootArguments.back().Type = type;
+		m_RootArguments.back().InlineResourceOffset = offset;
 	}
 
 
@@ -68,7 +66,8 @@ namespace Graphite
 	ResourceViewList::ResourceViewList(const PipelineResourceSet& resourceSet)
 		: m_ResourceSet(&resourceSet)
 	{
-		m_DescriptorCount = resourceSet.GetDescriptorCount();
+		// TODO: Could one resource contain multiple contiguous descriptors? Is that useful?
+		m_DescriptorCount = resourceSet.GetDefaultResourceCount();
 
 		if (m_DescriptorCount > 0)
 		{
@@ -79,7 +78,7 @@ namespace Graphite
 		m_InlineDescriptorCount = resourceSet.GetInlineResourceCount();
 
 		// Buffered resources may have a different GPU address for each frame in flight, so allow for 3 addresses to be stored for each inline resource
-		m_InlineDescriptors.resize(m_InlineDescriptorCount * GraphicsContext::GetBackBufferCount());
+		m_InlineDescriptors.resize(static_cast<size_t>(m_InlineDescriptorCount) * GraphicsContext::GetBackBufferCount());
 	}
 
 	ResourceViewList::~ResourceViewList()
@@ -111,16 +110,13 @@ namespace Graphite
 		{
 			for (uint32_t i = 0; i < GraphicsContext::GetBackBufferCount(); i++)
 			{
-				for (const auto& bindPoint : resource.BindPoints)
-				{
-					g_GraphicsContext->CreateConstantBufferView(
-						buffer.GetAddressOfElement(element, std::max(i, instanceCount - 1)),
-						buffer.GetElementStride(),
-						m_StagingDescriptors.GetCPUHandle(
-							(i * m_DescriptorCount) + static_cast<uint32_t>(bindPoint)
-						)
-					);
-				}
+				g_GraphicsContext->CreateConstantBufferView(
+					buffer.GetAddressOfElement(element, std::max(i, instanceCount - 1)),
+					buffer.GetElementStride(),
+					m_StagingDescriptors.GetCPUHandle(
+						(i * m_DescriptorCount) + static_cast<uint32_t>(resource.DescriptorOffsetOrAddressIndex)
+					)
+				);
 			}
 
 			m_FramesDirty = GraphicsContext::GetBackBufferCount();
@@ -129,11 +125,8 @@ namespace Graphite
 		{
 			for (uint32_t i = 0; i < GraphicsContext::GetBackBufferCount(); i++)
 			{
-				for (const auto& bindPoint : resource.BindPoints)
-				{
-					uint32_t index = (i * m_InlineDescriptorCount) + static_cast<uint32_t>(bindPoint);
-					m_InlineDescriptors.at(index) = buffer.GetAddressOfElement(element, std::max(i, instanceCount - 1));
-				}
+				uint32_t index = (i * m_InlineDescriptorCount) + static_cast<uint32_t>(resource.DescriptorOffsetOrAddressIndex);
+				m_InlineDescriptors.at(index) = buffer.GetAddressOfElement(element, std::max(i, instanceCount - 1));
 			}
 		}
 	}

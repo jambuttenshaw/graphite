@@ -25,8 +25,8 @@ protected:
 
 	std::unique_ptr<Graphite::GraphicsPipeline> m_GraphicsPipeline;
 
-	Graphite::ResourceViewList m_StaticResourceList;
 	Graphite::ResourceViewList m_DynamicResourceList;
+	Graphite::ResourceViewList m_StaticResourceList;
 
 	Graphite::ConstantBuffer<TriangleOffsetConstantBufferType> m_OffsetConstantBuffer;
 	Graphite::ConstantBuffer<TriangleColorConstantBufferType> m_ColorConstantBuffer;

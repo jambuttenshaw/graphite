@@ -103,14 +103,14 @@ namespace Graphite::D3D12
 			{
 				m_CommandList->SetGraphicsRootDescriptorTable(
 					argIndex + i,
-					GraphiteGPUDescriptorToD3D12Descriptor(resourceViewList.GetDescriptorTableHandle(arg.DefaultBinding.DescriptorOffset))
+					GraphiteGPUDescriptorToD3D12Descriptor(resourceViewList.GetDescriptorTableHandle())
 				);
 			}
 			else
 			{
 				uint32_t idx = argIndex + i;
-				D3D12_GPU_VIRTUAL_ADDRESS va = GraphiteGPUAddressToD3D12GPUAddress(resourceViewList.GetInlineResourceHandle(arg.InlineBinding.ResourceOffset));
-				switch (arg.InlineBinding.Type)
+				D3D12_GPU_VIRTUAL_ADDRESS va = GraphiteGPUAddressToD3D12GPUAddress(resourceViewList.GetInlineResourceHandle(arg.InlineResourceOffset));
+				switch (arg.Type)
 				{
 				case PipelineResourceType::ConstantBufferView:
 					m_CommandList->SetGraphicsRootConstantBufferView(idx, va);

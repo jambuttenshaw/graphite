@@ -24,10 +24,4 @@ namespace Graphite
 		};
 	}
 
-
-	PipelineResourceLayout::PipelineResourceLayout(std::initializer_list<PipelineResourceDescription> resources)
-		: PipelineResources(std::move(resources))
-	{
-	}
-
 }

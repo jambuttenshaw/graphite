@@ -29,14 +29,4 @@ namespace Graphite
 			uint32_t registerSpace,
 			PipelineResourceShaderVisibility shaderVisibility);
 	};
-
-	// Fully describes all resources used by all shaders in a pipeline
-	struct PipelineResourceLayout
-	{
-		std::vector<PipelineResourceDescription> PipelineResources;
-
-		// Initializer list constructor is designed to make describing layouts in client code tidier
-		GRAPHITE_API PipelineResourceLayout(std::initializer_list<PipelineResourceDescription> resources);
-	};
-
 }

@@ -26,7 +26,7 @@ void GameLayer::OnAttach()
 	// Create graphics pipeline
 
 	// Describe the resource layout of the pipeline
-	Graphite::PipelineResourceLayout resourceLayout
+	std::vector resourceLayout
 	{
 		Graphite::PipelineResourceDescription::ConstantBuffer(
 			"TriangleOffsetConstantBuffer",
@@ -43,7 +43,15 @@ void GameLayer::OnAttach()
 			/* Resource Slot = */ 0,
 			/* Register Space = */ 0,
 			Graphite::ShaderVisibility_Pixel
-			)
+			),
+		Graphite::PipelineResourceDescription::ConstantBuffer(
+			"TestConstantBuffer",
+			Graphite::PipelineResourceBindingFrequency::Mutable,
+			Graphite::PipelineResourceBindingMethod::Default,
+			/* Resource Slot = */ 1,
+			/* Register Space = */ 0,
+			Graphite::ShaderVisibility_All
+			),
 	};
 
 	Graphite::GraphicsPipelineDescription psoDesc
@@ -121,6 +129,7 @@ void GameLayer::OnRender()
 
 	// Ensure resource list is up to date
 	m_StaticResourceList.CommitResources();
+	m_DynamicResourceList.CommitResources();
 
 	// Perform all rendering
 	graphicsContext->BeginPass();
