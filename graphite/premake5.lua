@@ -1,7 +1,8 @@
 
 group "Dependencies"
-   include "vendor/imgui.lua"
-   include "vendor/D3D12MemoryAllocator.lua"
+    include "vendor/spdlog.lua"
+    include "vendor/imgui.lua"
+    include "vendor/D3D12MemoryAllocator.lua"
 group ""
 
 group "Core"
@@ -32,8 +33,9 @@ group "Core"
         }
 
         links {
-            "D3D12MemoryAllocator",
+            "spdlog",
             "imgui",
+            "D3D12MemoryAllocator",
 
             "d3d12",
             "dxgi",

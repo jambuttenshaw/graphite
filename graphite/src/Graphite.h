@@ -33,6 +33,10 @@
 #include <mutex>
 
 // Dependencies
+#ifndef SPDLOG_WCHAR_TO_UTF8_SUPPORT
+#define SPDLOG_WCHAR_TO_UTF8_SUPPORT
+#endif
+#include <spdlog/spdlog.h>
 #include <glm/glm.hpp>
 
 

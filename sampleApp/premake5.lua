@@ -18,6 +18,7 @@ project "sampleApp"
 
     links
     {
+        "spdlog",
         "imgui",
         "graphite"
     }
@@ -26,6 +27,8 @@ project "sampleApp"
     pchsource "src/pch.cpp"
 
     buildoptions { "/utf-8" }
+
+    defines { "SPDLOG_COMPILED_LIBRARY" }
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
     objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")

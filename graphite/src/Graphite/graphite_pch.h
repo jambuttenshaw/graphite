@@ -49,6 +49,15 @@
 
 #include <Windows.h>
 
+// Logging library
+#ifndef SPDLOG_COMPILED_LIB
+#define SPDLOG_COMPILED_LIB
+#endif
+#ifndef SPDLOG_WCHAR_TO_UTF8_SUPPORT
+#define SPDLOG_WCHAR_TO_UTF8_SUPPORT
+#endif
+#include <spdlog/spdlog.h>
+
 // Maths library
 #include <glm/glm.hpp>
 // Math library extensions
