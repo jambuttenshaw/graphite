@@ -38,7 +38,7 @@ project "sampleApp"
     objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
     postbuildcommands ("{COPYDIR} \"../graphite/bin/" .. outputdir .. "/graphite/\" \"%{cfg.buildtarget.directory}\"\n")
-    postbuildcommands ("{COPYDIR} \"../graphite/bin/" .. outputdir .. "/graphiteD3D12/\" \"%{cfg.buildtarget.directory}\"\n")
+    postbuildcommands ("{COPYDIR} \"../graphite/Platform/D3D12/bin/" .. outputdir .. "/graphiteD3D12/\" \"%{cfg.buildtarget.directory}\"\n")
     postbuildcommands ("{COPYDIR} \"../graphite/vendor/dxc/bin/x64/\" \"%{cfg.buildtarget.directory}\"")
     
 

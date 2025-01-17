@@ -11,4 +11,4 @@
 #include <shellapi.h>
 
 // Include PCH of core graphite to ensure the same STL is available
-#include "graphite_pch.h"
+#include <Graphite/graphite_pch.h>

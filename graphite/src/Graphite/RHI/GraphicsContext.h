@@ -1,11 +1,10 @@
 #pragma once
 
 #include "Graphite/Core/Core.h"
+#include "Graphite/Core/Assert.h"
+
 #include "RHITypes.h"
-
 #include "Descriptors.h"
-#include "Core/Assert.h"
-
 
 
 namespace Graphite

@@ -2,7 +2,6 @@
 group "Dependencies"
     include "vendor/spdlog.lua"
     include "vendor/imgui.lua"
-    include "vendor/D3D12MemoryAllocator.lua"
 group ""
 
 group "Core"
@@ -52,8 +51,6 @@ group "Core"
             runtime "Release"
             optimize "On"
             symbols "Off"
-
-    include "premake5_d3d12.lua"
-    
-
 group ""
+
+include "Platform/D3D12"

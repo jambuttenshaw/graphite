@@ -34,6 +34,7 @@ namespace Graphite
 			void (*imGuiFreeFunc)(void*, void*)
 		) {}
 
+	public:
 		// Getters
 		GRAPHITE_API GraphicsContext* GetGraphicsContext() const { return m_GraphicsContext.get(); }
 		GRAPHITE_API ResourceFactory* GetResourceFactory() const { return m_ResourceFactory.get(); }

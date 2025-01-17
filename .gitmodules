@@ -2,10 +2,10 @@
 	path = graphite/vendor/spdlog
 	url = https://github.com/gabime/spdlog
 [submodule "graphite/vendor/DirectX-Headers"]
-	path = graphite/vendor/DirectX-Headers
+	path = graphite/Platform/D3D12/vendor/DirectX-Headers
 	url = https://github.com/microsoft/DirectX-Headers
 [submodule "graphite/vendor/D3D12MemoryAllocator"]
-	path = graphite/vendor/D3D12MemoryAllocator
+	path = graphite/Platform/D3D12/vendor/D3D12MemoryAllocator
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator
 [submodule "graphite/vendor/glm"]
 	path = graphite/vendor/glm
