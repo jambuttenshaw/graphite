@@ -2,8 +2,10 @@
 #include "D3D12Platform.h"
 
 #include "D3D12GraphicsContext.h"
+#include "imgui.h"
 #include "Resources/D3D12ResourceFactory.h"
 #include "Pipelines/D3D12ShaderCompiler.h"
+
 #include "ImGui/D3D12ImGuiBackend.h"
 
 
@@ -17,5 +19,15 @@ namespace Graphite::D3D12
 		m_ShaderCompiler = std::make_unique<D3D12ShaderCompiler>();
 		m_ImGuiBackend = std::make_unique<D3D12ImGuiBackend>();
 	}
+
+	void D3D12Platform::SetPlatformImGuiContext(ImGuiContext* imGuiContext,
+		void* (*imGuiAllocFunc)(size_t, void*),
+		void (*imGuiFreeFunc)(void*, void*))
+	{
+		// This uses the core graphite ImGui context
+		ImGui::SetCurrentContext(imGuiContext);
+		ImGui::SetAllocatorFunctions(imGuiAllocFunc, imGuiFreeFunc);
+	}
+
 
 }

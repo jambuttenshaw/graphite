@@ -19,6 +19,8 @@ namespace Graphite
 	class Application
 	{
 	public:
+		GRAPHITE_API static Application* Get();
+	public:
 		GRAPHITE_API Application(Platform& platform);
 		GRAPHITE_API virtual ~Application();
 
@@ -64,7 +66,7 @@ namespace Graphite
 		LayerStack m_LayerStack;
 	};
 
-	GRAPHITE_API extern Application* g_Application;
+	// To be implemented by clients to create custom application
 	extern std::unique_ptr<Application> CreateApplication();
 	
 }

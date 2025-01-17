@@ -19,6 +19,9 @@ namespace Graphite::D3D12
 		GRAPHITE_API DELETE_MOVE(D3D12Platform);
 
 		GRAPHITE_API virtual void InitPlatform(const struct GraphicsContextDesc& graphicsContextDesc) override;
+		GRAPHITE_API virtual void SetPlatformImGuiContext(ImGuiContext* imGuiContext,
+			void* (*imGuiAllocFunc)(size_t, void*),
+			void (*imGuiFreeFunc)(void*, void*)) override;
 	};
 
 }

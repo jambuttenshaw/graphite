@@ -23,7 +23,7 @@ namespace Graphite
 
 	ShaderCompiler& ShaderCompiler::Get()
 	{
-		auto shaderCompiler = g_Application->GetPlatform()->GetShaderCompiler();
+		auto shaderCompiler = Application::Get()->GetPlatform()->GetShaderCompiler();
 		GRAPHITE_ASSERT(shaderCompiler, "Shader compiler has not been created.")
 		return *shaderCompiler;
 	}

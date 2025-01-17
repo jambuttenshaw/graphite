@@ -8,6 +8,12 @@
 
 #include "imgui.h"
 #include "ImGuiBackend.h"
+#include "ImGuiInterface.h"
+
+#include "Events/KeyboardEvent.h"
+#include "Events/MouseEvent.h"
+#include "Events/WindowEvent.h"
+
 #include "Graphite/RHI/CommandRecordingContext.h"
 
 
@@ -254,6 +260,18 @@ namespace Graphite
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
+		{
+			ImGuiMemAllocFunc allocFunc;
+			ImGuiMemFreeFunc freeFunc;
+			void* userData;
+			GetImGuiAllocators(&allocFunc, &freeFunc, &userData);
+			Application::Get()->GetPlatform()->SetPlatformImGuiContext(
+				GetImGuiContext(),
+				allocFunc,
+				freeFunc
+			);
+		}
+
 		// Set up config
 
 		// Set up style
@@ -261,16 +279,17 @@ namespace Graphite
 		// Set up IO
 		ImGuiIO& io = ImGui::GetIO();
 
-		auto window = g_Application->GetWindow();
+		auto window = Application::Get()->GetWindow();
 		io.DisplaySize = ImVec2(static_cast<float>(window->GetWidth()), static_cast<float>(window->GetHeight()));
 
 		// Setup rendering backend
-		GraphicsContext* graphicsContext = g_Application->GetGraphicsContext();
+		Application* app = Application::Get();
+		GraphicsContext* graphicsContext = app->GetGraphicsContext();
 
 		m_ImGuiResources = graphicsContext->AllocateStaticDescriptors(1);
 		GRAPHITE_ASSERT(m_ImGuiResources.IsValid(), "Failed to allocate ImGui resources.");
 
-		m_Backend = g_Application->GetPlatform()->GetImGuiBackend();
+		m_Backend = Application::Get()->GetPlatform()->GetImGuiBackend();
 		m_Backend->Init(*graphicsContext, m_ImGuiResources);
 
 		// To capture all ImGui usage between updates of this layer
@@ -291,7 +310,7 @@ namespace Graphite
 		// This will also end the frame
 		ImGui::Render();
 
-		GraphicsContext* graphicsContext = g_Application->GetGraphicsContext();
+		GraphicsContext* graphicsContext = Application::Get()->GetGraphicsContext();
 
 		graphicsContext->BeginPass();
 		{
@@ -331,7 +350,7 @@ namespace Graphite
 	void ImGuiLayer::NewFrame()
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.DeltaTime = g_Application->GetDeltaTime();
+		io.DeltaTime = Application::Get()->GetDeltaTime();
 
 		m_Backend->NewFrame();
 		ImGui::NewFrame();

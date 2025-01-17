@@ -11,7 +11,7 @@ namespace Graphite
 
 	ResourceFactory& ResourceFactory::Get()
 	{
-		auto resourceFactory = g_Application->GetPlatform()->GetResourceFactory();
+		auto resourceFactory = Application::Get()->GetPlatform()->GetResourceFactory();
 		GRAPHITE_ASSERT(resourceFactory, "Resource factory has not been created!");
 		return *resourceFactory;
 	}

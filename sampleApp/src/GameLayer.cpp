@@ -68,7 +68,7 @@ void GameLayer::OnAttach()
 		.ResourceLayout = &resourceLayout
 	};
 
-	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
+	Graphite::GraphicsContext* graphicsContext = Graphite::Application::Get()->GetGraphicsContext();
 	m_GraphicsPipeline = graphicsContext->CreateGraphicsPipeline(psoDesc);
 
 	m_OffsetConstantBuffer = Graphite::ConstantBuffer<TriangleOffsetConstantBufferType>{ {
@@ -120,8 +120,8 @@ void GameLayer::OnUpdate()
 
 void GameLayer::OnRender()
 {
-	Graphite::GraphicsContext* graphicsContext = Graphite::g_Application->GetGraphicsContext();
-	Graphite::Window* window = Graphite::g_Application->GetWindow();
+	Graphite::GraphicsContext* graphicsContext = Graphite::Application::Get()->GetGraphicsContext();
+	Graphite::Window* window = Graphite::Application::Get()->GetWindow();
 
 	// Update the data in the constant buffers
 	m_OffsetConstantBuffer.CommitDirtyElements(graphicsContext);

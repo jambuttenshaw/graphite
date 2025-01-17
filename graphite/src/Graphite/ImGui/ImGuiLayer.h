@@ -3,10 +3,6 @@
 #include "Graphite/Layers/Layer.h"
 #include "ImGuiBackend.h"
 
-#include "Graphite/Events/KeyboardEvent.h"
-#include "Graphite/Events/MouseEvent.h"
-#include "Graphite/Events/WindowEvent.h"
-
 #include "Graphite/RHI/Descriptors.h"
 
 

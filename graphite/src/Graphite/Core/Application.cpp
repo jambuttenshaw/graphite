@@ -17,6 +17,12 @@ namespace Graphite
 {
 	Application* g_Application = nullptr;
 
+	Application* Application::Get()
+	{
+		return g_Application;
+	}
+
+
 	Application::Application(Platform& platform)
 		: m_Platform(platform)
 	{
