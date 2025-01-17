@@ -412,5 +412,5 @@ bin-int/
 !vendor/bin/premake5.exe
 
 # Include DXC binaries
-!graphite/vendor/dxc/lib/
-!graphite/vendor/dxc/bin/
+!graphite/Platform/D3D12/vendor/dxc/lib/
+!graphite/Platform/D3D12/vendor/dxc/bin/
