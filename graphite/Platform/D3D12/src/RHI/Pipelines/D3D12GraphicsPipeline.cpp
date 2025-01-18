@@ -5,9 +5,9 @@
 
 #include "Graphite/RHI/GraphicsContext.h"
 
-#include "D3D12Exceptions.h"
-#include "D3D12GraphicsContext.h"
-#include "D3D12Types.h"
+#include "RHI/D3D12Exceptions.h"
+#include "RHI/D3D12GraphicsContext.h"
+#include "RHI/D3D12Types.h"
 #include "D3D12ShaderCompiler.h"
 
 namespace Graphite::D3D12

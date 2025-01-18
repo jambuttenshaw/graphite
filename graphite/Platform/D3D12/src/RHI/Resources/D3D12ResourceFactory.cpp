@@ -7,8 +7,8 @@
 
 #include "Graphite/RHI/Resources/ResourceFactory.h"
 
-#include "D3D12GraphicsContext.h"
-#include "D3D12Exceptions.h"
+#include "RHI/D3D12GraphicsContext.h"
+#include "RHI/D3D12Exceptions.h"
 #include "D3D12Buffer.h"
 
 

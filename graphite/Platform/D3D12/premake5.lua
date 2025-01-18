@@ -42,6 +42,10 @@ group "Core"
                 "dxcompiler"
             }
 
+            libdirs {
+                "vendor/dxc/lib/x64"
+            }
+
             pchheader "graphite_d3d12_pch.h"
             pchsource "src/graphite_d3d12_pch.cpp"
 

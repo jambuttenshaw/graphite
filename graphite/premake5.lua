@@ -12,12 +12,11 @@ group "Core"
         cppdialect "C++20"
 
         files {
-            "src/Graphite/**.h",
-            "src/Graphite/**.cpp"
+            "src/**.h",
+            "src/**.cpp"
         }
 
         includedirs {
-            "%{prj.directory}",
             "src",
             "src/Graphite",
 

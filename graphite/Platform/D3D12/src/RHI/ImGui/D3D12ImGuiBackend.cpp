@@ -3,9 +3,9 @@
 
 #include "backends/imgui_impl_dx12.h"
 
-#include "D3D12GraphicsContext.h"
-#include "D3D12CommandRecordingContext.h"
-#include "D3D12Types.h"
+#include "RHI/D3D12GraphicsContext.h"
+#include "RHI/D3D12CommandRecordingContext.h"
+#include "RHI/D3D12Types.h"
 
 
 namespace Graphite::D3D12

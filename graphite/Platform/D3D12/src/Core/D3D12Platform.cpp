@@ -1,12 +1,12 @@
 #include "graphite_d3d12_pch.h"
 #include "D3D12Platform.h"
 
-#include "D3D12GraphicsContext.h"
-#include "imgui.h"
-#include "Resources/D3D12ResourceFactory.h"
-#include "Pipelines/D3D12ShaderCompiler.h"
+#include "RHI/D3D12GraphicsContext.h"
+#include "RHI/Resources/D3D12ResourceFactory.h"
+#include "RHI/Pipelines/D3D12ShaderCompiler.h"
 
-#include "ImGui/D3D12ImGuiBackend.h"
+#include "imgui.h"
+#include "RHI/ImGui/D3D12ImGuiBackend.h"
 
 
 namespace Graphite::D3D12

@@ -2,7 +2,7 @@
 #include "D3D12Buffer.h"
 
 #include "Graphite/Core/Assert.h"
-#include "D3D12Exceptions.h"
+#include "RHI/D3D12Exceptions.h"
 
 
 namespace Graphite::D3D12
