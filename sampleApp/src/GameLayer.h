@@ -1,4 +1,5 @@
 #pragma once
+#include "GameRenderer.h"
 
 
 struct TriangleOffsetConstantBufferType
@@ -17,9 +18,12 @@ public:
 	virtual void OnAttach() override;
 
 	virtual void OnUpdate() override;
-	virtual void OnRender() override;
+
+	virtual std::optional<Graphite::RendererInterface&> GetRenderer() override { return m_Renderer; }
 
 protected:
+	GameRenderer m_Renderer;
+
 	std::unique_ptr<Graphite::UploadBuffer> m_VertexBuffer;
 	std::unique_ptr<Graphite::UploadBuffer> m_IndexBuffer;
 

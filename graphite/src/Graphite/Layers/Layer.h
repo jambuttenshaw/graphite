@@ -5,12 +5,13 @@
 namespace Graphite
 {
 	class Event;
+	class RendererInterface;
 
 	class GRAPHITE_API Layer
 	{
 	public:
 		Layer() = default;
-		virtual ~Layer() = default;
+		virtual ~Layer() = 0;
 
 		DEFAULT_COPY(Layer);
 		DEFAULT_MOVE(Layer);
@@ -21,10 +22,12 @@ namespace Graphite
 
 		virtual void OnUpdate() {}
 
-		// Any rendering performed in a layer should be performed in at least one pass
-		// I.e., a pair of BeginPass()/EndPass() should be called within the OnRender function
-		virtual void OnRender() {}
+		// Rendering interface
+		// If a layer does not wish to perform rendering it may return null optional
+		virtual std::optional<RendererInterface&> GetRenderer() { return std::nullopt; }
 
+		// Event integration
+		// Layers can respond to application events
 		virtual void OnEvent(Event&) {}
 	};
 

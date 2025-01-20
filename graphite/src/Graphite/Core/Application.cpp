@@ -11,6 +11,7 @@
 #include "Platform.h"
 #include "Graphite/ImGui/ImGuiLayer.h"
 #include "Graphite/RHI/GraphicsContext.h"
+#include "Renderer/RendererInterface.h"
 
 
 namespace Graphite
@@ -105,7 +106,13 @@ namespace Graphite
 
 			for (auto& layer : m_LayerStack)
 			{
-				layer->OnRender();
+				auto renderer = layer->GetRenderer();
+				if (renderer.has_value())
+				{
+					renderer.value().PreRender();
+					renderer.value().Render();
+					renderer.value().PostRender();
+				}
 			}
 
 			m_GraphicsContext->EndFrame();

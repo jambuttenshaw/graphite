@@ -4,17 +4,24 @@
 #include "ImGuiBackend.h"
 
 #include "Graphite/RHI/Descriptors.h"
+#include "Renderer/RendererInterface.h"
 
 
 namespace Graphite
 {
+	class ImGuiRenderer : public RendererInterface
+	{
+	public:
+
+		void Render() override;
+	};
+
 	class ImGuiLayer : public Layer
 	{
 	public:
 		void OnAttach() override;
 		void OnDetach() override;
 
-		void OnRender() override;
 		void OnEvent(Event&) override;
 
 	private:

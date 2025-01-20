@@ -70,6 +70,10 @@
 #include "Graphite/RHI/Pipelines/GraphicsPipeline.h"
 #include "Graphite/RHI/Pipelines/PipelineResourceLayout.h"
 
+// Renderer
+#include "Graphite/Renderer/RendererInterface.h"
+#include "Graphite/Renderer/SceneRenderer.h"
+
 // ImGui
 #include "Graphite/ImGui/ImGuiInterface.h"
 
