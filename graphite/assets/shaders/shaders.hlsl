@@ -1,29 +1,23 @@
 #ifndef SHADERS_HLSL
 #define SHADERS_HLSL
 
-struct TriangleOffsetConstantBufferType
+struct PassConstantBufferType
 {
-    float2 Offset;
+    float4x4 ViewProjectionMatrix;
 };
-struct TriangleColorConstantBufferType
+struct InstanceDataConstantBufferType
 {
-    float4 Color;
-};
-struct TestCBType
-{
-	float4 A;
-	float4 B;
+    float4x4 WorldMatrix;
 };
 
-ConstantBuffer<TriangleOffsetConstantBufferType> g_TriangleOffsetCB : register(b0); // Used in VS
-ConstantBuffer<TriangleColorConstantBufferType> g_TriangleColorCB : register(b0); // Used in PS
-
-ConstantBuffer<TestCBType> g_TestCB : register(b1);
+ConstantBuffer<PassConstantBufferType> g_PassCB : register(b0); // Used in VS
+ConstantBuffer<InstanceDataConstantBufferType> g_InstanceData : register(b1); // Used in VS
 
 
 struct Vertex_Position
 {
 	float4 position : POSITION;
+	float3 normal : NORMAL;
 };
 
 
@@ -36,14 +30,18 @@ struct VSToPS
 VSToPS VSMain(Vertex_Position input)
 {
 	VSToPS output;
-	output.position = input.position + float4(g_TriangleOffsetCB.Offset, 0, 1) + g_TestCB.A.wwxx;
+    
+    output.position = mul(g_InstanceData.WorldMatrix, input.position);
+    output.position = mul(g_PassCB.ViewProjectionMatrix, output.position);
 
 	return output;
 }
 
-float4 PSMain(VSToPS input) : SV_TARGET
+
+float4 PSMain(VSToPS input, uint primitiveID : SV_PrimitiveID) : SV_TARGET
 {
-	return g_TriangleColorCB.Color + g_TestCB.A.wwxx;
+    //return float4(0.8f, 0.2f, 0.2f, 1.0f);
+    return float4((float)primitiveID / 8.0f, 0.0f, 0.0f, 1.0f);
 }
 
 #endif

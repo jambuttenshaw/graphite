@@ -16,6 +16,17 @@ namespace Graphite
 		GRAPHITE_API static const InputLayout VertexInputLayout;
 	};
 
+	struct Vertex_PositionNormal
+	{
+		glm::vec3 Position;
+		glm::vec3 Normal;
+
+		// Input layout for this vertex type
+		// TODO: build these from shader reflection
+		// TODO: Cache these so they can be shared by compatible vertex types
+		GRAPHITE_API static const InputLayout VertexInputLayout;
+	};
+
 	// Standard vertex types
 	struct Vertex_PositionNormalUV
 	{

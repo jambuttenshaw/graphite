@@ -8,6 +8,11 @@ namespace Graphite
 		{"POSITION", 0, 3},
 	});
 
+	const InputLayout Vertex_PositionNormal::VertexInputLayout({
+		{"POSITION", 0, 3},
+		{"NORMAL", 0, 3},
+	});
+
 	const InputLayout Vertex_PositionNormalUV::VertexInputLayout({
 		{"POSITION", 0, 3},
 		{"NORMAL", 0, 3},

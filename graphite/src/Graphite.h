@@ -37,7 +37,11 @@
 #define SPDLOG_WCHAR_TO_UTF8_SUPPORT
 #endif
 #include <spdlog/spdlog.h>
+
 #include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/scalar_constants.hpp>
 
 
 // Graphite Core 

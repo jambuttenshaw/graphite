@@ -1,13 +1,13 @@
 #pragma once
 
 
-struct TriangleOffsetConstantBufferType
+struct PassConstantBufferType
 {
-	glm::vec2 Offset;
+	glm::mat4 ViewProjectionMatrix;
 };
-struct TriangleColorConstantBufferType
+struct InstanceDataConstantBufferType
 {
-	glm::vec4 Color;
+	glm::mat4 WorldMatrix;
 };
 
 
@@ -28,6 +28,8 @@ protected:
 	Graphite::ResourceViewList m_DynamicResourceList;
 	Graphite::ResourceViewList m_StaticResourceList;
 
-	Graphite::ConstantBuffer<TriangleOffsetConstantBufferType> m_OffsetConstantBuffer;
-	Graphite::ConstantBuffer<TriangleColorConstantBufferType> m_ColorConstantBuffer;
+	Graphite::ConstantBuffer<PassConstantBufferType> m_PassCB;
+	Graphite::ConstantBuffer<InstanceDataConstantBufferType> m_InstanceDataCB;
+
+	float yaw = 0.0f;
 };

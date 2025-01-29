@@ -4,24 +4,70 @@
 #include "imgui.h"
 
 
+// Geometry definition:
+static Graphite::Vertex_PositionNormal vertices[] = {
+	// Front
+	{ .Position= {-1.0f, 1.0f, -1.0f }, .Normal= {0.0f, 0.0f, -1.0f } },
+	{ .Position= {1.0f, 1.0f, -1.0f }, .Normal= {0.0f, 0.0f, -1.0f } },
+	{ .Position= {1.0f, -1.0f, -1.0f }, .Normal= {0.0f, 0.0f, -1.0f } },
+	{ .Position= {-1.0f, -1.0f, -1.0f }, .Normal= {0.0f, 0.0f, -1.0f } },
+	// Back
+	{ .Position= {1.0f, 1.0f, 1.0f }, .Normal= {0.0f, 0.0f, 1.0f } },
+	{ .Position= {-1.0f, 1.0f, 1.0f }, .Normal= {0.0f, 0.0f, 1.0f } },
+	{ .Position= {-1.0f, -1.0f, 1.0f }, .Normal= {0.0f, 0.0f, 1.0f } },
+	{ .Position= {1.0f, -1.0f, 1.0f }, .Normal= {0.0f, 0.0f, 1.0f } },
+	// Left
+	{ .Position= {-1.0f, 1.0f, 1.0f }, .Normal= {-1.0f, 0.0f, 0.0f } },
+	{ .Position= {-1.0f, 1.0f, -1.0f }, .Normal= {-1.0f, 0.0f, 0.0f } },
+	{ .Position= {-1.0f, -1.0f, -1.0f }, .Normal= {-1.0f, 0.0f, 0.0f } },
+	{ .Position= {-1.0f, -1.0f, 1.0f }, .Normal= {-1.0f, 0.0f, 0.0f } },
+	// Right
+	{ .Position= {1.0f, 1.0f, -1.0f }, .Normal= {1.0f, 0.0f, 0.0f } },
+	{ .Position= {1.0f, 1.0f, 1.0f }, .Normal= {1.0f, 0.0f, 0.0f } },
+	{ .Position= {1.0f, -1.0f, 1.0f }, .Normal= {1.0f, 0.0f, 0.0f } },
+	{ .Position= {1.0f, -1.0f, -1.0f }, .Normal= {1.0f, 0.0f, 0.0f } },
+	// Top
+	{ .Position= {-1.0f, 1.0f, 1.0f }, .Normal= {0.0f, 1.0f, 0.0f } },
+	{ .Position= {1.0f, 1.0f, 1.0f }, .Normal= {0.0f, 1.0f, 0.0f } },
+	{ .Position= {1.0f, 1.0f, -1.0f }, .Normal= {0.0f, 1.0f, 0.0f } },
+	{ .Position= {-1.0f, 1.0f, -1.0f }, .Normal= {0.0f, 1.0f, 0.0f } },
+	// Bottom
+	{ .Position= {-1.0f, -1.0f, -1.0f }, .Normal= {0.0f, -1.0f, 0.0f } },
+	{ .Position= {1.0f, -1.0f, -1.0f }, .Normal= {0.0f, -1.0f, 0.0f } },
+	{ .Position= {1.0f, -1.0f, 1.0f }, .Normal= {0.0f, -1.0f, 0.0f } },
+	{ .Position= {-1.0f, -1.0f, 1.0f }, .Normal= {0.0f, -1.0f, 0.0f } },
+};
+
+static uint16_t indices[] = {
+	// Front
+	0, 1, 2,
+	0, 2, 3,
+	// Back
+	4, 5, 6,
+	4, 6, 7,
+	// Left
+	8, 9, 10,
+	8, 10, 11,
+	// Right
+	12, 13, 14,
+	12, 14, 15,
+	// Top
+	16, 17, 18,
+	16, 18, 19,
+	// Bottom
+	20, 21, 22,
+	20, 22, 23
+};
+
+
 void GameLayer::OnAttach()
 {
-	// Setup
-	Graphite::Vertex_Position vertices[] = {
-		{ { -0.5f, -0.5f, 0.0f } },
-		{ { 0.0f, 0.5f, 0.0f } },
-		{ { 0.5f, -0.5f, 0.0f } },
-	};
-	uint16_t indices[] = {
-		0, 1, 2
-	};
-
 	// Create vertex and index buffer
-	m_VertexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<Graphite::Vertex_Position>(3, 1, 0);
-	m_IndexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<uint16_t>(3, 1, 0);
+	m_VertexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<Graphite::Vertex_PositionNormal>(std::size(vertices), 1, 0);
+	m_IndexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<uint16_t>(std::size(indices), 1, 0);
 
-	m_VertexBuffer->CopyElements(0, 3, 0, vertices, sizeof(vertices));
-	m_IndexBuffer->CopyElements(0, 3, 0, indices, sizeof(indices));
+	m_VertexBuffer->CopyElements(0, std::size(vertices), 0, vertices, sizeof(vertices));
+	m_IndexBuffer->CopyElements(0, std::size(indices), 0, indices, sizeof(indices));
 
 	// Create graphics pipeline
 
@@ -29,34 +75,26 @@ void GameLayer::OnAttach()
 	std::vector resourceLayout
 	{
 		Graphite::PipelineResourceDescription::ConstantBuffer(
-			"TriangleOffsetConstantBuffer",
-			Graphite::PipelineResourceBindingFrequency::Dynamic,
+			"PassConstantBuffer",
+			Graphite::PipelineResourceBindingFrequency::Static,
 			Graphite::PipelineResourceBindingMethod::Inline,
 			/* Resource Slot = */ 0,
 			/* Register Space = */ 0,
 			Graphite::ShaderVisibility_Vertex
 			),
 		Graphite::PipelineResourceDescription::ConstantBuffer(
-			"TriangleColorConstantBuffer",
-			Graphite::PipelineResourceBindingFrequency::Static,
-			Graphite::PipelineResourceBindingMethod::Default,
-			/* Resource Slot = */ 0,
-			/* Register Space = */ 0,
-			Graphite::ShaderVisibility_Pixel
-			),
-		Graphite::PipelineResourceDescription::ConstantBuffer(
-			"TestConstantBuffer",
-			Graphite::PipelineResourceBindingFrequency::Mutable,
-			Graphite::PipelineResourceBindingMethod::Default,
+			"InstanceDataConstantBuffer",
+			Graphite::PipelineResourceBindingFrequency::Dynamic,
+			Graphite::PipelineResourceBindingMethod::Inline,
 			/* Resource Slot = */ 1,
 			/* Register Space = */ 0,
-			Graphite::ShaderVisibility_All
-			),
+			Graphite::ShaderVisibility_Vertex
+			)
 	};
 
 	Graphite::GraphicsPipelineDescription psoDesc
 	{
-		.InputVertexLayout = &Graphite::Vertex_Position::VertexInputLayout,
+		.InputVertexLayout = &Graphite::Vertex_PositionNormal::VertexInputLayout,
 		.VertexShader = {
 			.FilePath = L"../graphite/assets/shaders/shaders.hlsl",
 			.EntryPoint = L"VSMain"
@@ -71,48 +109,38 @@ void GameLayer::OnAttach()
 	Graphite::GraphicsContext* graphicsContext = Graphite::Application::Get()->GetGraphicsContext();
 	m_GraphicsPipeline = graphicsContext->CreateGraphicsPipeline(psoDesc);
 
-	m_OffsetConstantBuffer = Graphite::ConstantBuffer<TriangleOffsetConstantBufferType>{ {
-		{{ 0.5f,  0.5f}},
-		{{-0.5f, -0.5f}}
-	} };
+	m_PassCB = Graphite::ConstantBuffer<PassConstantBufferType>(1);
+	// Create view and projection matrices
 
-	m_ColorConstantBuffer = Graphite::ConstantBuffer<TriangleColorConstantBufferType>{
-		{ { 0.0f, 0.0f, 1.0f, 1.0f } }
-	};
+	auto window = Graphite::Application::Get()->GetWindow();
+	float width = static_cast<float>(window->GetWidth());
+	float height = static_cast<float>(window->GetHeight());
+
+	auto viewMatrix = glm::inverse(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)));
+	auto projMatrix = glm::perspectiveFovLH_ZO(glm::pi<float>() * 0.25f, width, height, 0.1f, 100.0f);
+	auto viewProj = projMatrix * viewMatrix;
+
+	m_PassCB.SetElement(0, PassConstantBufferType{ viewProj });
+
+	m_InstanceDataCB = Graphite::ConstantBuffer<InstanceDataConstantBufferType>(1);
+	// Create object transforms
+	m_InstanceDataCB.SetElement(0, { glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f) )});
 
 	m_DynamicResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
 
 	m_StaticResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Static);
-	m_StaticResourceList.SetConstantBufferView("TriangleColorConstantBuffer", *m_ColorConstantBuffer.GetBuffer(), 0);
+	m_StaticResourceList.SetConstantBufferView("PassConstantBuffer", *m_PassCB.GetBuffer(), 0);
 }
 
 
 void GameLayer::OnUpdate()
 {
+	float dt = Graphite::Application::Get()->GetDeltaTime();
+	m_Yaw += glm::radians(15.0f) * dt;
+
+	m_InstanceDataCB.SetElement(0, { glm::rotate(glm::mat4(1.0f), m_Yaw, glm::vec3(0.0f, 1.0f, 0.0f)) });
+
 	ImGui::Begin("Debug");
-
-	{
-		auto offset = m_OffsetConstantBuffer.GetElement(0);
-		if (ImGui::DragFloat2("Offset 1", &offset.Offset.x, 0.01f))
-		{
-			m_OffsetConstantBuffer.SetElement(0, offset);
-		}
-	}
-	{
-		auto offset = m_OffsetConstantBuffer.GetElement(1);
-		if (ImGui::DragFloat2("Offset 2", &offset.Offset.x, 0.01f))
-		{
-			m_OffsetConstantBuffer.SetElement(1, offset);
-
-		}
-	}
-	{
-		auto color = m_ColorConstantBuffer.GetElement(0);
-		if (ImGui::ColorEdit3("Color", &color.Color.r))
-		{
-			m_ColorConstantBuffer.SetElement(0, color);
-		}
-	}
 
 	ImGui::End();
 }
@@ -124,8 +152,8 @@ void GameLayer::OnRender()
 	Graphite::Window* window = Graphite::Application::Get()->GetWindow();
 
 	// Update the data in the constant buffers
-	m_OffsetConstantBuffer.CommitDirtyElements(graphicsContext);
-	m_ColorConstantBuffer.CommitDirtyElements(graphicsContext);
+	m_PassCB.CommitDirtyElements(graphicsContext);
+	m_InstanceDataCB.CommitDirtyElements(graphicsContext);
 
 	// Ensure resource list is up to date
 	m_StaticResourceList.CommitResources();
@@ -163,14 +191,9 @@ void GameLayer::OnRender()
 		recordingContext->SetIndexBuffer(ibv);
 
 		// Using dynamic resource lists like this is only possible with inline pipeline resources
+		// TODO: Implement transient resource lists that can linearly allocate descriptor tables on the fly
 		{
-			m_DynamicResourceList.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer.GetBuffer(), 0);
-			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList);
-
-			recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
-		}
-		{
-			m_DynamicResourceList.SetConstantBufferView("TriangleOffsetConstantBuffer", *m_OffsetConstantBuffer.GetBuffer(), 1);
+			m_DynamicResourceList.SetConstantBufferView("InstanceDataConstantBuffer", *m_InstanceDataCB.GetBuffer(), 0);
 			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList);
 
 			recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
