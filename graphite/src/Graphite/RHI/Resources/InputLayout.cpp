@@ -1,8 +1,6 @@
 #include "graphite_pch.h"
 #include "InputLayout.h"
 
-#include "Graphite/Core/Log.h"
-
 
 namespace Graphite
 {
@@ -17,4 +15,11 @@ namespace Graphite
 			m_VertexStride += element.NumChannels * sizeof(float);
 		}
 	}
+
+	void InputLayout::AddInputElement(InputElement&& inputElement)
+	{
+		m_VertexStride += inputElement.NumChannels * sizeof(float);
+		m_InputElements.emplace_back(std::move(inputElement));
+	}
+
 }

@@ -69,7 +69,7 @@
 #include "Graphite/RHI/Resources/ResourceViews.h"
 
 #include "Graphite/RHI/Resources/InputLayout.h"
-#include "Graphite/RHI/Resources/Geometry.h"
+#include "Graphite/RHI/Resources/VertexTypes.h"
 
 #include "Graphite/RHI/Pipelines/GraphicsPipeline.h"
 #include "Graphite/RHI/Pipelines/PipelineResourceLayout.h"

@@ -182,6 +182,7 @@ void GameLayer::OnRender()
 		recordingContext->SetGraphicsPipelineState(*m_GraphicsPipeline);
 		recordingContext->SetGraphicsPipelineResources(m_StaticResourceList);
 
+		// The following could be encapsulated as geometry properties of a mesh:
 		recordingContext->SetPrimitiveTopology(Graphite::GraphiteTopology_TRIANGLELIST);
 
 		Graphite::VertexBufferView vbv = Graphite::VertexBufferView::Create(*m_VertexBuffer);

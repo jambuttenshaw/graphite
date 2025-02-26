@@ -1,5 +1,5 @@
 #include "graphite_pch.h"
-#include "Geometry.h"
+#include "VertexTypes.h"
 
 
 namespace Graphite

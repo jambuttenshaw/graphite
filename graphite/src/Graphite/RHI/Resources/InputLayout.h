@@ -21,7 +21,10 @@ namespace Graphite
 	{
 	public:
 		// Constructs an input layout from a list of elements
+		GRAPHITE_API InputLayout() = default;
 		GRAPHITE_API InputLayout(std::initializer_list<InputElement> inputElements);
+
+		GRAPHITE_API void AddInputElement(InputElement&& inputElement);
 
 		GRAPHITE_API inline size_t GetElementCount() const { return m_InputElements.size(); }
 		GRAPHITE_API inline uint32_t GetVertexStride() const { return m_VertexStride; }

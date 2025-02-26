@@ -10,16 +10,7 @@ namespace Graphite
 
 	// Vertex and index buffer views are simpler because they are CPU-only resources and do not have underlying descriptors
 
-	struct VertexBufferView
-	{
-		GPUVirtualAddress BufferAddress;
-		uint64_t BufferSize;
-		uint64_t VertexStride;
-
-		GRAPHITE_API static VertexBufferView Create(const UploadBuffer& resource);
-		GRAPHITE_API static VertexBufferView Create(const StructuredBuffer& resource);
-		GRAPHITE_API static VertexBufferView Create(const GPUResource& resource, const InputLayout& vertexLayout);
-	};
+	
 
 
 	struct IndexBufferView
@@ -33,7 +24,7 @@ namespace Graphite
 		GRAPHITE_API static IndexBufferView Create(const GPUResource& resource);
 	};
 
-
+	/*
 	struct ConstantBufferView
 	{
 		GPUResource* Resource;
@@ -66,5 +57,6 @@ namespace Graphite
 	{
 		
 	};
+	*/
 
 }
