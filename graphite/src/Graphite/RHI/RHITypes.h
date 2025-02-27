@@ -252,4 +252,6 @@ namespace Graphite
         ShaderVisibility_All = 0x7F
     };
 
+    uint32_t GraphiteFormatSizeInBytes(GraphiteFormat format);
+
 }

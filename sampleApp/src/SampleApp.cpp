@@ -32,9 +32,9 @@ public:
 
 
 // Use D3D12 platform
-Graphite::D3D12::D3D12Platform platform;
+static Graphite::D3D12::D3D12Platform s_Platform;
 
 std::unique_ptr<Graphite::Application> Graphite::CreateApplication()
 {
-	return std::make_unique<SampleApplication>(platform);
+	return std::make_unique<SampleApplication>(s_Platform);
 }

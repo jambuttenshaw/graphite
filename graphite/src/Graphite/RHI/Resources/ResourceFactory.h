@@ -7,6 +7,9 @@ namespace Graphite
 {
 	class GraphicsContext;
 
+	class VertexBuffer;
+	class InputLayout;
+
 
 	class ResourceFactory
 	{
@@ -32,6 +35,8 @@ namespace Graphite
 		GRAPHITE_API virtual std::unique_ptr<ByteAddressBuffer> CreateByteAddressBuffer(uint64_t width, bool readOnly) const = 0;
 		GRAPHITE_API virtual std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(uint32_t elementCount, uint32_t elementSize, bool readOnly) const = 0;
 		GRAPHITE_API virtual std::unique_ptr<ReadbackBuffer> CreateReadbackBuffer(uint64_t width) const = 0;
+
+		GRAPHITE_API virtual std::unique_ptr<VertexBuffer> CreateVertexBuffer(uint32_t vertexCount, const InputLayout& inputLayout) const = 0;
 
 		// Templated variations to automatically determine sizes
 		template <typename T>

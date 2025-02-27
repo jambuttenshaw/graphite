@@ -23,31 +23,13 @@ namespace Graphite
 	}
 
 
-	VertexBufferView VertexBufferView::Create(const UploadBuffer& resource)
-	{
-		return VertexBufferView{
-			.BufferAddress = resource.GetResourceAddress(),
-			.BufferSize = resource.GetElementCount() * resource.GetElementStride(),
-			.VertexStride = resource.GetElementStride()
-		};
-	}
-
-	VertexBufferView VertexBufferView::Create(const StructuredBuffer& resource)
-	{
-		return VertexBufferView{
-			.BufferAddress = resource.GetResourceAddress(),
-			.BufferSize = resource.GetElementCount() * resource.GetElementSize(),
-			.VertexStride = resource.GetElementSize()
-		};
-	}
-
 	VertexBufferView VertexBufferView::Create(const GPUResource& resource, const InputLayout& vertexLayout)
 	{
 		GRAPHITE_ASSERT(false, "Not implemented");
 		return VertexBufferView{
 			.BufferAddress = resource.GetResourceAddress(),
 			.BufferSize = 0, //TODO: Need a way of passing through buffer size
-			.VertexStride = vertexLayout.GetVertexStride()
+			.VertexStride = vertexLayout.GetLayoutSizeInBytes()
 		};
 	}
 

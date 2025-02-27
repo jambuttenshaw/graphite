@@ -16,6 +16,9 @@ namespace Graphite
 		StructuredBuffer,
 		ReadbackBuffer,
 
+		// Vertex buffer is handled differently
+		VertexBuffer,
+
 		// Textures
 		Texture1D,
 		Texture2D,

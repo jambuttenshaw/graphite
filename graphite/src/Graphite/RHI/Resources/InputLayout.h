@@ -1,33 +1,54 @@
 #pragma once
 
 #include "Graphite/Core/Core.h"
+#include "RHI/RHITypes.h"
 
 
 namespace Graphite
 {
-	// Input layouts
-	struct InputElement
-	{
-		// Semantics
-		std::string SemanticName;
-		uint32_t SemanticIndex;
 
-		// Data format
-		uint32_t NumChannels;
+	enum class VertexAttribute : int8_t
+	{
+		Invalid = -1,
+
+		Position,
+		Normal,
+		UV0,
+		UV1,
+		Color,
+		Tangent,
+
+		Count
 	};
 
 
 	class InputLayout
 	{
 	public:
-		// Constructs an input layout from a list of elements
-		GRAPHITE_API InputLayout() = default;
-		GRAPHITE_API InputLayout(std::initializer_list<InputElement> inputElements);
+		using InputElementDesc = std::pair<VertexAttribute, GraphiteFormat>;
+		struct InputElement
+		{
+			VertexAttribute Attribute;
+			GraphiteFormat Format;
+			uint32_t SizeInBytes;
+			uint32_t OffsetInBytes;
+		};
 
-		GRAPHITE_API void AddInputElement(InputElement&& inputElement);
+		// Constructs an input layout from a list of elements
+		GRAPHITE_API InputLayout(std::initializer_list<InputElementDesc> inputElements, bool interleaved = false);
 
 		GRAPHITE_API inline size_t GetElementCount() const { return m_InputElements.size(); }
-		GRAPHITE_API inline uint32_t GetVertexStride() const { return m_VertexStride; }
+		// This would be the size of a single vertex in the layout
+		GRAPHITE_API inline uint32_t GetLayoutSizeInBytes() const { return m_LayoutSizeInBytes; }
+
+		GRAPHITE_API bool IsInterleaved() const { return m_Interleaved; }
+
+		GRAPHITE_API const InputElement& GetInputElement(uint32_t index) const { return m_InputElements.at(index); }
+
+		GRAPHITE_API bool HasAttribute(VertexAttribute attribute) const;
+		GRAPHITE_API size_t GetAttributeIndex(VertexAttribute attribute) const;
+		GRAPHITE_API GraphiteFormat GetAttributeFormat(VertexAttribute attribute) const;
+
 
 		// Iterators to use InputLayout as a container of input elements
 		GRAPHITE_API std::vector<InputElement>::iterator begin() { return m_InputElements.begin(); }
@@ -37,10 +58,15 @@ namespace Graphite
 		GRAPHITE_API std::vector<InputElement>::const_iterator end() const { return m_InputElements.end(); }
 
 	private:
+		std::vector<InputElement>::iterator FindAttribute(VertexAttribute attribute);
+		std::vector<InputElement>::const_iterator FindAttribute(VertexAttribute attribute) const;
+
+	private:
 		std::vector<InputElement> m_InputElements;
 
 		// Size in bytes between the start of each vertex
-		uint32_t m_VertexStride;
+		uint32_t m_LayoutSizeInBytes;
+		bool m_Interleaved;
 	};
 
 }

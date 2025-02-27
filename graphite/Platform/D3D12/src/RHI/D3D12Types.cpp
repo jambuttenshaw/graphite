@@ -246,25 +246,6 @@ namespace Graphite::D3D12
     }
 
 
-
-    static DXGI_FORMAT NumChannelsToFormat(uint32_t numChannels)
-    {
-        switch (numChannels)
-        {
-        case 1:
-            return DXGI_FORMAT_R32_FLOAT;
-        case 2:
-            return DXGI_FORMAT_R32G32_FLOAT;
-        case 3:
-            return DXGI_FORMAT_R32G32B32_FLOAT;
-        case 4:
-            return DXGI_FORMAT_R32G32B32A32_FLOAT;
-        default:
-            GRAPHITE_LOG_ERROR("Invalid number of channels for input element: {}", numChannels);
-            return DXGI_FORMAT_UNKNOWN;
-        }
-    }
-
     void GraphiteInputLayoutToD3D12InputLayout(const InputLayout& inputLayout, std::vector<D3D12_INPUT_ELEMENT_DESC>& outLayout)
     {
         outLayout.clear();
@@ -278,7 +259,7 @@ namespace Graphite::D3D12
             D3D12_INPUT_ELEMENT_DESC desc = {
                 .SemanticName = element.SemanticName.c_str(),
                 .SemanticIndex = element.SemanticIndex,
-                .Format = NumChannelsToFormat(element.NumChannels),
+                .Format = GraphiteFormatToD3D12Format(element.Format),
                 .InputSlot = 0,
                 .AlignedByteOffset = layoutSizeInBytes,
                 // Unused
@@ -286,7 +267,7 @@ namespace Graphite::D3D12
                 .InstanceDataStepRate = 0
             };
             outLayout.push_back(desc);
-            layoutSizeInBytes += element.NumChannels * sizeof(uint32_t);
+            layoutSizeInBytes += GraphiteFormatSizeInBytes(element.Format);
         }
     }
 

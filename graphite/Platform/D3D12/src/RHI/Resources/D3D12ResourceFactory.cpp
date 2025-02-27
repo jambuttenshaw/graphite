@@ -9,7 +9,11 @@
 
 #include "RHI/D3D12GraphicsContext.h"
 #include "RHI/D3D12Exceptions.h"
+
 #include "D3D12Buffer.h"
+#include "D3D12VertexBuffer.h"
+
+#include "Graphite/RHI/Resources/InputLayout.h"
 
 
 namespace Graphite::D3D12
@@ -95,6 +99,16 @@ namespace Graphite::D3D12
 			D3D12_RESOURCE_FLAG_NONE);
 
 		auto buffer = std::unique_ptr<ReadbackBuffer>(new D3D12ReadbackBuffer(allocation));
+		return std::move(buffer);
+	}
+
+
+	std::unique_ptr<VertexBuffer> D3D12ResourceFactory::CreateVertexBuffer(uint32_t vertexCount, const InputLayout& inputLayout) const
+	{
+		const uint64_t width = static_cast<uint64_t>(vertexCount) * inputLayout.GetLayoutSizeInBytes();
+		auto allocation = AllocateBuffer(D3D12_HEAP_TYPE_UPLOAD, width, D3D12_RESOURCE_FLAG_NONE);
+
+		auto buffer = std::unique_ptr<VertexBuffer>(new D3D12VertexBuffer(allocation, vertexCount, inputLayout));
 		return std::move(buffer);
 	}
 

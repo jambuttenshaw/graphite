@@ -27,6 +27,8 @@ namespace Graphite::D3D12
 		virtual std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(uint32_t elementCount, uint32_t elementSize, bool readOnly) const override;
 		virtual std::unique_ptr<ReadbackBuffer> CreateReadbackBuffer(uint64_t width) const override;
 
+		virtual std::unique_ptr<VertexBuffer> CreateVertexBuffer(uint32_t vertexCount, const InputLayout& inputLayout) const override;
+
 	private:
 		D3D12MA::Allocation* AllocateBuffer(D3D12_HEAP_TYPE heap, uint64_t width, D3D12_RESOURCE_FLAGS flags) const;
 
