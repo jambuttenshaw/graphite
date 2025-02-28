@@ -13,3 +13,6 @@
 [submodule "graphite/vendor/imgui"]
 	path = graphite/vendor/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "graphite/vendor/assimp"]
+	path = graphite/vendor/assimp
+	url = https://github.com/assimp/assimp/

@@ -31,18 +31,18 @@ namespace Graphite
 		return FindAttribute(attribute) != end();
 	}
 
-	const InputLayout::InputElement& InputLayout::GetInputElement(VertexAttribute attribute) const
+	const InputElement& InputLayout::GetInputElement(VertexAttribute attribute) const
 	{
 		GRAPHITE_ASSERT(HasAttribute(attribute), "Input layout does not contain this attribute.");
 		return *FindAttribute(attribute);
 	}
 
-	InputLayout::InputElementIterator InputLayout::FindAttribute(VertexAttribute attribute)
+	InputElementIterator InputLayout::FindAttribute(VertexAttribute attribute)
 	{
 		return std::ranges::find_if(*this, [&](const InputElement& elem) { return elem.Attribute == attribute; });
 	}
 
-	InputLayout::InputElementConstIterator InputLayout::FindAttribute(VertexAttribute attribute) const
+	InputElementConstIterator InputLayout::FindAttribute(VertexAttribute attribute) const
 	{
 		return std::ranges::find_if(*this, [&](const InputElement& elem) { return elem.Attribute == attribute; });
 	}

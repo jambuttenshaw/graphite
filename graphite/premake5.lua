@@ -2,6 +2,7 @@
 group "Dependencies"
     include "vendor/spdlog.lua"
     include "vendor/imgui.lua"
+    include "vendor/assimp.lua"
 group ""
 
 group "Core"
@@ -20,9 +21,11 @@ group "Core"
             "src",
             "src/Graphite",
 
-            "vendor/spdlog/include",
+            "vendor/_config_headers/",
+            "vendor/spdlog/include/",
             "vendor/imgui/",
-            "vendor/glm/"
+            "vendor/glm/",
+            "vendor/assimp/include/"
         }
 
         links {

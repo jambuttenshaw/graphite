@@ -20,22 +20,22 @@ namespace Graphite
 		Count
 	};
 
+	using InputElementDesc = std::pair<VertexAttribute, GraphiteFormat>;
+	struct InputElement
+	{
+		VertexAttribute Attribute;
+		GraphiteFormat Format;
+		uint32_t SizeInBytes;
+		uint32_t OffsetInBytes;
+	};
+
+	using InputElementIterator = std::vector<InputElement>::iterator;
+	using InputElementConstIterator = std::vector<InputElement>::const_iterator;
+
 
 	class InputLayout
 	{
 	public:
-		using InputElementDesc = std::pair<VertexAttribute, GraphiteFormat>;
-		struct InputElement
-		{
-			VertexAttribute Attribute;
-			GraphiteFormat Format;
-			uint32_t SizeInBytes;
-			uint32_t OffsetInBytes;
-		};
-
-		using InputElementIterator = std::vector<InputLayout::InputElement>::iterator;
-		using InputElementConstIterator = std::vector<InputLayout::InputElement>::const_iterator;
-
 		// Constructs an input layout from a list of elements
 		GRAPHITE_API InputLayout(std::initializer_list<InputElementDesc> inputElements, bool interleaved = false);
 

@@ -37,7 +37,7 @@ namespace Graphite::D3D12
 	{
 		GRAPHITE_ASSERT(m_InputLayout->HasAttribute(attribute), "Vertex buffer does not contain attribute.");
 
-		const InputLayout::InputElement& inputElement = m_InputLayout->GetInputElement(attribute);
+		const InputElement& inputElement = m_InputLayout->GetInputElement(attribute);
 		GRAPHITE_ASSERT(elementCount <= m_VertexCount, "Vertex buffer overflow.");
 		GRAPHITE_ASSERT(inputElement.SizeInBytes == elementStride, "Attribute size mismatch.");
 
