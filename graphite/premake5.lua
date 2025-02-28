@@ -33,6 +33,10 @@ group "Core"
             "imgui"
         }
 
+        dependson {
+            "assimp"
+        }
+
         pchheader "graphite_pch.h"
         pchsource "src/Graphite/graphite_pch.cpp"
 
