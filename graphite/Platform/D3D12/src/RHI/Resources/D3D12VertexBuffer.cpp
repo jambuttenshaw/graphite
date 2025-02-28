@@ -35,7 +35,10 @@ namespace Graphite::D3D12
 
 	void D3D12VertexBuffer::CopyAttribute(VertexAttribute attribute, const void* data, uint32_t elementStride, size_t elementCount)
 	{
+		GRAPHITE_ASSERT(m_InputLayout->HasAttribute(attribute), "Vertex buffer does not contain attribute.");
+
 		const InputLayout::InputElement& inputElement = m_InputLayout->GetInputElement(attribute);
+		GRAPHITE_ASSERT(elementCount <= m_VertexCount, "Vertex buffer overflow.");
 		GRAPHITE_ASSERT(inputElement.SizeInBytes == elementStride, "Attribute size mismatch.");
 
 		if (m_InputLayout->IsInterleaved())

@@ -22,18 +22,6 @@ namespace Graphite
 		return GraphiteFormat_Unknown;
 	}
 
-	/*
-	VertexBufferView VertexBufferView::Create(const GPUResource& resource, const InputLayout& vertexLayout)
-	{
-		GRAPHITE_ASSERT(false, "Not implemented");
-		return VertexBufferView{
-			.BufferAddress = resource.GetResourceAddress(),
-			.BufferSize = 0, //TODO: Need a way of passing through buffer size
-			.VertexStride = vertexLayout.GetLayoutSizeInBytes()
-		};
-	}
-	*/
-
 	IndexBufferView IndexBufferView::Create(const UploadBuffer& resource)
 	{
 		return IndexBufferView{

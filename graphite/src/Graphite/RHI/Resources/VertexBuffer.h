@@ -34,13 +34,7 @@ namespace Graphite
 		template<typename T>
 		void CopyAttribute(VertexAttribute attribute, std::span<const T> data)
 		{
-			GRAPHITE_ASSERT(m_InputLayout->HasAttribute(attribute), "Vertex buffer does not contain attribute.");
-			GRAPHITE_ASSERT(data.size() <= m_VertexCount, "Vertex buffer overflow.");
-
-			const InputLayout::InputElement& element = m_InputLayout->GetInputElement(attribute);
-			GRAPHITE_ASSERT(sizeof(T) == element.SizeInBytes, "Element format mismatch.");
-
-			CopyAttribute(attribute, data.data(), element.SizeInBytes, data.size());
+			CopyAttribute(attribute, data.data(), sizeof(T), data.size());
 		}
 
 		GRAPHITE_API virtual void CopyAttribute(VertexAttribute attribute, const void* data, uint32_t elementStride, size_t elementCount) = 0;
