@@ -245,29 +245,46 @@ namespace Graphite::D3D12
         };
     }
 
+    const char* GraphiteVertexAttributeToD3D12Semantic(VertexAttribute attribute)
+    {
+        switch (attribute)
+        {
+            case VertexAttribute::Position: return "POSITION";
+            case VertexAttribute::Normal:   return "NORMAL";
+            case VertexAttribute::UV:       return "TEXCOORD";
+            case VertexAttribute::Color:    return "COLOR";
+            case VertexAttribute::Tangent:  return "TANGENT";
+        default:
+			break;
+        }
+
+        GRAPHITE_LOG_FATAL("Unknown vertex attribute.");
+        return nullptr;
+    }
 
     void GraphiteInputLayoutToD3D12InputLayout(const InputLayout& inputLayout, std::vector<D3D12_INPUT_ELEMENT_DESC>& outLayout)
     {
         outLayout.clear();
         outLayout.reserve(inputLayout.GetElementCount());
 
+        bool interleaved = inputLayout.IsInterleaved();
+        uint32_t inputSlot = 0;
+
         // Build a D3D12 layout description out of the input elements
-        uint32_t layoutSizeInBytes = 0;
         for (const auto& element : inputLayout)
         {
             // Build D3D12 element desc
             D3D12_INPUT_ELEMENT_DESC desc = {
-                .SemanticName = element.SemanticName.c_str(),
-                .SemanticIndex = element.SemanticIndex,
+                .SemanticName = GraphiteVertexAttributeToD3D12Semantic(element.Attribute),
+                .SemanticIndex = 0,
                 .Format = GraphiteFormatToD3D12Format(element.Format),
-                .InputSlot = 0,
-                .AlignedByteOffset = layoutSizeInBytes,
+                .InputSlot = interleaved ? 0 : inputSlot++,
+                .AlignedByteOffset = element.OffsetInBytes,
                 // Unused
                 .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
                 .InstanceDataStepRate = 0
             };
             outLayout.push_back(desc);
-            layoutSizeInBytes += GraphiteFormatSizeInBytes(element.Format);
         }
     }
 

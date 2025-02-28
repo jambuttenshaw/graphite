@@ -15,14 +15,14 @@ namespace Graphite::D3D12
 		DX_THROW_IF_FAIL(m_Resource->Map(0, nullptr, reinterpret_cast<void**>(&m_MappedData)));
 
 		CreateViews();
+
 		// Create native vertex buffer views
 		m_NativeViews.resize(m_BufferViews.size());
-		std::ranges::views::transform(m_BufferViews, )
-
-		for (auto& view : m_NativeViews)
+		std::ranges::transform(m_BufferViews, m_NativeViews.begin(), 
+		[](const VertexBufferView& view)
 		{
-			view = GraphiteVBVToD3D12VBV()
-		}
+			return GraphiteVBVToD3D12VBV(view);
+		});
 	}
 
 	D3D12VertexBuffer::~D3D12VertexBuffer()
@@ -33,6 +33,32 @@ namespace Graphite::D3D12
 		}
 	}
 
+	void D3D12VertexBuffer::CopyAttribute(VertexAttribute attribute, const void* data, uint32_t elementStride, size_t elementCount)
+	{
+		const InputLayout::InputElement& inputElement = m_InputLayout->GetInputElement(attribute);
+		GRAPHITE_ASSERT(inputElement.SizeInBytes == elementStride, "Attribute size mismatch.");
+
+		if (m_InputLayout->IsInterleaved())
+		{
+			GRAPHITE_LOG_WARN("Copying single attributes for is sub-optimal for interleaved vertex buffers.");
+			for (size_t i = 0; i < elementCount; i++)
+			{
+				memcpy(
+					m_MappedData + (i * m_InputLayout->GetLayoutSizeInBytes()) + inputElement.OffsetInBytes,
+					static_cast<const uint8_t*>(data) + (i * elementStride),
+					elementStride
+				);
+			}
+		}
+		else
+		{
+			memcpy(
+				m_MappedData + static_cast<uint64_t>(m_VertexCount * inputElement.OffsetInBytes),
+				data,
+				elementCount * elementStride
+			);
+		}
+	}
 
 
 }

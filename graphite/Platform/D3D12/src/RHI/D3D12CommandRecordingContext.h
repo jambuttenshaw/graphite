@@ -8,6 +8,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace Graphite::D3D12
 {
+
 	class D3D12CommandRecordingContext : public CommandRecordingContext
 	{
 		// Recording contexts should only be created by the graphics context4
@@ -36,7 +37,7 @@ namespace Graphite::D3D12
 		virtual void SetViewports(std::span<const Viewport> viewports) const override;
 		virtual void SetScissorRects(std::span<const Rectangle> rects) const override;
 
-		virtual void SetVertexBuffers(uint32_t startSlot, std::span<const VertexBufferView> vertexBuffers) const override;
+		virtual void SetVertexBuffers(uint32_t startSlot, const VertexBuffer& vertexBuffers) const override;
 		virtual void SetIndexBuffer(const IndexBufferView& indexBuffer) const override;
 
 		virtual void DrawInstanced(uint32_t vertexCountPerInstance, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance) const override;

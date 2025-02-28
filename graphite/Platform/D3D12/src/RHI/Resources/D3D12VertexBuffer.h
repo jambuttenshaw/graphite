@@ -23,6 +23,9 @@ namespace Graphite::D3D12
 
 		inline std::span<const D3D12_VERTEX_BUFFER_VIEW> GetNativeViews() const { return m_NativeViews; }
 
+		// Populating buffer
+		virtual void CopyAttribute(VertexAttribute attribute, const void* data, uint32_t elementStride, size_t elementCount) override;
+
 	private:
 		// Mapped pointer to write to buffer
 		uint8_t* m_MappedData;

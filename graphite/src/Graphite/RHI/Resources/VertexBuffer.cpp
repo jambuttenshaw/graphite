@@ -22,7 +22,12 @@ namespace Graphite
 	{
 		if (m_InputLayout->IsInterleaved())
 		{
-
+			// Create one view for the entire buffer
+			m_BufferViews.emplace_back(
+				GetResourceAddress(),
+				m_InputLayout->GetLayoutSizeInBytes() * m_VertexCount,
+				m_InputLayout->GetLayoutSizeInBytes()
+			);
 		}
 		else
 		{

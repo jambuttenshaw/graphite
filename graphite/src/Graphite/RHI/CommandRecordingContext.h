@@ -11,7 +11,7 @@ namespace Graphite
 
 	class ResourceViewList;
 
-	struct VertexBufferView;
+	class VertexBuffer;
 	struct IndexBufferView;
 
 
@@ -43,7 +43,7 @@ namespace Graphite
 		GRAPHITE_API virtual void SetViewports(std::span<const Viewport> viewports) const = 0;
 		GRAPHITE_API virtual void SetScissorRects(std::span<const Rectangle> rects) const = 0;
 
-		GRAPHITE_API virtual void SetVertexBuffers(uint32_t startSlot, std::span<const VertexBufferView> vertexBuffers) const = 0;
+		GRAPHITE_API virtual void SetVertexBuffers(uint32_t startSlot, const VertexBuffer& vertexBuffer) const = 0;
 		GRAPHITE_API virtual void SetIndexBuffer(const IndexBufferView& indexBuffer) const = 0;
 
 		GRAPHITE_API virtual void DrawInstanced(uint32_t vertexCountPerInstance, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance) const = 0;

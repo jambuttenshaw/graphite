@@ -1,11 +1,11 @@
 #pragma once
 
 #include "GPUResource.h"
-#include "Core/Core.h"
+#include "Graphite/Core/Core.h"
 
-#include "RHI/RHITypes.h"
 #include "InputLayout.h"
 #include "ResourceViews.h"
+#include "Graphite/Core/Assert.h"
 
 
 namespace Graphite
@@ -18,19 +18,35 @@ namespace Graphite
 
 	class VertexBuffer : public GPUResource
 	{
+	protected:
 		// Allocates a vertex buffer with the specified attributes
 		friend class ResourceFactory;
-		VertexBuffer(uint32_t vertexCount, const InputLayout& layout);
+		GRAPHITE_API VertexBuffer(uint32_t vertexCount, const InputLayout& layout);
 	public:
-		virtual ~VertexBuffer() = default;
+		GRAPHITE_API virtual ~VertexBuffer() = default;
 
-		DELETE_COPY(VertexBuffer)
-		DEFAULT_MOVE(VertexBuffer)
+		GRAPHITE_API_DELETE_COPY(VertexBuffer)
+		GRAPHITE_API_DEFAULT_MOVE(VertexBuffer)
 
-		virtual GPUResourceType GetResourceType() const override { return GPUResourceType::VertexBuffer; }
+		GRAPHITE_API virtual GPUResourceType GetResourceType() const override { return GPUResourceType::VertexBuffer; }
+
+		// Copy data interface
+		template<typename T>
+		void CopyAttribute(VertexAttribute attribute, std::span<const T> data)
+		{
+			GRAPHITE_ASSERT(m_InputLayout->HasAttribute(attribute), "Vertex buffer does not contain attribute.");
+			GRAPHITE_ASSERT(data.size() <= m_VertexCount, "Vertex buffer overflow.");
+
+			const InputLayout::InputElement& element = m_InputLayout->GetInputElement(attribute);
+			GRAPHITE_ASSERT(sizeof(T) == element.SizeInBytes, "Element format mismatch.");
+
+			CopyAttribute(attribute, data.data(), element.SizeInBytes, data.size());
+		}
+
+		GRAPHITE_API virtual void CopyAttribute(VertexAttribute attribute, const void* data, uint32_t elementStride, size_t elementCount) = 0;
 
 	protected:
-		void CreateViews();
+		GRAPHITE_API void CreateViews();
 
 	protected:
 		uint32_t m_VertexCount;

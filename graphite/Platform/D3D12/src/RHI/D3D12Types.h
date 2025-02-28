@@ -31,7 +31,7 @@ namespace Graphite::D3D12
 
 
 	extern D3D12_VERTEX_BUFFER_VIEW GraphiteVBVToD3D12VBV(const VertexBufferView& vbv);
-	extern D3D12_INDEX_BUFFER_VIEW GraphiteIBVToD3D12IBV(const IndexBufferView& vbv);
+	extern D3D12_INDEX_BUFFER_VIEW GraphiteIBVToD3D12IBV(const IndexBufferView& ibv);
 
 	extern D3D12_DESCRIPTOR_RANGE_TYPE GraphiteResourceTypeToD3D12DescriptorRangeType(PipelineResourceType type);
 	extern D3D12_ROOT_PARAMETER_TYPE GraphiteResourceTypeToD3D12RootParameterType(PipelineResourceType type);

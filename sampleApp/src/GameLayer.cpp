@@ -2,40 +2,72 @@
 #include "GameLayer.h"
 
 #include "imgui.h"
+#include "RHI/Resources/VertexBuffer.h"
 
 
 // Geometry definition:
-static Graphite::Vertex_PositionNormal vertices[] = {
-	// Front
-	{ .Position= {-1.0f, 1.0f, -1.0f }, .Normal= {0.0f, 0.0f, -1.0f } },
-	{ .Position= {1.0f, 1.0f, -1.0f }, .Normal= {0.0f, 0.0f, -1.0f } },
-	{ .Position= {1.0f, -1.0f, -1.0f }, .Normal= {0.0f, 0.0f, -1.0f } },
-	{ .Position= {-1.0f, -1.0f, -1.0f }, .Normal= {0.0f, 0.0f, -1.0f } },
-	// Back
-	{ .Position= {1.0f, 1.0f, 1.0f }, .Normal= {0.0f, 0.0f, 1.0f } },
-	{ .Position= {-1.0f, 1.0f, 1.0f }, .Normal= {0.0f, 0.0f, 1.0f } },
-	{ .Position= {-1.0f, -1.0f, 1.0f }, .Normal= {0.0f, 0.0f, 1.0f } },
-	{ .Position= {1.0f, -1.0f, 1.0f }, .Normal= {0.0f, 0.0f, 1.0f } },
-	// Left
-	{ .Position= {-1.0f, 1.0f, 1.0f }, .Normal= {-1.0f, 0.0f, 0.0f } },
-	{ .Position= {-1.0f, 1.0f, -1.0f }, .Normal= {-1.0f, 0.0f, 0.0f } },
-	{ .Position= {-1.0f, -1.0f, -1.0f }, .Normal= {-1.0f, 0.0f, 0.0f } },
-	{ .Position= {-1.0f, -1.0f, 1.0f }, .Normal= {-1.0f, 0.0f, 0.0f } },
-	// Right
-	{ .Position= {1.0f, 1.0f, -1.0f }, .Normal= {1.0f, 0.0f, 0.0f } },
-	{ .Position= {1.0f, 1.0f, 1.0f }, .Normal= {1.0f, 0.0f, 0.0f } },
-	{ .Position= {1.0f, -1.0f, 1.0f }, .Normal= {1.0f, 0.0f, 0.0f } },
-	{ .Position= {1.0f, -1.0f, -1.0f }, .Normal= {1.0f, 0.0f, 0.0f } },
-	// Top
-	{ .Position= {-1.0f, 1.0f, 1.0f }, .Normal= {0.0f, 1.0f, 0.0f } },
-	{ .Position= {1.0f, 1.0f, 1.0f }, .Normal= {0.0f, 1.0f, 0.0f } },
-	{ .Position= {1.0f, 1.0f, -1.0f }, .Normal= {0.0f, 1.0f, 0.0f } },
-	{ .Position= {-1.0f, 1.0f, -1.0f }, .Normal= {0.0f, 1.0f, 0.0f } },
-	// Bottom
-	{ .Position= {-1.0f, -1.0f, -1.0f }, .Normal= {0.0f, -1.0f, 0.0f } },
-	{ .Position= {1.0f, -1.0f, -1.0f }, .Normal= {0.0f, -1.0f, 0.0f } },
-	{ .Position= {1.0f, -1.0f, 1.0f }, .Normal= {0.0f, -1.0f, 0.0f } },
-	{ .Position= {-1.0f, -1.0f, 1.0f }, .Normal= {0.0f, -1.0f, 0.0f } },
+static glm::vec3 positions[] = {
+	{-1.0f, 1.0f, -1.0f },
+	{1.0f, 1.0f, -1.0f },
+	{1.0f, -1.0f, -1.0f },
+	{-1.0f, -1.0f, -1.0f },
+	
+	{1.0f, 1.0f, 1.0f },
+	{-1.0f, 1.0f, 1.0f },
+	{-1.0f, -1.0f, 1.0f },
+	{1.0f, -1.0f, 1.0f },
+	
+	{-1.0f, 1.0f, 1.0f },
+	{-1.0f, 1.0f, -1.0f },
+	{-1.0f, -1.0f, -1.0f },
+	{-1.0f, -1.0f, 1.0f },
+	
+	{1.0f, 1.0f, -1.0f },
+	{1.0f, 1.0f, 1.0f },
+	{1.0f, -1.0f, 1.0f },
+	{1.0f, -1.0f, -1.0f },
+	
+	{-1.0f, 1.0f, 1.0f },
+	{1.0f, 1.0f, 1.0f },
+	{1.0f, 1.0f, -1.0f },
+	{-1.0f, 1.0f, -1.0f },
+	
+	{-1.0f, -1.0f, -1.0f },
+	{1.0f, -1.0f, -1.0f },
+	{1.0f, -1.0f, 1.0f },
+	{-1.0f, -1.0f, 1.0f }
+};
+
+static glm::vec3 normals[] = {
+	{0.0f, 0.0f, -1.0f },
+	{0.0f, 0.0f, -1.0f },
+	{0.0f, 0.0f, -1.0f },
+	{0.0f, 0.0f, -1.0f },
+	
+	{0.0f, 0.0f, 1.0f },
+	{0.0f, 0.0f, 1.0f },
+	{0.0f, 0.0f, 1.0f },
+	{0.0f, 0.0f, 1.0f },
+	
+	{-1.0f, 0.0f, 0.0f },
+	{-1.0f, 0.0f, 0.0f },
+	{-1.0f, 0.0f, 0.0f },
+	{-1.0f, 0.0f, 0.0f },
+	
+	{1.0f, 0.0f, 0.0f },
+	{1.0f, 0.0f, 0.0f },
+	{1.0f, 0.0f, 0.0f },
+	{1.0f, 0.0f, 0.0f },
+	
+	{0.0f, 1.0f, 0.0f },
+	{0.0f, 1.0f, 0.0f },
+	{0.0f, 1.0f, 0.0f },
+	{0.0f, 1.0f, 0.0f },
+	
+	{0.0f, -1.0f, 0.0f },
+	{0.0f, -1.0f, 0.0f },
+	{0.0f, -1.0f, 0.0f },
+	{0.0f, -1.0f, 0.0f },
 };
 
 static uint16_t indices[] = {
@@ -63,10 +95,15 @@ static uint16_t indices[] = {
 void GameLayer::OnAttach()
 {
 	// Create vertex and index buffer
-	m_VertexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<Graphite::Vertex_PositionNormal>(std::size(vertices), 1, 0);
-	m_IndexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<uint16_t>(std::size(indices), 1, 0);
+	Graphite::InputLayout VertexBufferLayout{
+		{ Graphite::VertexAttribute::Position, Graphite::GraphiteFormat_R32G32B32_FLOAT },
+		{ Graphite::VertexAttribute::Normal, Graphite::GraphiteFormat_R32G32B32_FLOAT }
+	};
+	m_VertexBuffer = Graphite::ResourceFactory::Get().CreateVertexBuffer(std::size(positions), VertexBufferLayout);
+	m_VertexBuffer->CopyAttribute(Graphite::VertexAttribute::Position, std::span<const glm::vec3>(positions));
+	m_VertexBuffer->CopyAttribute(Graphite::VertexAttribute::Normal, std::span<const glm::vec3>(normals));
 
-	m_VertexBuffer->CopyElements(0, std::size(vertices), 0, vertices, sizeof(vertices));
+	m_IndexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<uint16_t>(std::size(indices), 1, 0);
 	m_IndexBuffer->CopyElements(0, std::size(indices), 0, indices, sizeof(indices));
 
 	// Create graphics pipeline
@@ -94,7 +131,7 @@ void GameLayer::OnAttach()
 
 	Graphite::GraphicsPipelineDescription psoDesc
 	{
-		.InputVertexLayout = &Graphite::Vertex_PositionNormal::VertexInputLayout,
+		.InputVertexLayout = &VertexBufferLayout,
 		.VertexShader = {
 			.FilePath = L"../graphite/assets/shaders/shaders.hlsl",
 			.EntryPoint = L"VSMain"
@@ -185,10 +222,9 @@ void GameLayer::OnRender()
 		// The following could be encapsulated as geometry properties of a mesh:
 		recordingContext->SetPrimitiveTopology(Graphite::GraphiteTopology_TRIANGLELIST);
 
-		Graphite::VertexBufferView vbv = Graphite::VertexBufferView::Create(*m_VertexBuffer);
-		Graphite::IndexBufferView ibv = Graphite::IndexBufferView::Create(*m_IndexBuffer);
+		recordingContext->SetVertexBuffers(0, *m_VertexBuffer);
 
-		recordingContext->SetVertexBuffers(0, { &vbv, 1 });
+		Graphite::IndexBufferView ibv = Graphite::IndexBufferView::Create(*m_IndexBuffer);
 		recordingContext->SetIndexBuffer(ibv);
 
 		// Using dynamic resource lists like this is only possible with inline pipeline resources

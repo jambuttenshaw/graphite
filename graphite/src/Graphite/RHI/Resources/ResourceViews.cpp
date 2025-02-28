@@ -22,7 +22,7 @@ namespace Graphite
 		return GraphiteFormat_Unknown;
 	}
 
-
+	/*
 	VertexBufferView VertexBufferView::Create(const GPUResource& resource, const InputLayout& vertexLayout)
 	{
 		GRAPHITE_ASSERT(false, "Not implemented");
@@ -32,7 +32,7 @@ namespace Graphite
 			.VertexStride = vertexLayout.GetLayoutSizeInBytes()
 		};
 	}
-
+	*/
 
 	IndexBufferView IndexBufferView::Create(const UploadBuffer& resource)
 	{

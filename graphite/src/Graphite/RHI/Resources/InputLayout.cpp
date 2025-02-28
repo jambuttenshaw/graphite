@@ -7,17 +7,22 @@
 namespace Graphite
 {
 
-	InputLayout::InputLayout(std::initializer_list<InputElement> inputElements, bool interleaved)
+	InputLayout::InputLayout(std::initializer_list<InputElementDesc> inputElements, bool interleaved)
 		: m_Interleaved(interleaved)
 	{
-		m_InputElements = { inputElements };
-		m_ElementOffsets.reserve(m_InputElements.size());
-
 		m_LayoutSizeInBytes = 0;
-		for (const auto& format : inputElements | std::views::values)
+		m_InputElements.reserve(inputElements.size());
+
+		for (const auto& [attribute, format] : inputElements)
 		{
-			m_ElementOffsets.push_back(m_LayoutSizeInBytes);
-			m_LayoutSizeInBytes += GraphiteFormatSizeInBytes(format);
+			const uint32_t elementSize = GraphiteFormatSizeInBytes(format);
+			m_InputElements.emplace_back(
+				attribute,
+				format,
+				elementSize,
+				m_LayoutSizeInBytes
+			);
+			m_LayoutSizeInBytes += elementSize;
 		}
 	}
 
@@ -26,26 +31,20 @@ namespace Graphite
 		return FindAttribute(attribute) != end();
 	}
 
-	size_t InputLayout::GetAttributeIndex(VertexAttribute attribute) const
+	const InputLayout::InputElement& InputLayout::GetInputElement(VertexAttribute attribute) const
 	{
 		GRAPHITE_ASSERT(HasAttribute(attribute), "Input layout does not contain this attribute.");
-		return std::distance(begin(), FindAttribute(attribute));
+		return *FindAttribute(attribute);
 	}
 
-	GraphiteFormat InputLayout::GetAttributeFormat(VertexAttribute attribute) const
+	InputLayout::InputElementIterator InputLayout::FindAttribute(VertexAttribute attribute)
 	{
-		GRAPHITE_ASSERT(HasAttribute(attribute), "Input layout does not contain this attribute.");
-		return FindAttribute(attribute)->second;
+		return std::ranges::find_if(*this, [&](const InputElement& elem) { return elem.Attribute == attribute; });
 	}
 
-	InputLayout::InputElementContainer::iterator InputLayout::FindAttribute(VertexAttribute attribute)
+	InputLayout::InputElementConstIterator InputLayout::FindAttribute(VertexAttribute attribute) const
 	{
-		return std::ranges::find_if(*this, [&](const InputElement& elem) { return elem.first == attribute; });
-	}
-
-	InputLayout::InputElementContainer::const_iterator InputLayout::FindAttribute(VertexAttribute attribute) const
-	{
-		return std::ranges::find_if(*this, [&](const InputElement& elem) { return elem.first == attribute; });
+		return std::ranges::find_if(*this, [&](const InputElement& elem) { return elem.Attribute == attribute; });
 	}
 
 

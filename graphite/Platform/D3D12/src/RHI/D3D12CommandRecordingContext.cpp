@@ -9,6 +9,7 @@
 
 #include "Pipelines/D3D12GraphicsPipeline.h"
 #include "Resources/D3D12ResourceViews.h"
+#include "Resources/D3D12VertexBuffer.h"
 
 
 namespace Graphite::D3D12
@@ -148,17 +149,12 @@ namespace Graphite::D3D12
 		m_CommandList->RSSetScissorRects(static_cast<UINT>(rects.size()), reinterpret_cast<const D3D12_RECT*>(rects.data()));
 	}
 
-	void D3D12CommandRecordingContext::SetVertexBuffers(uint32_t startSlot, std::span<const VertexBufferView> vertexBuffers) const
+	void D3D12CommandRecordingContext::SetVertexBuffers(uint32_t startSlot, const VertexBuffer& vertexBuffer) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
 
-		std::vector<D3D12_VERTEX_BUFFER_VIEW> vbs(vertexBuffers.size());
-		for (size_t i = 0; i < vbs.size(); i++)
-		{
-			vbs.at(i) = GraphiteVBVToD3D12VBV(vertexBuffers[i]);
-		}
-
-		m_CommandList->IASetVertexBuffers(startSlot, static_cast<UINT>(vbs.size()), vbs.data());
+		auto bufferViews = dynamic_cast<const D3D12VertexBuffer&>(vertexBuffer).GetNativeViews();
+		m_CommandList->IASetVertexBuffers(startSlot, static_cast<UINT>(bufferViews.size()), bufferViews.data());
 	}
 
 	void D3D12CommandRecordingContext::SetIndexBuffer(const IndexBufferView& indexBuffer) const

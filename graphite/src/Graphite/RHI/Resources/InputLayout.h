@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Graphite/Core/Core.h"
-#include "RHI/RHITypes.h"
+#include "Graphite/RHI/RHITypes.h"
 
 
 namespace Graphite
@@ -13,8 +13,7 @@ namespace Graphite
 
 		Position,
 		Normal,
-		UV0,
-		UV1,
+		UV,
 		Color,
 		Tangent,
 
@@ -34,6 +33,9 @@ namespace Graphite
 			uint32_t OffsetInBytes;
 		};
 
+		using InputElementIterator = std::vector<InputLayout::InputElement>::iterator;
+		using InputElementConstIterator = std::vector<InputLayout::InputElement>::const_iterator;
+
 		// Constructs an input layout from a list of elements
 		GRAPHITE_API InputLayout(std::initializer_list<InputElementDesc> inputElements, bool interleaved = false);
 
@@ -43,23 +45,20 @@ namespace Graphite
 
 		GRAPHITE_API bool IsInterleaved() const { return m_Interleaved; }
 
-		GRAPHITE_API const InputElement& GetInputElement(uint32_t index) const { return m_InputElements.at(index); }
-
 		GRAPHITE_API bool HasAttribute(VertexAttribute attribute) const;
-		GRAPHITE_API size_t GetAttributeIndex(VertexAttribute attribute) const;
-		GRAPHITE_API GraphiteFormat GetAttributeFormat(VertexAttribute attribute) const;
-
+		GRAPHITE_API const InputElement& GetInputElement(uint32_t index) const { return m_InputElements.at(index); }
+		GRAPHITE_API const InputElement& GetInputElement(VertexAttribute attribute) const;
 
 		// Iterators to use InputLayout as a container of input elements
-		GRAPHITE_API std::vector<InputElement>::iterator begin() { return m_InputElements.begin(); }
-		GRAPHITE_API std::vector<InputElement>::iterator end() { return m_InputElements.end(); }
+		GRAPHITE_API InputElementIterator begin() { return m_InputElements.begin(); }
+		GRAPHITE_API InputElementIterator end() { return m_InputElements.end(); }
 
-		GRAPHITE_API std::vector<InputElement>::const_iterator begin() const { return m_InputElements.begin(); }
-		GRAPHITE_API std::vector<InputElement>::const_iterator end() const { return m_InputElements.end(); }
+		GRAPHITE_API InputElementConstIterator begin() const { return m_InputElements.begin(); }
+		GRAPHITE_API InputElementConstIterator end() const { return m_InputElements.end(); }
 
 	private:
-		std::vector<InputElement>::iterator FindAttribute(VertexAttribute attribute);
-		std::vector<InputElement>::const_iterator FindAttribute(VertexAttribute attribute) const;
+		InputElementIterator FindAttribute(VertexAttribute attribute);
+		InputElementConstIterator FindAttribute(VertexAttribute attribute) const;
 
 	private:
 		std::vector<InputElement> m_InputElements;

@@ -20,7 +20,7 @@ public:
 	virtual void OnRender() override;
 
 protected:
-	std::unique_ptr<Graphite::UploadBuffer> m_VertexBuffer;
+	std::unique_ptr<Graphite::VertexBuffer> m_VertexBuffer;
 	std::unique_ptr<Graphite::UploadBuffer> m_IndexBuffer;
 
 	std::unique_ptr<Graphite::GraphicsPipeline> m_GraphicsPipeline;
