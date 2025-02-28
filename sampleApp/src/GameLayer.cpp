@@ -4,7 +4,6 @@
 #include "imgui.h"
 #include "RHI/Resources/VertexBuffer.h"
 
-
 // Geometry definition:
 static glm::vec3 positions[] = {
 	{-1.0f, 1.0f, -1.0f },

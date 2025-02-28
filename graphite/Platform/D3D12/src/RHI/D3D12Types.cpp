@@ -279,7 +279,7 @@ namespace Graphite::D3D12
                 .SemanticIndex = 0,
                 .Format = GraphiteFormatToD3D12Format(element.Format),
                 .InputSlot = interleaved ? 0 : inputSlot++,
-                .AlignedByteOffset = element.OffsetInBytes,
+                .AlignedByteOffset = interleaved ? element.OffsetInBytes : 0,
                 // Unused
                 .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
                 .InstanceDataStepRate = 0
