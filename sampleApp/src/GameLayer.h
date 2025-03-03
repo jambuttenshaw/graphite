@@ -31,5 +31,5 @@ protected:
 	Graphite::ConstantBuffer<PassConstantBufferType> m_PassCB;
 	Graphite::ConstantBuffer<InstanceDataConstantBufferType> m_InstanceDataCB;
 
-	float m_Yaw = 0.0f;
+	Graphite::Transform m_CubeTransform;
 };

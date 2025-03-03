@@ -77,6 +77,9 @@
 // ImGui
 #include "Graphite/ImGui/ImGuiInterface.h"
 
+// Scene and object manipulation
+#include "Graphite/SCene/Transform.h"
+
 
 /////// Entry Point ///////
 #include "Graphite/Core/EntryPoint.h"

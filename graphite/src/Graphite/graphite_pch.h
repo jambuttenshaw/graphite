@@ -50,3 +50,4 @@
 // Maths library
 #include <glm/glm.hpp>
 // Math library extensions
+#include <glm/gtc/constants.hpp>

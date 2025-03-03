@@ -160,7 +160,7 @@ void GameLayer::OnAttach()
 
 	m_InstanceDataCB = Graphite::ConstantBuffer<InstanceDataConstantBufferType>(1);
 	// Create object transforms
-	m_InstanceDataCB.SetElement(0, { glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f) )});
+	m_InstanceDataCB.SetElement(0, { m_CubeTransform.GetLocalToWorld() });
 
 	m_DynamicResourceList = Graphite::ResourceViewList::Create(*m_GraphicsPipeline, Graphite::PipelineResourceBindingFrequency::Dynamic);
 
@@ -172,11 +172,16 @@ void GameLayer::OnAttach()
 void GameLayer::OnUpdate()
 {
 	float dt = Graphite::Application::Get()->GetDeltaTime();
-	m_Yaw += glm::radians(15.0f) * dt;
 
-	m_InstanceDataCB.SetElement(0, { glm::rotate(glm::mat4(1.0f), m_Yaw, glm::vec3(0.0f, 1.0f, 0.0f)) });
+	m_InstanceDataCB.SetElement(0, { m_CubeTransform.GetLocalToWorld() });
 
 	ImGui::Begin("Debug");
+
+	ImGui::DragFloat3("Translation", &m_CubeTransform.Translation.x, 0.01f);
+	ImGui::SliderAngle("Pitch", &m_CubeTransform.Rotation.x);
+	ImGui::SliderAngle("Yaw", &m_CubeTransform.Rotation.y);
+	ImGui::SliderAngle("Roll", &m_CubeTransform.Rotation.z);
+	ImGui::DragFloat3("Scale", &m_CubeTransform.Scale.x, 0.01f);
 
 	ImGui::End();
 }

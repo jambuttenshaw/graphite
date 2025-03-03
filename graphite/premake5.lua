@@ -40,7 +40,10 @@ group "Core"
         pchheader "graphite_pch.h"
         pchsource "src/Graphite/graphite_pch.cpp"
 
-        defines { "GRAPHITE_BUILD" }
+        defines { 
+            "GRAPHITE_BUILD",
+            "GLM_ENABLE_EXPERIMENTAL"
+        }
 
         buildoptions { "/utf-8" }
 

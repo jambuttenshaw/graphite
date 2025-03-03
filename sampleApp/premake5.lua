@@ -32,7 +32,10 @@ project "sampleApp"
 
     buildoptions { "/utf-8" }
 
-    defines { "SPDLOG_COMPILED_LIBRARY" }
+    defines { 
+        "SPDLOG_COMPILED_LIBRARY",
+        "GLM_ENABLE_EXPERIMENTAL"
+    }
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
     objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
