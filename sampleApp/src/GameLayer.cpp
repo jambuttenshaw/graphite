@@ -93,6 +93,9 @@ static uint16_t indices[] = {
 
 void GameLayer::OnAttach()
 {
+	// Load model
+	std::unique_ptr<Graphite::Mesh> mesh = Graphite::ModelLoader::LoadModel("assets/teapot.obj");
+
 	// Create vertex and index buffer
 	Graphite::InputLayout VertexBufferLayout{
 		{ Graphite::VertexAttribute::Position, Graphite::GraphiteFormat_R32G32B32_FLOAT },

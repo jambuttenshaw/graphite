@@ -78,8 +78,11 @@
 #include "Graphite/ImGui/ImGuiInterface.h"
 
 // Scene and object manipulation
-#include "Graphite/SCene/Transform.h"
+#include "Graphite/Scene/Transform.h"
+#include "Graphite/Scene/Mesh.h"
 
+// Asset management
+#include "Graphite/Scene/ModelLoader.h"
 
 /////// Entry Point ///////
 #include "Graphite/Core/EntryPoint.h"

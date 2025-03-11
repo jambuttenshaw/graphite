@@ -30,10 +30,7 @@ group "Core"
 
         links {
             "spdlog",
-            "imgui"
-        }
-
-        dependson {
+            "imgui",
             "assimp"
         }
 
@@ -42,7 +39,8 @@ group "Core"
 
         defines { 
             "GRAPHITE_BUILD",
-            "GLM_ENABLE_EXPERIMENTAL"
+            "GLM_ENABLE_EXPERIMENTAL",
+            "ASSIMP_DLL"
         }
 
         buildoptions { "/utf-8" }

@@ -80,6 +80,11 @@ project 'assimp'
 		-- 'assimp/code/glTF/**',
 		'assimp/code/Assbin/**' -- Very fast format to parse/write, useful for caching
 	}
+	-- General defines
+	defines {
+		'ASSIMP_BUILD_DLL_EXPORT'
+	}
+
 	-- Importers
 	defines {
 		'ASSIMP_BUILD_NO_3D_IMPORTER',
