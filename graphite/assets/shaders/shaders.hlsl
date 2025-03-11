@@ -17,14 +17,12 @@ ConstantBuffer<InstanceDataConstantBufferType> g_InstanceData : register(b1); //
 struct Vertex_Position
 {
 	float4 position : POSITION;
-	float3 normal : NORMAL;
 };
 
 
 struct VSToPS
 {
 	float4 position : SV_POSITION;
-    float3 normal : NORMAL;
 };
 
 
@@ -35,16 +33,13 @@ VSToPS VSMain(Vertex_Position input)
     output.position = mul(g_InstanceData.WorldMatrix, input.position);
     output.position = mul(g_PassCB.ViewProjectionMatrix, output.position);
 
-    //output.normal = mul((float3x3)g_InstanceData.WorldMatrix, input.normal);
-    output.normal = input.normal;
-
 	return output;
 }
 
 
 float4 PSMain(VSToPS input, uint primitiveID : SV_PrimitiveID) : SV_TARGET
 {
-    return float4(input.normal * 0.5f + 0.5f, 1.0f);
+    return 1.0f;
 }
 
 #endif

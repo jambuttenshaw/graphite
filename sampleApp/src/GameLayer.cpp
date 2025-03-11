@@ -94,9 +94,10 @@ static uint16_t indices[] = {
 void GameLayer::OnAttach()
 {
 	// Load model
-	std::unique_ptr<Graphite::Mesh> mesh = Graphite::ModelLoader::LoadModel("assets/teapot.obj");
+	m_Mesh = Graphite::ModelLoader::LoadModel("assets/teapot.obj");
 
 	// Create vertex and index buffer
+	/*
 	Graphite::InputLayout VertexBufferLayout{
 		{ Graphite::VertexAttribute::Position, Graphite::GraphiteFormat_R32G32B32_FLOAT },
 		{ Graphite::VertexAttribute::Normal, Graphite::GraphiteFormat_R32G32B32_FLOAT }
@@ -107,7 +108,7 @@ void GameLayer::OnAttach()
 
 	m_IndexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<uint16_t>(std::size(indices), 1, 0);
 	m_IndexBuffer->CopyElements(0, std::size(indices), 0, indices, sizeof(indices));
-
+	*/
 	// Create graphics pipeline
 
 	// Describe the resource layout of the pipeline
@@ -133,7 +134,7 @@ void GameLayer::OnAttach()
 
 	Graphite::GraphicsPipelineDescription psoDesc
 	{
-		.InputVertexLayout = &VertexBufferLayout,
+		.InputVertexLayout = &m_Mesh->GetInputLayout(),
 		.VertexShader = {
 			.FilePath = L"../graphite/assets/shaders/shaders.hlsl",
 			.EntryPoint = L"VSMain"
@@ -229,9 +230,9 @@ void GameLayer::OnRender()
 		// The following could be encapsulated as geometry properties of a mesh:
 		recordingContext->SetPrimitiveTopology(Graphite::GraphiteTopology_TRIANGLELIST);
 
-		recordingContext->SetVertexBuffers(0, *m_VertexBuffer);
+		recordingContext->SetVertexBuffers(0, *m_Mesh->GetVertexBuffer());
 
-		Graphite::IndexBufferView ibv = Graphite::IndexBufferView::Create(*m_IndexBuffer);
+		Graphite::IndexBufferView ibv = Graphite::IndexBufferView::Create(*m_Mesh->GetIndexBuffer());
 		recordingContext->SetIndexBuffer(ibv);
 
 		// Using dynamic resource lists like this is only possible with inline pipeline resources
@@ -240,7 +241,7 @@ void GameLayer::OnRender()
 			m_DynamicResourceList.SetConstantBufferView("InstanceDataConstantBuffer", *m_InstanceDataCB.GetBuffer(), 0);
 			recordingContext->SetGraphicsPipelineResources(m_DynamicResourceList);
 
-			recordingContext->DrawIndexedInstanced(m_IndexBuffer->GetElementCount(), 1, 0, 0, 0);
+			recordingContext->DrawIndexedInstanced(m_Mesh->GetIndexBuffer()->GetElementCount(), 1, 0, 0, 0);
 		}
 
 		graphicsContext->CloseRecordingContext(recordingContext);

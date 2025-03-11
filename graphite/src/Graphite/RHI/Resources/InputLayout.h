@@ -37,7 +37,13 @@ namespace Graphite
 	{
 	public:
 		// Constructs an input layout from a list of elements
-		GRAPHITE_API InputLayout(std::initializer_list<InputElementDesc> inputElements, bool interleaved = false);
+		GRAPHITE_API InputLayout(std::span<const InputElementDesc> inputElements, bool interleaved = false);
+		GRAPHITE_API InputLayout(std::initializer_list<InputElementDesc> inputElements, bool interleaved = false)
+			: InputLayout({inputElements.begin(), inputElements.end()}, interleaved)
+		{}
+
+		GRAPHITE_API_DEFAULT_COPY(InputLayout);
+		GRAPHITE_API_DEFAULT_MOVE(InputLayout);
 
 		GRAPHITE_API inline size_t GetElementCount() const { return m_InputElements.size(); }
 		// This would be the size of a single vertex in the layout

@@ -7,7 +7,7 @@
 namespace Graphite
 {
 
-	InputLayout::InputLayout(std::initializer_list<InputElementDesc> inputElements, bool interleaved)
+	InputLayout::InputLayout(std::span<const InputElementDesc> inputElements, bool interleaved)
 		: m_Interleaved(interleaved)
 	{
 		m_LayoutSizeInBytes = 0;

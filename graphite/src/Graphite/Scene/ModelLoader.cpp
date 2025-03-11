@@ -39,13 +39,44 @@ namespace Graphite
 		LogAssimpSceneInfo(scene, filepath);
 
 		if (!scene->HasMeshes())
+		{
+			GRAPHITE_LOG_WARN("Scene did not contain any meshes.");
 			return nullptr;
+		}
 
 		aiMesh* mesh = scene->mMeshes[0];
 
-		// Create model from file
-		auto newMesh = std::make_unique<Mesh>();
+		if (mesh->mNumFaces == 0)
+		{
+			GRAPHITE_LOG_WARN("Mesh did not have any faces.");
+			return nullptr;
+		}
 
+		aiFace face = mesh->mFaces[0];
+
+		// Create input layout
+		std::vector<InputElementDesc> inputElements;
+		if (mesh->HasPositions())
+		{
+			inputElements.emplace_back(VertexAttribute::Position, GraphiteFormat_R32G32B32_FLOAT);
+		}
+		if (mesh->HasNormals())
+		{
+			inputElements.emplace_back(VertexAttribute::Normal, GraphiteFormat_R32G32B32_FLOAT);
+			GRAPHITE_LOG_INFO("Model has normals");
+		}
+		else
+		{
+			GRAPHITE_LOG_WARN("Model is missing normals!");
+		}
+
+		// Create input layout
+		InputLayout inputLayout(inputElements);
+
+		// Create model from file
+		auto newMesh = std::make_unique<Mesh>(mesh->mNumVertices, face.mNumIndices, std::move(inputLayout));
+		newMesh->GetVertexBuffer()->CopyAttribute(VertexAttribute::Position, std::span<const aiVector3D>{ mesh->mVertices, mesh->mNumVertices });
+		newMesh->GetIndexBuffer()->CopyElements(0, face.mNumIndices, 0, face.mIndices, sizeof(unsigned int));
 		return std::move(newMesh);
 	}
 
