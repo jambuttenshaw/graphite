@@ -45,6 +45,7 @@ namespace Graphite
 		}
 
 		aiMesh* mesh = scene->mMeshes[0];
+		GRAPHITE_LOG_INFO("Num faces: {}", mesh->mNumFaces);
 
 		if (mesh->mNumFaces == 0)
 		{
@@ -52,7 +53,6 @@ namespace Graphite
 			return nullptr;
 		}
 
-		aiFace face = mesh->mFaces[0];
 
 		// Create input layout
 		std::vector<InputElementDesc> inputElements;
@@ -60,23 +60,24 @@ namespace Graphite
 		{
 			inputElements.emplace_back(VertexAttribute::Position, GraphiteFormat_R32G32B32_FLOAT);
 		}
-		if (mesh->HasNormals())
-		{
-			inputElements.emplace_back(VertexAttribute::Normal, GraphiteFormat_R32G32B32_FLOAT);
-			GRAPHITE_LOG_INFO("Model has normals");
-		}
-		else
-		{
-			GRAPHITE_LOG_WARN("Model is missing normals!");
-		}
 
 		// Create input layout
 		InputLayout inputLayout(inputElements);
 
 		// Create model from file
-		auto newMesh = std::make_unique<Mesh>(mesh->mNumVertices, face.mNumIndices, std::move(inputLayout));
+		auto newMesh = std::make_unique<Mesh>(mesh->mNumVertices, 3 * mesh->mNumFaces, std::move(inputLayout));
 		newMesh->GetVertexBuffer()->CopyAttribute(VertexAttribute::Position, std::span<const aiVector3D>{ mesh->mVertices, mesh->mNumVertices });
-		newMesh->GetIndexBuffer()->CopyElements(0, face.mNumIndices, 0, face.mIndices, sizeof(unsigned int));
+
+		uint32_t startElement = 0;
+		for (uint32_t faceIdx = 0; faceIdx < mesh->mNumFaces; faceIdx++)
+		{
+			aiFace face = mesh->mFaces[faceIdx];
+
+			GRAPHITE_ASSERT(face.mNumIndices == 3, "Only triangles are supported!");
+			newMesh->GetIndexBuffer()->CopyElements(startElement, face.mNumIndices, 0, face.mIndices, sizeof(unsigned int));
+			startElement += face.mNumIndices;
+		}
+
 		return std::move(newMesh);
 	}
 
