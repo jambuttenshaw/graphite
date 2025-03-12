@@ -414,3 +414,7 @@ bin-int/
 # Include DXC binaries
 !graphite/Platform/D3D12/vendor/dxc/lib/
 !graphite/Platform/D3D12/vendor/dxc/bin/
+
+# Don't exclude the other kind of obj...
+!graphite/assets/**.obj
+!sampleApp/assets/**.obj
