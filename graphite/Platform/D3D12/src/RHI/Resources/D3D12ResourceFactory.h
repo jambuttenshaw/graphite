@@ -29,6 +29,9 @@ namespace Graphite::D3D12
 
 		virtual std::unique_ptr<VertexBuffer> CreateVertexBuffer(uint32_t vertexCount, const InputLayout& inputLayout) const override;
 
+		// Textures
+		virtual std::unique_ptr<Texture2D> CreateTexture2D(const Texture2DDesc& desc) const override;
+
 	private:
 		D3D12MA::Allocation* AllocateBuffer(D3D12_HEAP_TYPE heap, uint64_t width, D3D12_RESOURCE_FLAGS flags) const;
 

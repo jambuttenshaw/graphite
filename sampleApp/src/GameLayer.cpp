@@ -93,22 +93,21 @@ static uint16_t indices[] = {
 
 void GameLayer::OnAttach()
 {
+	auto window = Graphite::Application::Get()->GetWindow();
+
+
 	// Load model
 	m_Mesh = Graphite::ModelLoader::LoadModel("assets/teapot.obj");
 
-	// Create vertex and index buffer
-	/*
-	Graphite::InputLayout VertexBufferLayout{
-		{ Graphite::VertexAttribute::Position, Graphite::GraphiteFormat_R32G32B32_FLOAT },
-		{ Graphite::VertexAttribute::Normal, Graphite::GraphiteFormat_R32G32B32_FLOAT }
+	// Create a texture to use as depth buffer
+	Graphite::Texture2DDesc depthBufferDesc{
+		.Width = window->GetWidth(),
+		.Height = window->GetHeight(),
+		.Format = Graphite::GraphiteFormat_D32_FLOAT,
+		.AccessFlags = Graphite::ResourceAccess_DepthStencil
 	};
-	m_VertexBuffer = Graphite::ResourceFactory::Get().CreateVertexBuffer(std::size(positions), VertexBufferLayout);
-	m_VertexBuffer->CopyAttribute(Graphite::VertexAttribute::Position, std::span<const glm::vec3>(positions));
-	m_VertexBuffer->CopyAttribute(Graphite::VertexAttribute::Normal, std::span<const glm::vec3>(normals));
+	m_DepthBuffer = Graphite::ResourceFactory::Get().CreateTexture2D(depthBufferDesc);
 
-	m_IndexBuffer = Graphite::ResourceFactory::Get().CreateUploadBuffer<uint16_t>(std::size(indices), 1, 0);
-	m_IndexBuffer->CopyElements(0, std::size(indices), 0, indices, sizeof(indices));
-	*/
 	// Create graphics pipeline
 
 	// Describe the resource layout of the pipeline
@@ -152,7 +151,6 @@ void GameLayer::OnAttach()
 	m_PassCB = Graphite::ConstantBuffer<PassConstantBufferType>(1);
 	// Create view and projection matrices
 
-	auto window = Graphite::Application::Get()->GetWindow();
 	float width = static_cast<float>(window->GetWidth());
 	float height = static_cast<float>(window->GetHeight());
 

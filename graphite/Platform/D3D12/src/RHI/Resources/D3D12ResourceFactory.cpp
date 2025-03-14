@@ -11,9 +11,11 @@
 #include "RHI/D3D12Exceptions.h"
 
 #include "D3D12Buffer.h"
+#include "D3D12Texture.h"
 #include "D3D12VertexBuffer.h"
 
 #include "Graphite/RHI/Resources/InputLayout.h"
+#include "RHI/D3D12Types.h"
 
 
 namespace Graphite::D3D12
@@ -110,6 +112,54 @@ namespace Graphite::D3D12
 
 		auto buffer = std::unique_ptr<VertexBuffer>(new D3D12VertexBuffer(allocation, vertexCount, inputLayout));
 		return std::move(buffer);
+	}
+
+
+	std::unique_ptr<Texture2D> D3D12ResourceFactory::CreateTexture2D(const Texture2DDesc& desc) const
+	{
+		bool committedResource = false;
+		D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE;
+		if (GPUResource::CheckAccessFlags(desc.AccessFlags, ResourceAccess_GPUWrite))
+		{
+			resourceFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		}
+		if (GPUResource::CheckAccessFlags(desc.AccessFlags, ResourceAccess_RenderTarget))
+		{
+			committedResource = true;
+			resourceFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+		}
+		if (GPUResource::CheckAccessFlags(desc.AccessFlags, ResourceAccess_DepthStencil))
+		{
+			committedResource = true;
+			resourceFlags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+		}
+
+		const auto resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+			GraphiteFormatToD3D12Format(desc.Format),
+			static_cast<UINT64>(desc.Width),
+			static_cast<UINT>(desc.Height),
+			1,
+			0,
+			1,
+			1,
+			resourceFlags
+		);
+
+		D3D12MA::ALLOCATION_DESC allocDesc = {};
+		allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
+		allocDesc.Flags |= committedResource ? D3D12MA::ALLOCATION_FLAG_COMMITTED : D3D12MA::ALLOCATION_FLAG_NONE;
+
+		D3D12MA::Allocation* allocation;
+		DX_THROW_IF_FAIL(m_Allocator->CreateResource(
+			&allocDesc,
+			&resourceDesc,
+			D3D12_RESOURCE_STATE_COMMON,
+			nullptr,
+			&allocation,
+			IID_NULL, nullptr));
+
+		auto texture = std::unique_ptr<Texture2D>(new D3D12Texture2D(allocation, desc));
+		return std::move(texture);
 	}
 
 

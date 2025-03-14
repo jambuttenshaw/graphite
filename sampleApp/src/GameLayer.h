@@ -20,9 +20,6 @@ public:
 	virtual void OnRender() override;
 
 protected:
-	//std::unique_ptr<Graphite::VertexBuffer> m_VertexBuffer;
-	//std::unique_ptr<Graphite::UploadBuffer> m_IndexBuffer;
-
 	std::unique_ptr<Graphite::Mesh> m_Mesh;
 
 	std::unique_ptr<Graphite::GraphicsPipeline> m_GraphicsPipeline;
@@ -34,4 +31,6 @@ protected:
 	Graphite::ConstantBuffer<InstanceDataConstantBufferType> m_InstanceDataCB;
 
 	Graphite::Transform m_CubeTransform;
+
+	std::unique_ptr<Graphite::Texture2D> m_DepthBuffer;
 };

@@ -65,6 +65,8 @@
 #include "Graphite/RHI/CommandRecordingContext.h"
 
 #include "Graphite/RHI/Resources/ResourceFactory.h"
+#include "Graphite/RHI/Resources/Buffer.h"
+#include "Graphite/RHI/Resources/Texture.h"
 #include "Graphite/RHI/Resources/ConstantBuffer.h"
 #include "Graphite/RHI/Resources/ResourceViews.h"
 

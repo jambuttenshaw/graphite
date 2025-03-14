@@ -28,11 +28,15 @@ namespace Graphite
 	// Flags used to determine how a resource can be accessed
 	enum ResourceAccessFlags : uint8_t
 	{
-		ResourceAccess_None		= 0x0,
-		ResourceAccess_CPURead	= 0x1,
-		ResourceAccess_CPUWrite	= 0x2,
-		ResourceAccess_GPURead	= 0x4,
-		ResourceAccess_GPUWrite	= 0x8,
+		ResourceAccess_None		    = 0x0,
+		// CPU Read/Write is only supported for buffers
+		ResourceAccess_CPURead	    = 0x1,
+		ResourceAccess_CPUWrite	    = 0x2,
+		ResourceAccess_GPURead	    = 0x4,
+		ResourceAccess_GPUWrite	    = 0x8,
+		// Only available for textures
+		ResourceAccess_RenderTarget	= 0x10,
+		ResourceAccess_DepthStencil	= 0x20
 	};
 
 
@@ -57,6 +61,8 @@ namespace Graphite
 
 		GRAPHITE_API inline ResourceAccessFlags GetAccessFlags() const { return m_AccessFlags; }
 		GRAPHITE_API inline bool CheckAccessFlags(ResourceAccessFlags flags) const { return m_AccessFlags & flags; }
+
+		GRAPHITE_API static bool CheckAccessFlags(ResourceAccessFlags accessFlags, ResourceAccessFlags toCheck) { return accessFlags & toCheck; }
 
 	protected:
 		// Common properties about this resource, including usage

@@ -1,14 +1,22 @@
 #pragma once
 
-#include "Buffer.h"
+#include "Graphite/Core/Core.h"
 
 
 namespace Graphite
 {
 	class GraphicsContext;
 
+	class UploadBuffer;
+	class ByteAddressBuffer;
+	class StructuredBuffer;
+	class ReadbackBuffer;
+
 	class VertexBuffer;
 	class InputLayout;
+
+	struct Texture2DDesc;
+	class Texture2D;
 
 
 	class ResourceFactory
@@ -50,6 +58,10 @@ namespace Graphite
 		{
 			return CreateStructuredBuffer(elementCount, sizeof(T), readOnly);
 		}
+
+
+		// Textures
+		GRAPHITE_API virtual std::unique_ptr<Texture2D> CreateTexture2D(const Texture2DDesc& desc) const = 0;
 
 	protected:
 		// Helper functions
