@@ -56,14 +56,14 @@ namespace Graphite::D3D12
 	void D3D12CommandRecordingContext::ClearRenderTargetView(CPUDescriptorHandle renderTargetView, const glm::vec4& clearColor) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		auto descriptor = GraphiteCPUDescriptorToD3D12Descriptor(renderTargetView);
+		auto descriptor = ToD3D12CpuDescriptor(renderTargetView);
 		m_CommandList->ClearRenderTargetView(descriptor, &clearColor.x, 0, nullptr);
 	}
 
 	void D3D12CommandRecordingContext::ClearDepthStencilView(CPUDescriptorHandle dsv, float depth, uint8_t stencil) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		auto descriptor = GraphiteCPUDescriptorToD3D12Descriptor(dsv);
+		auto descriptor = ToD3D12CpuDescriptor(dsv);
 		m_CommandList->ClearDepthStencilView(descriptor, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, depth, stencil, 0, nullptr);
 	}
 
@@ -71,12 +71,12 @@ namespace Graphite::D3D12
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
 
-		auto rtvDescriptor = GraphiteCPUDescriptorToD3D12Descriptor(rtvRange);
+		auto rtvDescriptor = ToD3D12CpuDescriptor(rtvRange);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE dsvDescriptor;
 		if (dsv.has_value())
 		{
-			dsvDescriptor = GraphiteCPUDescriptorToD3D12Descriptor(dsv.value());
+			dsvDescriptor = ToD3D12CpuDescriptor(dsv.value());
 		}
 
 		m_CommandList->OMSetRenderTargets(static_cast<UINT>(rtvCount), &rtvDescriptor, true, dsv.has_value() ? &dsvDescriptor : nullptr);
@@ -104,13 +104,13 @@ namespace Graphite::D3D12
 			{
 				m_CommandList->SetGraphicsRootDescriptorTable(
 					argIndex + i,
-					GraphiteGPUDescriptorToD3D12Descriptor(resourceViewList.GetDescriptorTableHandle())
+					ToD3D12GpuDescriptor(resourceViewList.GetDescriptorTableHandle())
 				);
 			}
 			else
 			{
 				uint32_t idx = argIndex + i;
-				D3D12_GPU_VIRTUAL_ADDRESS va = GraphiteGPUAddressToD3D12GPUAddress(resourceViewList.GetInlineResourceHandle(arg.InlineResourceOffset));
+				D3D12_GPU_VIRTUAL_ADDRESS va = ToD3D12GPUAddress(resourceViewList.GetInlineResourceHandle(arg.InlineResourceOffset));
 				switch (arg.Type)
 				{
 				case PipelineResourceType::ConstantBufferView:
@@ -131,10 +131,28 @@ namespace Graphite::D3D12
 		}
 	}
 
+	void D3D12CommandRecordingContext::SetResourceState(GPUResource* resource, ResourceState newState) const
+	{
+		if (resource->GetResourceState() == newState)
+		{
+			return;
+		}
+
+		auto nativeResource = dynamic_cast<const D3D12Resource*>(resource);
+		GRAPHITE_ASSERT(nativeResource, "Resource is not a D3D12 resource!");
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			nativeResource->GetResource(), 
+			ToD3D12ResourceState(resource->GetResourceState()),
+			ToD3D12ResourceState(newState));
+		resource->SetResourceState(newState);
+
+		m_CommandList->ResourceBarrier(1, &barrier);
+	}
+
 	void D3D12CommandRecordingContext::SetPrimitiveTopology(GraphiteTopology topology) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		m_CommandList->IASetPrimitiveTopology(GraphiteTopologyToD3D12Topology(topology));
+		m_CommandList->IASetPrimitiveTopology(ToD3D12Topology(topology));
 	}
 
 	void D3D12CommandRecordingContext::SetViewports(std::span<const Viewport> viewports) const
@@ -160,7 +178,7 @@ namespace Graphite::D3D12
 	void D3D12CommandRecordingContext::SetIndexBuffer(const IndexBufferView& indexBuffer) const
 	{
 		GRAPHITE_ASSERT(!m_IsClosed, "Cannot add commands to a closed context!");
-		D3D12_INDEX_BUFFER_VIEW ibv = GraphiteIBVToD3D12IBV(indexBuffer);
+		D3D12_INDEX_BUFFER_VIEW ibv = ToD3D12IBV(indexBuffer);
 		m_CommandList->IASetIndexBuffer(&ibv);
 	}
 

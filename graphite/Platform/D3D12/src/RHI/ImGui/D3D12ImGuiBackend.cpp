@@ -21,8 +21,8 @@ namespace Graphite::D3D12
 			nativeGraphicsContext.GetBackBufferCount(),
 			nativeGraphicsContext.GetNativeBackBufferFormat(),
 			nativeDescriptorHeap->GetNativeHeap(),
-			GraphiteCPUDescriptorToD3D12Descriptor(imGuiResources.GetCPUHandle()),
-			GraphiteGPUDescriptorToD3D12Descriptor(imGuiResources.GetGPUHandle())
+			ToD3D12CpuDescriptor(imGuiResources.GetCPUHandle()),
+			ToD3D12GpuDescriptor(imGuiResources.GetGPUHandle())
 		);
 	}
 

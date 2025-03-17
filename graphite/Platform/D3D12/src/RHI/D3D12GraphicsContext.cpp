@@ -19,7 +19,7 @@ namespace Graphite::D3D12
 
 	D3D12GraphicsContext::D3D12GraphicsContext(const GraphicsContextDesc& contextDesc)
 		: GraphicsContext(contextDesc)
-		, m_NativeBackBufferFormat(GraphiteFormatToD3D12Format(contextDesc.BackBufferFormat))
+		, m_NativeBackBufferFormat(ToD3D12Format(contextDesc.BackBufferFormat))
 	{
 		// Validate description
 		GRAPHITE_ASSERT(contextDesc.WindowHandle, "Invalid window handle.");
@@ -253,7 +253,7 @@ namespace Graphite::D3D12
 			.BufferLocation = bufferAddress,
 			.SizeInBytes = bufferSize
 		};
-		m_Device->CreateConstantBufferView(&cbv, GraphiteCPUDescriptorToD3D12Descriptor(destDescriptor));
+		m_Device->CreateConstantBufferView(&cbv, ToD3D12CpuDescriptor(destDescriptor));
 	}
 
 	DescriptorAllocation D3D12GraphicsContext::CreateDepthStencilView(const GPUResource* resource, GraphiteFormat format)
@@ -270,7 +270,7 @@ namespace Graphite::D3D12
 		GRAPHITE_ASSERT(destDescriptor.IsValid(), "Failed to allocate DSV. Has the heap been exhausted?");
 
 		D3D12_DEPTH_STENCIL_VIEW_DESC dsv{
-			.Format = GraphiteFormatToD3D12Format(format),
+			.Format = ToD3D12Format(format),
 			.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D,
 			.Flags = D3D12_DSV_FLAG_NONE,
 			.Texture2D = D3D12_TEX2D_DSV{ .MipSlice = 0 }
@@ -278,7 +278,7 @@ namespace Graphite::D3D12
 		const D3D12Resource* nativeResource = dynamic_cast<const D3D12Resource*>(resource);
 		GRAPHITE_ASSERT(nativeResource, "Resource must be a D3D12 resource!");
 
-		m_Device->CreateDepthStencilView(nativeResource->GetResource(), &dsv, GraphiteCPUDescriptorToD3D12Descriptor(destDescriptor.GetCPUHandle()));
+		m_Device->CreateDepthStencilView(nativeResource->GetResource(), &dsv, ToD3D12CpuDescriptor(destDescriptor.GetCPUHandle()));
 
 		return destDescriptor;
 	}
@@ -288,9 +288,9 @@ namespace Graphite::D3D12
 	{
 		m_Device->CopyDescriptorsSimple(
 			descriptorCount,
-			GraphiteCPUDescriptorToD3D12Descriptor(destination),
-			GraphiteCPUDescriptorToD3D12Descriptor(source),
-			GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(type)
+			ToD3D12CpuDescriptor(destination),
+			ToD3D12CpuDescriptor(source),
+			ToD3D12DescriptorHeapType(type)
 			);
 	}
 
@@ -477,7 +477,7 @@ namespace Graphite::D3D12
 		for (UINT n = 0; n < s_BackBufferCount; n++)
 		{
 			DX_THROW_IF_FAIL(m_SwapChain->GetBuffer(n, IID_PPV_ARGS(&m_BackBuffers.at(n))));
-			D3D12_CPU_DESCRIPTOR_HANDLE rtv = GraphiteCPUDescriptorToD3D12Descriptor(m_BackBufferRTVs.GetCPUHandle(n));
+			D3D12_CPU_DESCRIPTOR_HANDLE rtv = ToD3D12CpuDescriptor(m_BackBufferRTVs.GetCPUHandle(n));
 			m_Device->CreateRenderTargetView(m_BackBuffers.at(n).Get(), nullptr, rtv);
 
 #ifdef GRAPHITE_DEBUG

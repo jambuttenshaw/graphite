@@ -32,6 +32,8 @@ namespace Graphite::D3D12
 
 		virtual void SetGraphicsPipelineResources(const ResourceViewList& resourceViewList) const override;
 
+		virtual void SetResourceState(GPUResource* resource, ResourceState newState) const override;
+
 		virtual void SetPrimitiveTopology(GraphiteTopology topology) const override;
 
 		virtual void SetViewports(std::span<const Viewport> viewports) const override;

@@ -64,9 +64,16 @@ namespace Graphite
 
 		GRAPHITE_API static bool CheckAccessFlags(ResourceAccessFlags accessFlags, ResourceAccessFlags toCheck) { return accessFlags & toCheck; }
 
+		GRAPHITE_API inline ResourceState GetResourceState() const { return m_ResourceState; }
+
+		// TODO: Arrange a way where this can only be performed by the command recording context.
+		// TODO: Things would get out of hand by allowing the application to manipulate internal state
+		GRAPHITE_API inline void SetResourceState(ResourceState newState) { m_ResourceState = newState; }
+
 	protected:
 		// Common properties about this resource, including usage
 		ResourceAccessFlags m_AccessFlags = ResourceAccess_None;
+		ResourceState m_ResourceState = ResourceState_Common;
 	};
 
 }

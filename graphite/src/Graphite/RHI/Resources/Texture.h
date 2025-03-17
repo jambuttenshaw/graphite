@@ -25,6 +25,7 @@ namespace Graphite
 		std::optional<TextureClearValue> ClearValue;
 
 		ResourceAccessFlags AccessFlags;
+		ResourceState InitialState;
 	};
 
 	class Texture2D : public GPUResource

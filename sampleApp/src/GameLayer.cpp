@@ -98,6 +98,7 @@ void GameLayer::OnAttach()
 
 	// Load model
 	m_Mesh = Graphite::ModelLoader::LoadModel("assets/teapot.obj");
+	m_CubeTransform.Translation = glm::vec3(0.0f, -1.0f, 3.0f);
 
 	// Create a texture to use as depth buffer
 	Graphite::Texture2DDesc depthBufferDesc{
@@ -105,7 +106,8 @@ void GameLayer::OnAttach()
 		.Height = window->GetHeight(),
 		.Format = Graphite::GraphiteFormat_D32_FLOAT,
 		.ClearValue = Graphite::TextureClearValue{ .Color = glm::vec4(0.0f), .Depth = 1.0f, .Stencil = 0 },
-		.AccessFlags = Graphite::ResourceAccess_DepthStencil
+		.AccessFlags = Graphite::ResourceAccess_DepthStencil,
+		.InitialState = Graphite::ResourceState_DepthWrite
 	};
 	m_DepthBuffer = Graphite::ResourceFactory::Get().CreateTexture2D(depthBufferDesc);
 

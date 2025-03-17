@@ -21,7 +21,7 @@ namespace Graphite::D3D12
 		std::ranges::transform(m_BufferViews, m_NativeViews.begin(), 
 		[](const VertexBufferView& view)
 		{
-			return GraphiteVBVToD3D12VBV(view);
+			return ToD3D12VBV(view);
 		});
 	}
 

@@ -19,7 +19,7 @@ namespace Graphite::D3D12
 			cpuOnly
 		)
 	{
-		m_NativeHeapType = GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(type);
+		m_NativeHeapType = ToD3D12DescriptorHeapType(type);
 
 		// RTV and DSV heaps cannot be gpu visible
 		if (m_NativeHeapType == D3D12_DESCRIPTOR_HEAP_TYPE_RTV || m_NativeHeapType == D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
@@ -54,11 +54,11 @@ namespace Graphite::D3D12
 
 	CPUDescriptorHandle D3D12DescriptorHeap::GetCPUHandleForHeapStart() const
 	{
-		return D3D12CPUDescriptorToGraphiteDescriptor(m_NativeHeap->GetCPUDescriptorHandleForHeapStart());
+		return ToGraphiteDescriptor(m_NativeHeap->GetCPUDescriptorHandleForHeapStart());
 	}
 
 	GPUDescriptorHandle D3D12DescriptorHeap::GetGPUHandleForHeapStart() const
 	{
-		return D3D12GPUDescriptorToGraphiteDescriptor(m_NativeHeap->GetGPUDescriptorHandleForHeapStart());
+		return ToGraphiteDescriptor(m_NativeHeap->GetGPUDescriptorHandleForHeapStart());
 	}
 }

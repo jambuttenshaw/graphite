@@ -84,10 +84,10 @@ namespace Graphite::D3D12
 							if (resourceDescription.BindingMethod == PipelineResourceBindingMethod::Inline)
 							{
 								rootParams.emplace_back();
-								rootParams.back().ParameterType = GraphiteResourceTypeToD3D12RootParameterType(resourceDescription.Type);
+								rootParams.back().ParameterType = ToD3D12RootParameterType(resourceDescription.Type);
 								rootParams.back().Descriptor.ShaderRegister = resourceDescription.BindingSlot;
 								rootParams.back().Descriptor.RegisterSpace = resourceDescription.RegisterSpace;
-								rootParams.back().ShaderVisibility = GraphiteShaderVisibilityToD3D12ShaderVisibility(shaderStage);
+								rootParams.back().ShaderVisibility = ToD3D12ShaderVisibility(shaderStage);
 
 								resourceSet.AddInlineRootArgument(resourceDescription.Type, static_cast<uint32_t>(pipelineResource.DescriptorOffsetOrAddressIndex));
 							}
@@ -97,7 +97,7 @@ namespace Graphite::D3D12
 								std::vector<CD3DX12_DESCRIPTOR_RANGE>& ranges = descriptorRangesForFrequency[shaderStage];
 								ranges.emplace_back();
 								ranges.back().Init(
-									GraphiteResourceTypeToD3D12DescriptorRangeType(resourceDescription.Type),
+									ToD3D12DescriptorRangeType(resourceDescription.Type),
 									1,
 									resourceDescription.BindingSlot,
 									resourceDescription.RegisterSpace,
@@ -125,7 +125,7 @@ namespace Graphite::D3D12
 						rootParams.back().InitAsDescriptorTable(
 							static_cast<UINT>(descriptorRangeCount),
 							&descriptorRanges.at(descriptorRangeIndex),
-							GraphiteShaderVisibilityToD3D12ShaderVisibility(visibility)
+							ToD3D12ShaderVisibility(visibility)
 						);
 
 						resourceSet.AddDefaultRootArgument();
@@ -191,12 +191,11 @@ namespace Graphite::D3D12
 			psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 			psoDesc.SampleMask = UINT_MAX;
 			psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-			psoDesc.DepthStencilState.DepthEnable = false;
-			psoDesc.DepthStencilState.StencilEnable = false;
+			psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 
 			// Create D3D12 input layout
 			std::vector<D3D12_INPUT_ELEMENT_DESC> inputLayout;
-			GraphiteInputLayoutToD3D12InputLayout(*description.InputVertexLayout, inputLayout);
+			ToD3D12InputLayout(*description.InputVertexLayout, inputLayout);
 
 			psoDesc.InputLayout = {
 				.pInputElementDescs = inputLayout.data(),
@@ -209,7 +208,7 @@ namespace Graphite::D3D12
 			psoDesc.NumRenderTargets = 1;
 			psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-			psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+			psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 			psoDesc.SampleDesc.Count = 1;
 			psoDesc.SampleDesc.Quality = 0;
 

@@ -9,13 +9,13 @@
 
 namespace Graphite::D3D12
 {
-    D3D12_GPU_VIRTUAL_ADDRESS GraphiteGPUAddressToD3D12GPUAddress(GPUVirtualAddress address)
+    D3D12_GPU_VIRTUAL_ADDRESS ToD3D12GPUAddress(GPUVirtualAddress address)
     {
 	    return static_cast<D3D12_GPU_VIRTUAL_ADDRESS>(address);
     }
 
 
-    DXGI_FORMAT GraphiteFormatToD3D12Format(GraphiteFormat format)
+    DXGI_FORMAT ToD3D12Format(GraphiteFormat format)
     {
         switch (format)
         {
@@ -142,7 +142,30 @@ namespace Graphite::D3D12
         return DXGI_FORMAT_UNKNOWN;
     }
 
-    D3D_PRIMITIVE_TOPOLOGY GraphiteTopologyToD3D12Topology(GraphiteTopology topology)
+    D3D12_RESOURCE_STATES ToD3D12ResourceState(ResourceState state)
+    {
+	    switch (state)
+	    {
+            case ResourceState_Common:                          return D3D12_RESOURCE_STATE_COMMON;
+            case ResourceState_VertexConstantBuffer:            return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+            case ResourceState_IndexBuffer:                     return D3D12_RESOURCE_STATE_INDEX_BUFFER;
+            case ResourceState_RenderTarget:                    return D3D12_RESOURCE_STATE_RENDER_TARGET;
+            case ResourceState_UnorderedAccess:                 return D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+            case ResourceState_DepthWrite:                      return D3D12_RESOURCE_STATE_DEPTH_WRITE;
+            case ResourceState_DepthRead:                       return D3D12_RESOURCE_STATE_DEPTH_READ;
+            case ResourceState_ShaderResource:                  return D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
+            case ResourceState_CopyDest:                        return D3D12_RESOURCE_STATE_COPY_DEST;
+            case ResourceState_CopySource:                      return D3D12_RESOURCE_STATE_COPY_SOURCE;
+            case ResourceState_RaytracingAccelerationStructure: return D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
+            case ResourceState_Present:                         return D3D12_RESOURCE_STATE_PRESENT;
+	    }
+
+        GRAPHITE_LOG_ERROR("Unknown/unsupported resource state!");
+        return D3D12_RESOURCE_STATE_COMMON;
+    }
+
+
+    D3D_PRIMITIVE_TOPOLOGY ToD3D12Topology(GraphiteTopology topology)
     {
         switch (topology)
         {
@@ -197,7 +220,7 @@ namespace Graphite::D3D12
     }
 
 
-    D3D12_DESCRIPTOR_HEAP_TYPE GraphiteDescriptorHeapTypeToD3D12DescriptorHeapType(DescriptorHeapType heapType)
+    D3D12_DESCRIPTOR_HEAP_TYPE ToD3D12DescriptorHeapType(DescriptorHeapType heapType)
     {
         switch (heapType)
         {
@@ -212,28 +235,28 @@ namespace Graphite::D3D12
         return D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;
     }
 
-    D3D12_CPU_DESCRIPTOR_HANDLE GraphiteCPUDescriptorToD3D12Descriptor(CPUDescriptorHandle descriptor)
+    D3D12_CPU_DESCRIPTOR_HANDLE ToD3D12CpuDescriptor(CPUDescriptorHandle descriptor)
     {
         return D3D12_CPU_DESCRIPTOR_HANDLE{ descriptor };
     }
 
-    CPUDescriptorHandle D3D12CPUDescriptorToGraphiteDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE descriptor)
+    CPUDescriptorHandle ToGraphiteDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE descriptor)
     {
         return descriptor.ptr;
     }
 
-    D3D12_GPU_DESCRIPTOR_HANDLE GraphiteGPUDescriptorToD3D12Descriptor(GPUDescriptorHandle descriptor)
+    D3D12_GPU_DESCRIPTOR_HANDLE ToD3D12GpuDescriptor(GPUDescriptorHandle descriptor)
     {
         return D3D12_GPU_DESCRIPTOR_HANDLE{ descriptor };
     }
 
-    GPUDescriptorHandle D3D12GPUDescriptorToGraphiteDescriptor(D3D12_GPU_DESCRIPTOR_HANDLE descriptor)
+    GPUDescriptorHandle ToGraphiteDescriptor(D3D12_GPU_DESCRIPTOR_HANDLE descriptor)
     {
         return descriptor.ptr;
     }
 
 
-    D3D12_VIEWPORT GraphiteViewportToD3D12Viewport(const Viewport& viewport)
+    D3D12_VIEWPORT ToD3D12Viewport(const Viewport& viewport)
     {
         return {
             .TopLeftX = viewport.Left,
@@ -245,7 +268,7 @@ namespace Graphite::D3D12
         };
     }
 
-    const char* GraphiteVertexAttributeToD3D12Semantic(VertexAttribute attribute)
+    const char* ToD3D12Semantic(VertexAttribute attribute)
     {
         switch (attribute)
         {
@@ -262,7 +285,7 @@ namespace Graphite::D3D12
         return nullptr;
     }
 
-    void GraphiteInputLayoutToD3D12InputLayout(const InputLayout& inputLayout, std::vector<D3D12_INPUT_ELEMENT_DESC>& outLayout)
+    void ToD3D12InputLayout(const InputLayout& inputLayout, std::vector<D3D12_INPUT_ELEMENT_DESC>& outLayout)
     {
         outLayout.clear();
         outLayout.reserve(inputLayout.GetElementCount());
@@ -275,9 +298,9 @@ namespace Graphite::D3D12
         {
             // Build D3D12 element desc
             D3D12_INPUT_ELEMENT_DESC desc = {
-                .SemanticName = GraphiteVertexAttributeToD3D12Semantic(element.Attribute),
+                .SemanticName = ToD3D12Semantic(element.Attribute),
                 .SemanticIndex = 0,
-                .Format = GraphiteFormatToD3D12Format(element.Format),
+                .Format = ToD3D12Format(element.Format),
                 .InputSlot = interleaved ? 0 : inputSlot++,
                 .AlignedByteOffset = interleaved ? element.OffsetInBytes : 0,
                 // Unused
@@ -289,7 +312,7 @@ namespace Graphite::D3D12
     }
 
 
-    D3D12_VERTEX_BUFFER_VIEW GraphiteVBVToD3D12VBV(const VertexBufferView& vbv)
+    D3D12_VERTEX_BUFFER_VIEW ToD3D12VBV(const VertexBufferView& vbv)
     {
         return {
             .BufferLocation = vbv.BufferAddress,
@@ -298,17 +321,17 @@ namespace Graphite::D3D12
         };
     }
 
-    D3D12_INDEX_BUFFER_VIEW GraphiteIBVToD3D12IBV(const IndexBufferView& ibv)
+    D3D12_INDEX_BUFFER_VIEW ToD3D12IBV(const IndexBufferView& ibv)
     {
         return {
             .BufferLocation = ibv.BufferAddress,
             .SizeInBytes = static_cast<UINT>(ibv.BufferSize),
-            .Format = GraphiteFormatToD3D12Format(ibv.IndexFormat)
+            .Format = ToD3D12Format(ibv.IndexFormat)
         };
     }
 
 
-    D3D12_DESCRIPTOR_RANGE_TYPE GraphiteResourceTypeToD3D12DescriptorRangeType(PipelineResourceType type)
+    D3D12_DESCRIPTOR_RANGE_TYPE ToD3D12DescriptorRangeType(PipelineResourceType type)
     {
         switch (type)
         {
@@ -321,7 +344,7 @@ namespace Graphite::D3D12
         }
     }
 
-    D3D12_ROOT_PARAMETER_TYPE GraphiteResourceTypeToD3D12RootParameterType(PipelineResourceType type)
+    D3D12_ROOT_PARAMETER_TYPE ToD3D12RootParameterType(PipelineResourceType type)
     {
         switch (type)
         {
@@ -334,7 +357,7 @@ namespace Graphite::D3D12
         }
     }
 
-    D3D12_SHADER_VISIBILITY GraphiteShaderVisibilityToD3D12ShaderVisibility(PipelineResourceShaderVisibility visibility)
+    D3D12_SHADER_VISIBILITY ToD3D12ShaderVisibility(PipelineResourceShaderVisibility visibility)
     {
         switch (visibility)
         {

@@ -120,7 +120,7 @@ namespace Graphite::D3D12
 		bool committedResource = false;
 		D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE;
 		D3D12_CLEAR_VALUE clearValue;
-		clearValue.Format = GraphiteFormatToD3D12Format(desc.Format);
+		clearValue.Format = ToD3D12Format(desc.Format);
 
 		if (GPUResource::CheckAccessFlags(desc.AccessFlags, ResourceAccess_GPUWrite))
 		{
@@ -148,7 +148,7 @@ namespace Graphite::D3D12
 		}
 
 		const auto resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-			GraphiteFormatToD3D12Format(desc.Format),
+			ToD3D12Format(desc.Format),
 			static_cast<UINT64>(desc.Width),
 			static_cast<UINT>(desc.Height),
 			1,
@@ -166,7 +166,7 @@ namespace Graphite::D3D12
 		DX_THROW_IF_FAIL(m_Allocator->CreateResource(
 			&allocDesc,
 			&resourceDesc,
-			D3D12_RESOURCE_STATE_COMMON,
+			ToD3D12ResourceState(desc.InitialState),
 			desc.ClearValue.has_value() ? &clearValue : nullptr,
 			&allocation,
 			IID_NULL, nullptr));

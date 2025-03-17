@@ -132,6 +132,24 @@ namespace Graphite
         GraphiteFormat_B4G4R4A4_UNORM
 	};
 
+    uint32_t GraphiteFormatSizeInBytes(GraphiteFormat format);
+
+    enum ResourceState : uint8_t
+    {
+        ResourceState_Common,
+        ResourceState_VertexConstantBuffer,
+        ResourceState_IndexBuffer,
+        ResourceState_RenderTarget,
+        ResourceState_UnorderedAccess,
+        ResourceState_DepthWrite,
+        ResourceState_DepthRead,
+        ResourceState_ShaderResource,
+        ResourceState_CopyDest,
+        ResourceState_CopySource,
+        ResourceState_RaytracingAccelerationStructure,
+        ResourceState_Present,
+    };
+
     enum GraphiteTopology : uint8_t
     {
         GraphiteTopology_UNDEFINED,
@@ -251,7 +269,5 @@ namespace Graphite
         ShaderVisibility_Mesh = 0x40,
         ShaderVisibility_All = 0x7F
     };
-
-    uint32_t GraphiteFormatSizeInBytes(GraphiteFormat format);
 
 }

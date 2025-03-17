@@ -11,6 +11,7 @@ namespace Graphite
 
 	class ResourceViewList;
 
+	class GPUResource;
 	class VertexBuffer;
 	struct IndexBufferView;
 
@@ -37,6 +38,8 @@ namespace Graphite
 		GRAPHITE_API virtual void SetGraphicsPipelineState(const GraphicsPipeline& pipelineState) const = 0;
 
 		GRAPHITE_API virtual void SetGraphicsPipelineResources(const ResourceViewList& resourceViewList) const = 0;
+
+		GRAPHITE_API virtual void SetResourceState(GPUResource* resource, ResourceState newState) const = 0;
 
 		GRAPHITE_API virtual void SetPrimitiveTopology(GraphiteTopology topology) const = 0;
 
