@@ -10,6 +10,8 @@
 #include "D3D12Exceptions.h"
 #include "D3D12CommandQueue.h"
 #include "D3D12CommandRecordingContext.h"
+#include "Graphite/RHI/Resources/GPUResource.h"
+#include "Resources/D3D12Resource.h"
 
 
 namespace Graphite::D3D12
@@ -254,6 +256,34 @@ namespace Graphite::D3D12
 		m_Device->CreateConstantBufferView(&cbv, GraphiteCPUDescriptorToD3D12Descriptor(destDescriptor));
 	}
 
+	DescriptorAllocation D3D12GraphicsContext::CreateDepthStencilView(const GPUResource* resource, GraphiteFormat format)
+	{
+		GRAPHITE_ASSERT(resource->CheckAccessFlags(ResourceAccess_DepthStencil), "Resource was not created for depth stencil access!");
+
+		if (resource->GetResourceType() != GPUResourceType::Texture2D)
+		{
+			GRAPHITE_LOG_ERROR("Only Texture2D's can be used as Depth Stencil Views");
+			return {};
+		}
+
+		DescriptorAllocation destDescriptor = m_DSVAllocator.Allocate(1);
+		GRAPHITE_ASSERT(destDescriptor.IsValid(), "Failed to allocate DSV. Has the heap been exhausted?");
+
+		D3D12_DEPTH_STENCIL_VIEW_DESC dsv{
+			.Format = GraphiteFormatToD3D12Format(format),
+			.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D,
+			.Flags = D3D12_DSV_FLAG_NONE,
+			.Texture2D = D3D12_TEX2D_DSV{ .MipSlice = 0 }
+		};
+		const D3D12Resource* nativeResource = dynamic_cast<const D3D12Resource*>(resource);
+		GRAPHITE_ASSERT(nativeResource, "Resource must be a D3D12 resource!");
+
+		m_Device->CreateDepthStencilView(nativeResource->GetResource(), &dsv, GraphiteCPUDescriptorToD3D12Descriptor(destDescriptor.GetCPUHandle()));
+
+		return destDescriptor;
+	}
+
+
 	void D3D12GraphicsContext::CopyDescriptors(CPUDescriptorHandle source, CPUDescriptorHandle destination, uint32_t descriptorCount, DescriptorHeapType type)
 	{
 		m_Device->CopyDescriptorsSimple(
@@ -421,20 +451,21 @@ namespace Graphite::D3D12
 		m_RTVHeap = std::make_unique<D3D12DescriptorHeap>(m_Device.Get(), GraphiteDescriptorHeap_RTV, 64, true, L"RTV Descriptor Heap");
 
 		// Create allocators for the resource heap
-		uint32_t descriptorsPerHeap = m_ResourceHeap->GetCapacity() / 4;
+		uint32_t descriptorsPerAllocator = m_ResourceHeap->GetCapacity() / 4;
 		uint32_t allocatorHeapOffset = 0;
 
-		m_StaticDescriptorAllocator = StaticDescriptorAllocator(m_ResourceHeap.get(), allocatorHeapOffset, descriptorsPerHeap);
-		allocatorHeapOffset += descriptorsPerHeap;
+		m_StaticDescriptorAllocator = StaticDescriptorAllocator(m_ResourceHeap.get(), allocatorHeapOffset, descriptorsPerAllocator);
+		allocatorHeapOffset += descriptorsPerAllocator;
 
 		for (uint32_t i = 0; i < s_BackBufferCount; i++)
 		{
-			m_DynamicDescriptorAllocators.at(i) = DynamicDescriptorAllocator(m_ResourceHeap.get(), allocatorHeapOffset, descriptorsPerHeap, i);
-			allocatorHeapOffset += descriptorsPerHeap;
+			m_DynamicDescriptorAllocators.at(i) = DynamicDescriptorAllocator(m_ResourceHeap.get(), allocatorHeapOffset, descriptorsPerAllocator, i);
+			allocatorHeapOffset += descriptorsPerAllocator;
 		}
 
 		m_StagingDescriptorAllocator = StaticDescriptorAllocator(m_StagingHeap.get(), 0, m_StagingHeap->GetCapacity());
 		m_RTVAllocator = StaticDescriptorAllocator(m_RTVHeap.get(), 0, m_RTVHeap->GetCapacity());
+		m_DSVAllocator = StaticDescriptorAllocator(m_DSVHeap.get(), 0, m_DSVHeap->GetCapacity());
 	}
 
 	void D3D12GraphicsContext::CreateBackBufferRTVs()
@@ -511,6 +542,7 @@ namespace Graphite::D3D12
 
 		m_StagingDescriptorAllocator.ReleasePendingFrees(frameIndex);
 		m_RTVAllocator.ReleasePendingFrees(frameIndex);
+		m_DSVAllocator.ReleasePendingFrees(frameIndex);
 	}
 
 	void D3D12GraphicsContext::ProcessAllDeferrals()

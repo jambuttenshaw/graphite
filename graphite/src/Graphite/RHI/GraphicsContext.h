@@ -15,6 +15,8 @@ namespace Graphite
 	class GraphicsPipeline;
 	struct GraphicsPipelineDescription;
 
+	class GPUResource;
+
 
 	struct GraphicsContextDesc
 	{
@@ -91,6 +93,8 @@ namespace Graphite
 		GRAPHITE_API virtual DescriptorAllocation AllocateStagingDescriptors(uint32_t count) = 0;
 
 		GRAPHITE_API virtual void CreateConstantBufferView(GPUVirtualAddress bufferAddress, uint32_t bufferSize, CPUDescriptorHandle destDescriptor) = 0;
+
+		GRAPHITE_API virtual DescriptorAllocation CreateDepthStencilView(const GPUResource* resource, GraphiteFormat format) = 0;
 
 		GRAPHITE_API virtual void CopyDescriptors(CPUDescriptorHandle source, CPUDescriptorHandle destination, uint32_t descriptorCount, DescriptorHeapType type) = 0;
 

@@ -62,6 +62,8 @@ namespace Graphite::D3D12
 
 		virtual void CreateConstantBufferView(GPUVirtualAddress bufferAddress, uint32_t bufferSize, CPUDescriptorHandle destDescriptor) override;
 
+		virtual DescriptorAllocation CreateDepthStencilView(const GPUResource* resource, GraphiteFormat format) override;
+
 		virtual void CopyDescriptors(CPUDescriptorHandle source, CPUDescriptorHandle destination, uint32_t descriptorCount, DescriptorHeapType type) override;
 
 	public:
@@ -147,6 +149,7 @@ namespace Graphite::D3D12
 		StaticDescriptorAllocator m_StagingDescriptorAllocator;
 
 		StaticDescriptorAllocator m_RTVAllocator;
+		StaticDescriptorAllocator m_DSVAllocator;
 
 		// Back buffer resources and descriptors
 		std::array<ComPtr<ID3D12Resource>, s_BackBufferCount> m_BackBuffers;

@@ -33,4 +33,5 @@ protected:
 	Graphite::Transform m_CubeTransform;
 
 	std::unique_ptr<Graphite::Texture2D> m_DepthBuffer;
+	Graphite::DescriptorAllocation m_DSV;
 };

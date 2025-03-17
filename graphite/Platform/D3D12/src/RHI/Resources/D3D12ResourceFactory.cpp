@@ -119,6 +119,9 @@ namespace Graphite::D3D12
 	{
 		bool committedResource = false;
 		D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE;
+		D3D12_CLEAR_VALUE clearValue;
+		clearValue.Format = GraphiteFormatToD3D12Format(desc.Format);
+
 		if (GPUResource::CheckAccessFlags(desc.AccessFlags, ResourceAccess_GPUWrite))
 		{
 			resourceFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
@@ -127,11 +130,21 @@ namespace Graphite::D3D12
 		{
 			committedResource = true;
 			resourceFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+			GRAPHITE_ASSERT(desc.ClearValue.has_value(), "Render targets must be provided with a clear value.");
+			clearValue.Color[0] = desc.ClearValue->Color.r;
+			clearValue.Color[1] = desc.ClearValue->Color.g;
+			clearValue.Color[2] = desc.ClearValue->Color.b;
+			clearValue.Color[3] = desc.ClearValue->Color.a;
 		}
 		if (GPUResource::CheckAccessFlags(desc.AccessFlags, ResourceAccess_DepthStencil))
 		{
 			committedResource = true;
 			resourceFlags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+			GRAPHITE_ASSERT(desc.ClearValue.has_value(), "Depth stencil targets must be provided with a clear value.");
+			clearValue.DepthStencil.Depth = desc.ClearValue->Depth;
+			clearValue.DepthStencil.Stencil = desc.ClearValue->Stencil;
 		}
 
 		const auto resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
@@ -141,7 +154,7 @@ namespace Graphite::D3D12
 			1,
 			0,
 			1,
-			1,
+			0,
 			resourceFlags
 		);
 
@@ -154,7 +167,7 @@ namespace Graphite::D3D12
 			&allocDesc,
 			&resourceDesc,
 			D3D12_RESOURCE_STATE_COMMON,
-			nullptr,
+			desc.ClearValue.has_value() ? &clearValue : nullptr,
 			&allocation,
 			IID_NULL, nullptr));
 

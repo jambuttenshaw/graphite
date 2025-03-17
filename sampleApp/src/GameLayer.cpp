@@ -94,7 +94,7 @@ static uint16_t indices[] = {
 void GameLayer::OnAttach()
 {
 	auto window = Graphite::Application::Get()->GetWindow();
-
+	auto graphicsContext = Graphite::Application::Get()->GetGraphicsContext();
 
 	// Load model
 	m_Mesh = Graphite::ModelLoader::LoadModel("assets/teapot.obj");
@@ -104,9 +104,12 @@ void GameLayer::OnAttach()
 		.Width = window->GetWidth(),
 		.Height = window->GetHeight(),
 		.Format = Graphite::GraphiteFormat_D32_FLOAT,
+		.ClearValue = Graphite::TextureClearValue{ .Color = glm::vec4(0.0f), .Depth = 1.0f, .Stencil = 0 },
 		.AccessFlags = Graphite::ResourceAccess_DepthStencil
 	};
 	m_DepthBuffer = Graphite::ResourceFactory::Get().CreateTexture2D(depthBufferDesc);
+
+	 m_DSV = graphicsContext->CreateDepthStencilView(m_DepthBuffer.get(), Graphite::GraphiteFormat_D32_FLOAT);
 
 	// Create graphics pipeline
 
@@ -145,7 +148,6 @@ void GameLayer::OnAttach()
 		.ResourceLayout = &resourceLayout
 	};
 
-	Graphite::GraphicsContext* graphicsContext = Graphite::Application::Get()->GetGraphicsContext();
 	m_GraphicsPipeline = graphicsContext->CreateGraphicsPipeline(psoDesc);
 
 	m_PassCB = Graphite::ConstantBuffer<PassConstantBufferType>(1);
@@ -217,10 +219,12 @@ void GameLayer::OnRender()
 		// Record commands
 		glm::vec4 clearColor{ 0.17f, 0.2f, 0.23f, 1.0f };
 		Graphite::CPUDescriptorHandle rtv = graphicsContext->GetBackBufferRenderTargetView();
+		Graphite::CPUDescriptorHandle dsv = m_DSV.GetCPUHandle();
 
 		recordingContext->ClearRenderTargetView(rtv, clearColor);
+		recordingContext->ClearDepthStencilView(dsv, 1.0f, 0);
 
-		recordingContext->SetRenderTargets(1, rtv, std::nullopt);
+		recordingContext->SetRenderTargets(1, rtv, dsv);
 
 		recordingContext->SetGraphicsPipelineState(*m_GraphicsPipeline);
 		recordingContext->SetGraphicsPipelineResources(m_StaticResourceList);

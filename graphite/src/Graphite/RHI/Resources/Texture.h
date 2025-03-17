@@ -7,12 +7,22 @@
 namespace Graphite
 {
 
+	struct TextureClearValue
+	{
+		// TODO: Doesn't need to contain color AND stencil
+		glm::vec4 Color;
+		float Depth;
+		uint8_t Stencil;
+	};
+
+
 	struct Texture2DDesc
 	{
 		uint32_t Width;
 		uint32_t Height;
 
 		GraphiteFormat Format;
+		std::optional<TextureClearValue> ClearValue;
 
 		ResourceAccessFlags AccessFlags;
 	};
