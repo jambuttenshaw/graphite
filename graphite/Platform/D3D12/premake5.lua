@@ -51,6 +51,10 @@ group "Core"
 
             defines { "GRAPHITE_BUILD" }
 
+            flags {
+                "MultiProcessorCompile"
+            }        
+
             buildoptions { "/utf-8" }
 
             targetdir ("bin/" .. outputdir .. "/%{prj.name}")

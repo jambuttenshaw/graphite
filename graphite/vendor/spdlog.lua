@@ -25,6 +25,10 @@ project "spdlog"
         "SPDLOG_WCHAR_TO_UTF8_SUPPORT"
     }
 
+    flags {
+		"MultiProcessorCompile"
+	}
+
     buildoptions { "/utf-8" }
 
 	filter "configurations:Debug"

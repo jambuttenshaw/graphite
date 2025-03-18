@@ -43,6 +43,10 @@ group "Core"
             "ASSIMP_DLL"
         }
 
+        flags {
+            "MultiProcessorCompile"
+        }
+
         buildoptions { "/utf-8" }
 
         targetdir ("bin/" .. outputdir .. "/%{prj.name}")
