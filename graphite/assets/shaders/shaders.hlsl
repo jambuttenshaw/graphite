@@ -35,7 +35,7 @@ VSToPS VSMain(Vertex input)
     output.position = mul(g_InstanceData.WorldMatrix, input.position);
     output.position = mul(g_PassCB.ViewProjectionMatrix, output.position);
     
-    output.normal = input.normal;
+    output.normal = mul((float3x3)g_InstanceData.WorldMatrix, input.normal);
     
 	return output;
 }

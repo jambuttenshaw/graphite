@@ -48,6 +48,13 @@ group "Core"
         targetdir ("bin/" .. outputdir .. "/%{prj.name}")
         objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 
+        files {
+            "assets/shaders/**.hlsl"
+        }
+
+        filter "files:**.hlsl"
+            flags { "ExcludeFromBuild" }   
+
         filter "configurations:Debug"
             defines { "GRAPHITE_DEBUG" }
             runtime "Debug"
